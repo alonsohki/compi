@@ -1,0 +1,40 @@
+ Expresiones regulares :
+=========================
+
+Espacio (espacio, tabulador, salto de linea, retorno de carro)
+[\ \t\n\r]+
+
+Separador
+[(),:;]
+
+Comentario
+\(\*([^*]|(\*+[^*)]))*\*+\)
+
+Identificador
+[a-zA-Z](_?[a-zA-Z0-9])*
+
+Constante entera
+[0-9]+
+
+Constante real
+[0-9]+\.[0-9]+([eE][+\-]?[0-9]+)?
+
+Operador
+[+-\*\/]|[\/<>=]=
+
+
+ Palabras reservadas :
+=======================
+
+programa
+procedimiento
+entrada
+salida
+si
+entonces
+fin
+hacer
+mientras
+salir
+get
+put_line
