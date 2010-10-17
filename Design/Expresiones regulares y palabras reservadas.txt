@@ -15,13 +15,54 @@ Identificador
 
 Constante entera
 [0-9]+
+jflap-re:NN*
 
 Constante real
 [0-9]+\.[0-9]+([eE][+\-]?[0-9]+)?
 
 Operador
-[+-\*\/]|[\/<>=]=
+[+-*/]|[<>]|[/<>=]=
 
+ Expresiones regulares jflap :
+===============================
+
+Espacio
+(s+t+n+r)(s+t+n+r)*
+
+Separador
+(1+2+,+:+;)
+
+Comentario
+1M((2+N+L+S)+(MM*(N+L+S)))*MM*2
+
+Identificador
+L((_+!)(L+N))*
+
+Constante entera
+NN*
+
+Constante real
+NN*.NN*((e+E)(S+-+!)NN*+!)
+
+Operador
+(S+-+M+/)+(<+>)+(/+<+>+=)=
+
+" "=s
+"("=1
+")"=2
+"*"=M
+"+"=S
+
+[a-zA-Z]=L
+[0-9]   =N
+[^*]    =(2+N+L+S)
+[^*)]   =(N+L+S)
+
+
+ Automata unificado :
+======================
+
+(s+t+n+r)(s+t+n+r)*+(1+2+,+:+;)+1M((2+N+L+S)+(MM*(N+L+S)))*MM*2+L((_+!)(L+N))*+NN*+NN*.NN*((e+E)(S+-+!)NN*+!)+(S+-+M+/)+(<+>)+(/+<+>+=)=
 
  Palabras reservadas :
 =======================
