@@ -20,41 +20,16 @@
 		</state>
 		<state id="3" name="q3">
 			<x>367.0</x>
-			<y>106.0</y>
+			<y>111.0</y>
 			<label>5,8</label>
 		</state>
 		<state id="4" name="q4">
-			<x>452.0</x>
-			<y>104.0</y>
+			<x>458.0</x>
+			<y>109.0</y>
 			<label>9</label>
 			<final/>
 		</state>
 		<!--The list of transitions.-->
-		<transition>
-			<from>3</from>
-			<to>4</to>
-			<read>)</read>
-		</transition>
-		<transition>
-			<from>3</from>
-			<to>2</to>
-			<read>[^*)]</read>
-		</transition>
-		<transition>
-			<from>3</from>
-			<to>3</to>
-			<read>*</read>
-		</transition>
-		<transition>
-			<from>2</from>
-			<to>3</to>
-			<read>*</read>
-		</transition>
-		<transition>
-			<from>0</from>
-			<to>1</to>
-			<read>(</read>
-		</transition>
 		<transition>
 			<from>1</from>
 			<to>2</to>
@@ -62,8 +37,33 @@
 		</transition>
 		<transition>
 			<from>2</from>
+			<to>3</to>
+			<read>*</read>
+		</transition>
+		<transition>
+			<from>3</from>
+			<to>4</to>
+			<read>/</read>
+		</transition>
+		<transition>
+			<from>3</from>
+			<to>3</to>
+			<read>*</read>
+		</transition>
+		<transition>
+			<from>0</from>
+			<to>1</to>
+			<read>/</read>
+		</transition>
+		<transition>
+			<from>2</from>
 			<to>2</to>
 			<read>[^*]</read>
+		</transition>
+		<transition>
+			<from>3</from>
+			<to>2</to>
+			<read>[^*)]</read>
 		</transition>
 	</automaton>
 </structure>
