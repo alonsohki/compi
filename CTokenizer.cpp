@@ -122,6 +122,8 @@ bool CTokenizer::ReadToken ( SToken* pToken )
     {
         memset ( pToken->value, 0, sizeof ( pToken->value ) );
         pToken->uiValueLength = 0;
+        pToken->uiCol = m_uiCol;
+        pToken->uiLine = m_uiLine;
     }
 
     // Inicializamos el autómata.
@@ -145,13 +147,14 @@ bool CTokenizer::ReadToken ( SToken* pToken )
                 m_buffer.Rollback ();
             else
             {
+                ++m_uiCol;
+
                 // Añadimos el caracter recientemente leído al token.
                 if ( pToken != 0 )
                 {
                     pToken->value [ pToken->uiValueLength ] = c;
                     pToken->uiValueLength++;
                 }
-                ++m_uiCol;
             }
             break;
         }
@@ -176,8 +179,6 @@ bool CTokenizer::ReadToken ( SToken* pToken )
     {
         pToken->eType = ms_eFinalStates [ m_uiState ];
         pToken->uiState = m_uiState;
-        pToken->uiLine = m_uiLine;
-        pToken->uiCol = m_uiCol;
     }
 
     return !bFailed;

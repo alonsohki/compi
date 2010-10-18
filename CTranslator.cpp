@@ -25,12 +25,22 @@ bool CTranslator::Translate ()
 
     while ( true == tokenizer.NextToken( &token, true ) )
     {
-        printf("(Tipo: %s, %u:%u) %s%s\n", tokenizer.NameThisToken(token.eType),
-                                         token.uiLine + 1,
-                                         token.uiCol - token.uiValueLength + 1,
-                                         token.value,
-                                         token.eType != CTokenizer::UNKNOWN ? "" : tokenizer.GetErrorForToken(token)
-              );
+        if ( token.eType != CTokenizer::UNKNOWN )
+        {
+            printf("(Tipo: %s, %u:%u) %s\n", tokenizer.NameThisToken(token.eType),
+                                             token.uiLine + 1,
+                                             token.uiCol + 1,
+                                             token.value );
+        }
+        else
+        {
+            printf("(Tipo: %s, %u:%u) %s [Error: %s]\n", tokenizer.NameThisToken(token.eType),
+                                             token.uiLine + 1,
+                                             token.uiCol + 1,
+                                             token.value,
+                                             tokenizer.GetErrorForToken(token)
+                                            );
+        }
     }
 
     return true;
