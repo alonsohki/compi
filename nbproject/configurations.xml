@@ -45,6 +45,12 @@
         <platform>3</platform>
       </toolsSet>
       <compileType>
+        <cTool>
+          <commandLine>-Wall</commandLine>
+        </cTool>
+        <ccTool>
+          <commandLine>-Wall</commandLine>
+        </ccTool>
       </compileType>
     </conf>
     <conf name="Release" type="1">

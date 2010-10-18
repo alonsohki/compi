@@ -99,11 +99,11 @@ const char* CTokenizer::ms_szErrors [ CTokenizer::NUMSTATES ] = {
 /////////////////////////////////////////////////////////
 
 CTokenizer::CTokenizer ( std::istream& isInput )
-: m_uiLine ( 0 )
-, m_uiCol ( 0 )
+: m_buffer ( isInput )
 , m_uiState ( 0 )
+, m_uiLine ( 0 )
+, m_uiCol ( 0 )
 , m_isInput ( isInput )
-, m_buffer ( isInput )
 {
 }
 
@@ -257,6 +257,8 @@ const char* CTokenizer::NameThisToken ( ETokenType eType ) const
         TOKTYPE(NEWLINE);
         TOKTYPE(SEPARATOR);
         TOKTYPE(UNKNOWN);
+        default:
+            return "";
     }
 #undef TOKTYPE
 }
