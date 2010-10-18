@@ -46,11 +46,23 @@
       </toolsSet>
       <compileType>
         <cTool>
+          <commandlineTool>gcc</commandlineTool>
           <commandLine>-Wall</commandLine>
         </cTool>
         <ccTool>
+          <commandlineTool>g++</commandlineTool>
           <commandLine>-Wall</commandLine>
         </ccTool>
+        <fortranCompilerTool>
+          <commandlineTool>g77</commandlineTool>
+        </fortranCompilerTool>
+        <asmTool>
+          <commandlineTool>as</commandlineTool>
+        </asmTool>
+        <linkerTool>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/analex</output>
+          <commandlineTool>g++</commandlineTool>
+        </linkerTool>
       </compileType>
     </conf>
     <conf name="Release" type="1">
@@ -62,16 +74,24 @@
       <compileType>
         <cTool>
           <developmentMode>5</developmentMode>
+          <commandlineTool>gcc</commandlineTool>
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
+          <commandlineTool>g++</commandlineTool>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
+          <commandlineTool>g77</commandlineTool>
         </fortranCompilerTool>
         <asmTool>
           <developmentMode>5</developmentMode>
+          <commandlineTool>as</commandlineTool>
         </asmTool>
+        <linkerTool>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/analex</output>
+          <commandlineTool>g++</commandlineTool>
+        </linkerTool>
       </compileType>
     </conf>
   </confs>
