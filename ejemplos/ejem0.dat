@@ -1,0 +1,28 @@
+/* esto es
+ * un comentario
+ * multi línea.
+ * Programa escrito por el equipo del JAG.
+ */
+programa ejemplo
+	variables a,b,c : entero;
+	variables d,e : real;
+
+	/* esto es un comentario */
+	procedimiento sumar (x,y: entrada entero; resul: entrada salida entero)
+	variables aux:entero;
+	comienzo
+		hacer
+			aux=a; c=b;
+			aux = aux - 1 ;
+			c = c+1;
+		mientras aux > 0 fin hacer ;
+	fin ;
+
+comienzo
+	get(a); get(b);
+	d= 1.0e+1/b;
+	e= 1/a;
+	sumar(a,b,c); /* los que hagan llamadas a procedimientos */
+	c= c*(c*d)+e;
+	put_line(c*c);
+fin ;
