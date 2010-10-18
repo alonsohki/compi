@@ -1,0 +1,20 @@
+
+\chapter{Mejoras}
+
+\begin{itemize}
+
+    \item Compilable en Windows, Mac OS X y Linux, mediante un Makefile generado con netbeans.
+
+    \item Hemos implementado la práctica en C++ desde cero.
+    
+    \item La tabla de clases de caracteres incluye una columna Unknown que nos sirve para aceptar cualquier tipo de entrada en algunas transiciones. Como por ejemplo en los comentarios, que permite incluir cualquier carácter hasta llegar al final del comentario.
+    
+    \item Triggers. Los estados pueden contener una rutina que es ejecutada cuando se llega a dicho estado. Utilizamos esta funcionalidad en los comentarios para registrar los saltos de linea en los comentarios multilinea.
+    
+    \item La función NextToken del Tokenizer nos permite parametrizar si queremos filtrar los espacios y los saltos de linea.
+    
+    \item Leemos los ficheros mediante una abstracción que realiza buffering.
+    
+    \item Documentación escrita en \LaTeX.
+    
+\end{itemize}
