@@ -98,7 +98,6 @@ const char* CTokenizer::ms_szErrors [ CTokenizer::NUMSTATES ] = {
 
 /////////////////////////////////////////////////////////
 
-
 CTokenizer::CTokenizer ( std::istream& isInput )
 : m_uiLine ( 0 )
 , m_uiCol ( 0 )

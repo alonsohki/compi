@@ -92,7 +92,7 @@ private:
         bool Get ( unsigned char* c = 0 )
         {
             // Rellenamos el buffer si es necesario.
-            if ( pos > end )
+            if ( pos >= end )
                 if ( ReadFromStream () == false )
                     return false;
 
