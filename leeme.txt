@@ -1,0 +1,52 @@
+
+Miembros del grupo :
+
+   Jon Ander Hernández
+   
+   Alberto Alonso
+   
+   Gorka Blanco
+
+
+Compilador usado : GCC, y el resto de la GNU Toolchain.
+
+   Hemos comprobado la práctica compila correctamente en :
+   
+      - Windows       : MinGW (http://www.mingw.org/)
+   
+      - Mac OS X 1.5  : XCode 2.1 (http://developer.apple.com/technologies/tools/xcode.html)
+   
+      - Debian/Ubuntu : # apt-get install build-essentials
+      - Fedora        : # yum groupinstall "Development Tools"
+ 
+ 
+Para compilar el proyecto, teniendo una GNU toolchain instalada :
+
+   $ cd fuentes
+   
+   $ make all
+   
+   El programa sin símbolos de depuración quedará construido en : 
+   
+      dist/Release/MinGW-Windows/analex
+      
+   El programa con símbolos de depuración quedará construido en :
+
+      dist/Release/MinGW-Windows/analex
+
+
+Para ejecutar:
+
+   Lee el programa desde la entrada estandar y escribe el listado de tokens en la salida standard
+
+   $ dist/Release/MinGW-Windows/analex
+
+
+   Lee el programa de prueba y escribe el listado de tokens en la salida standard
+
+   $ dist/Release/MinGW-Windows/analex ejemi.dat
+   
+   
+   Lee el programa de prueba y escribe la salida en salida.out.txt
+
+   $ dist/Release/MinGW-Windows/analex ejemi.dat salida.out.txt
