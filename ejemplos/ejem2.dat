@@ -1,4 +1,4 @@
-/* Programa de muestra para verificar errores lÈxicos de identificadores inv·lidos */
+/* Programa de muestra para verificar errores l√©xicos de identificadores inv√°lidos */
 programa ejem1
 	variables a, _a, a_, A_B, 3A, A__B : real;
 comienzo

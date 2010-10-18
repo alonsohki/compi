@@ -1,4 +1,4 @@
-/* Programa de muestra para verificar errores léxicos de números reales */
+/* Programa de muestra para verificar errores lÃ©xicos de nÃºmeros reales */
 programa ejem1
 	variables a : real;
 comienzo
