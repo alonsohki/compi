@@ -3,17 +3,152 @@
 
 \begin{itemize}
 
-    \item Compilable en Windows, Mac OS X y Linux, mediante un Makefile generado con netbeans.
+    \item Compilable en Windows (usando \href{http://www.mingw.org/}{MingGW} y \href{http://www.mingw.org/wiki/MSYS}{MSYS}, Mac OS X y Linux, mediante un Makefile generado con netbeans.
 
     \item Hemos implementado la práctica en C++ desde cero.
     
     \item La tabla de clases de caracteres incluye una columna Unknown que nos sirve para aceptar cualquier tipo de entrada en algunas transiciones. Como por ejemplo en los comentarios, que permite incluir cualquier carácter hasta llegar al final del comentario.
-    
+
+        \begin{lstlisting}[caption={Estructura usada para definir los transiciones},basicstyle=\tiny] 
+const int CTokenizer::ms_iTransitions [ CTokenizer::NUMSTATES ] [ CClassifier::GROUP_MAX ] = {
+/*         ALPHA  DIGIT eE   DOT  UNDER  EQUAL  LT   GT   PLUS  MINUS  STAR  SLASH  CR  LF  SPACE  SEP  UNKN */
+/*q0*/  {  4,    13,    4,  -1,  -1,    9,     9,   9,   8,    8,     8,    7,     2,  3,  1,     6,  -1   },
+/*q1*/  { -1,    -1,   -1,  -1,  -1,   -1,    -1,  -1,  -1,   -1,    -1,   -1,    -1, -1,  1,    -1   -1   },
+// ...
+/*q18*/ { -1,    18,   -1,  -1,  -1,   -1,    -1,  -1,  -1,   -1,    -1,   -1,    -1, -1, -1,    -1,  -1   }
+};
+        \end{lstlisting}
+
     \item Triggers. Los estados pueden contener una rutina que es ejecutada cuando se llega a dicho estado. Utilizamos esta funcionalidad en los comentarios para registrar los saltos de linea en los comentarios multilinea.
     
+        \begin{lstlisting}[caption={Estructura usada para definir los transiciones}]
+CTokenizer::fn_stateTrigger CTokenizer::ms_fnTriggers [ CTokenizer::NUMSTATES ] = {
+/* q0  */ 0,
+// ...
+/* q9  */ 0,
+/* q10 */ &CTokenizer::CheckMultilineComment,
+// ...
+/* q18 */ 0
+};
+        \end{lstlisting}
+
+        \begin{lstlisting}[caption={Trigger para contar lineas en un comentario multilinea}]
+void CTokenizer::CheckMultilineComment ( unsigned char c )
+{
+    static bool bLastCharWasCR = false;
+
+    switch ( c )
+    {
+        case '\r':
+            bLastCharWasCR = true;
+            ++m_uiLine;
+            m_uiCol = 0;
+            break;
+        case '\n':
+            m_uiCol = 0;
+            if ( bLastCharWasCR == true )
+            {
+                bLastCharWasCR = false;
+            }
+            else
+            {
+                ++m_uiLine;
+            }
+            break;
+    }
+}
+        \end{lstlisting}
+
+
     \item La función NextToken del Tokenizer nos permite parametrizar si queremos filtrar los espacios y los saltos de linea.
     
+        \begin{lstlisting}[caption={Estructura usada para definir los errores}]
+    bool            NextToken       ( SToken* pToken = 0, bool bIgnoreWhiteSpaces = true );
+        \end{lstlisting}
+    
     \item Leemos los ficheros mediante una abstracción que realiza buffering.
+    
+        \begin{lstlisting}[caption={BufferedReader}]
+        struct BufferedReader
+    {
+        unsigned char   data [ BUFFER_SIZE ];
+        unsigned char*  pos;
+        unsigned char*  end;
+
+        BufferedReader ( std::istream& isInput ) : m_isInput ( isInput ) { Initialize (); }
+
+        bool ReadFromStream ()
+        {
+            // Inicializamos el buffer.
+            m_isInput.read ( reinterpret_cast < char* > ( &data[0] ), BUFFER_SIZE );
+            unsigned int uiCount = m_isInput.gcount ();
+            if ( uiCount != 0 )
+            {
+                pos = data;
+                end = data + uiCount;
+            }
+            else
+            {
+                // Marcamos que no se ha podido leer nada.
+                end = data;
+                pos = end + 1;
+            }
+
+            return ( uiCount != 0 );
+        }
+
+        bool Initialize () { return ReadFromStream (); }
+        
+        bool Get ( unsigned char* c = 0 )
+        {
+            // Rellenamos el buffer si es necesario.
+            if ( pos >= end )
+                if ( ReadFromStream () == false )
+                    return false;
+
+            if ( c != 0 )
+                *c = pos [ 0 ];
+            ++pos;
+            return true;
+        }
+
+        void Rollback ()
+        {
+            --pos;
+        }
+
+        private:
+            std::istream& m_isInput;
+    } m_buffer;
+         \end{lstlisting}
+    
+    \item Guardamos en los token en número de columna y el número de linea, para mostrar mensajes de error y de advertencia. 
+    
+    \item Añadir soporte para sugerir al programador la corrección de errores léxico. Si en un estado no final, leemos una transición inválida, detectamos que se ha producido un problema.
+    
+        \begin{lstlisting}[caption={Estructura usada para definir los errores}]
+const char* CTokenizer::ms_szErrors [ CTokenizer::NUMSTATES ] = {
+/* q0  */ "Unknown token",
+/* q1  */ 0,
+/* q2  */ 0,
+/* q3  */ 0,
+/* q4  */ 0,
+/* q5  */ "Invalid identifier: Must start with an alphabetic character and followed by alphanumeric characters or single inserted underscores.",
+/* q6  */ 0,
+/* q7  */ 0,
+/* q8  */ 0,
+/* q9  */ 0,
+/* q10 */ "Non closed comment",
+/* q11 */ "Non closed comment",
+/* q12 */ 0,
+/* q13 */ 0,
+/* q14 */ "Invalid real number format. It must be in scientific notation.",
+/* q15 */ 0,
+/* q16 */ "Invalid real number format. It must be in scientific notation.",
+/* q17 */ "Invalid real number format. It must be in scientific notation.",
+/* q18 */ 0
+};    
+        \end{lstlisting}
     
     \item Documentación escrita en \LaTeX.
     
