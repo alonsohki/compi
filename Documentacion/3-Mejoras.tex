@@ -3,7 +3,7 @@
 
 \begin{itemize}
 
-    \item Compilable en Windows (usando \href{http://www.mingw.org/}{MingGW} y \href{http://www.mingw.org/wiki/MSYS}{MSYS}, Mac OS X y Linux, mediante un Makefile generado con netbeans.
+    \item Compilable en Windows (usando \href{http://www.mingw.org/}{MingGW} y \href{http://www.mingw.org/wiki/MSYS}{MSYS}), Mac OS X y Linux, mediante un Makefile generado con netbeans.
 
     \item Hemos implementado la práctica en C++ desde cero.
     
@@ -21,7 +21,7 @@ const int CTokenizer::ms_iTransitions [ CTokenizer::NUMSTATES ] [ CClassifier::G
 
     \item Triggers. Los estados pueden contener una rutina que es ejecutada cuando se llega a dicho estado. Utilizamos esta funcionalidad en los comentarios para registrar los saltos de linea en los comentarios multilinea.
     
-        \begin{lstlisting}[caption={Estructura usada para definir los transiciones}]
+        \begin{lstlisting}[caption={Estructura utilizada para declarar los triggers asociados a cada estado}]
 CTokenizer::fn_stateTrigger CTokenizer::ms_fnTriggers [ CTokenizer::NUMSTATES ] = {
 /* q0  */ 0,
 // ...
@@ -124,7 +124,7 @@ void CTokenizer::CheckMultilineComment ( unsigned char c )
     
     \item Guardamos en los token en número de columna y el número de linea, para mostrar mensajes de error y de advertencia. 
     
-    \item Añadir soporte para sugerir al programador la corrección de errores léxico. Si en un estado no final, leemos una transición inválida, detectamos que se ha producido un problema.
+    \item Añadido soporte para sugerir al programador la corrección de errores léxico. Si en un estado no final, leemos una transición inválida, detectamos que se ha producido un problema.
     
         \begin{lstlisting}[caption={Estructura usada para definir los errores}]
 const char* CTokenizer::ms_szErrors [ CTokenizer::NUMSTATES ] = {
