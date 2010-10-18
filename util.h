@@ -1,10 +1,3 @@
-/* 
- * File:   util.h
- * Author: ryden
- *
- * Created on 16 de octubre de 2010, 17:48
- */
-
 #ifndef UTIL_H
 #define	UTIL_H
 

@@ -1,11 +1,5 @@
-/* 
- * File:   CTranslator.cpp
- * Author: ryden
- * 
- * Created on 16 de octubre de 2010, 17:31
- */
-
 #include "CTranslator.h"
+#include "CTokenizer.h"
 
 CTranslator::CTranslator(std::istream& ifsOrig,
                          std::ostream& ofsDest)
@@ -26,5 +20,18 @@ bool CTranslator::IsOk () const
 
 bool CTranslator::Translate ()
 {
+    CTokenizer tokenizer ( m_isOrig );
+    CTokenizer::SToken token;
+
+    while ( true == tokenizer.NextToken( &token, true ) )
+    {
+        printf("(Tipo: %s, %u:%u) %s%s\n", tokenizer.NameThisToken(token.eType),
+                                         token.uiLine + 1,
+                                         token.uiCol - token.uiValueLength + 1,
+                                         token.value,
+                                         token.eType != CTokenizer::UNKNOWN ? "" : tokenizer.GetErrorForToken(token)
+              );
+    }
+
     return true;
 }
