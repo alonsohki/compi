@@ -31,19 +31,14 @@
 		</state>
 		<!--The list of transitions.-->
 		<transition>
-			<from>1</from>
-			<to>2</to>
-			<read>*</read>
-		</transition>
-		<transition>
-			<from>2</from>
-			<to>3</to>
-			<read>*</read>
-		</transition>
-		<transition>
 			<from>3</from>
 			<to>4</to>
 			<read>/</read>
+		</transition>
+		<transition>
+			<from>3</from>
+			<to>2</to>
+			<read>[^*/]</read>
 		</transition>
 		<transition>
 			<from>3</from>
@@ -57,13 +52,18 @@
 		</transition>
 		<transition>
 			<from>2</from>
-			<to>2</to>
-			<read>[^*]</read>
+			<to>3</to>
+			<read>*</read>
 		</transition>
 		<transition>
-			<from>3</from>
+			<from>1</from>
 			<to>2</to>
-			<read>[^*)]</read>
+			<read>*</read>
+		</transition>
+		<transition>
+			<from>2</from>
+			<to>2</to>
+			<read>[^*]</read>
 		</transition>
 	</automaton>
 </structure>
