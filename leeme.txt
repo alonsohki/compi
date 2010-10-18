@@ -32,7 +32,7 @@ Para compilar el proyecto, teniendo una GNU toolchain instalada :
       
    El programa con símbolos de depuración quedará construido en :
 
-      dist/Release/MinGW-Windows/analex
+      dist/Debug/MinGW-Windows/analex
 
 
 Para ejecutar:
@@ -50,3 +50,15 @@ Para ejecutar:
    Lee el programa de prueba y escribe la salida en salida.out.txt
 
    $ dist/Release/MinGW-Windows/analex ejemi.dat salida.out.txt
+   
+
+
+Compilar la documentación :
+
+   Se requiere tener instalada una distribución de LaTeX con el compilador XeTeX
+   
+   $ cd fuentes/Documentación
+
+   $ make
+   
+   Y el fichero generado será Documentacion.pdf
