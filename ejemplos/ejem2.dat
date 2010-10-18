@@ -1,0 +1,5 @@
+/* Programa de muestra para verificar errores léxicos de identificadores inválidos */
+programa ejem1
+	variables a, _a, a_, A_B, 3A, A__B : real;
+comienzo
+fin;

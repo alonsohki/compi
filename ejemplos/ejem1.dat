@@ -1,0 +1,5 @@
+/* Programa de muestra para verificar errores léxicos debidos a comentarios mal cerrados */
+programa ejem1
+	/* Comentario sin cerrar
+comienzo
+fin;

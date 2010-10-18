@@ -1,0 +1,11 @@
+/* Programa de muestra para verificar errores léxicos de números reales */
+programa ejem1
+	variables a : real;
+comienzo
+	a = 1.0e+;
+	a = 1;
+	a = 1.;
+	a = .0;
+	a = 1.0e+1;
+	a = 0.1e-1;
+fin;
