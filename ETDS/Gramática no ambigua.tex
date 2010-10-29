@@ -1,0 +1,33 @@
+\documentclass[spanish]{article}
+\usepackage{amsmath}
+\begin{document}
+\begin{tabular}{l c r}
+expresi\'{o}n &  \rightarrow  & expresi\'{o}n\_simple S \\
+\\
+S &  \rightarrow  & oprel expresi\'{o}n\_simple \\
+\\
+oprel &  \rightarrow   & == \\
+				  & & $ > $ \\
+				  & & $ < $ \\
+				  & & \geq \\ 
+				  & & \leq \\
+				  & & /= \\
+\\
+expresi\'{o}n\_simple & \rightarrow & t\'{e}rmino T \\
+\\
+T &  \rightarrow & + t\'{e}rmino T \\
+                  & & - t\'{e}rmino T \\
+                  & &  \epsilon \\
+\\
+t\'{e}rmino & \rightarrow & factor F \\
+\\
+F & \rightarrow & * factor F \\
+                  & & / factor F \\
+                  & & \epsilon \\
+\\
+factor & \rightarrow & id \\
+                    & & num\_entero \\
+                    & & num\_real \\
+                    & & (expresi\'{o}n\_simple)
+\end{tabular}
+\end{document}
