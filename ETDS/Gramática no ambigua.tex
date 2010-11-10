@@ -1,31 +1,107 @@
-\documentclass[spanish]{article}
-\usepackage{amsmath}
+\documentclass[11pt,twoside,a4paper]{book}
+\usepackage[a4paper]{geometry} 
+\usepackage{amssymb}
 \begin{document}
-\begin{tabular}{l c r}
-expresi\'{o}n &  \rightarrow  & expresi\'{o}n\_simple S \\
+\begin{tabular}{l c l}
+programa & $ \rightarrow $ & programa id \\
+                  & & declaraciones \\
+                  & & decl\_de\_subprogs \\
+                  & & comienzo \\
+                  & & lista\_de\_sentencias \\
+                  & & fin ; \\
 \\
-S &  \rightarrow  & oprel expresi\'{o}n\_simple \\
+
+declaraciones & $ \rightarrow $ & variables lista\_de\_ident : tipo ; resto\_dec \\
+                  & & $ \varepsilon $ \\
 \\
-oprel &  \rightarrow   & == \\
+
+resto\_dec & $ \rightarrow $ & variables lista\_de\_ident : tipo ; resto\_dec \\
+                  & & $ \varepsilon $ \\
+\\
+
+tipo & $ \rightarrow $ & id resto\_lista\_id \\
+\\
+
+resto\_lista\_id & $ \rightarrow $ & , id resto\_lista\_id \\
+                  & & $ \varepsilon $ \\
+\\
+
+tipo & $ \rightarrow $ & entero \\
+                  & & real \\
+\\
+
+decl\_de\_subprograma & $ \rightarrow $ & cabecera declaraciones \\
+                  & & comienzo lista\_de\_sentencias fin ; \\
+\\
+
+cabecera &  $ \rightarrow $  & procedimiento id argumentos\\
+\\
+
+argumentos &  $ \rightarrow $  & ( lista\_de\_param ) \\
+                  & &  $ \varepsilon $ \\
+\\
+
+lista\_de\_param &  $ \rightarrow $ & lista\_de\_ident : clase\_par tipo resto\_lis\_de\_param \\
+\\
+
+clase\_par & $ \rightarrow $ & entrada I \\
+                  & &  salida \\
+\\
+
+I & $ \rightarrow $ & salida \\
+                  & &  $ \varepsilon $ \\
+\\
+
+resto\_lis\_de\_param & $ \rightarrow $ & ; lista\_de\_ident : clase\_par tipo resto\_lis\_de\_param \\
+                  & &  $ \varepsilon $ \\
+\\
+
+lista\_de\_sentencias & $ \rightarrow $ & sentencia lista\_de\_sentencias \\
+                  & &  $ \varepsilon $ \\
+\\
+
+sentencia & $ \rightarrow $ & variable = expresi\'{o}n\_simple ; \\
+                  & & si expresi\'{o}n entonces lista\_de\_sentencias fin si ; \\
+                  & & hacer lista\_de\_sentencias mientras expresi\'{o}n fin hacer ; \\
+                  & & salir si expresi\'{o}n ; \\
+                  & & get ( variable ) ; \\
+                  & & put\_line ( expresi\'{o}n\_simple ) ; \\
+\\
+
+variable & $ \rightarrow $ & id \\
+\\
+
+expresi\'{o}n &  $ \rightarrow $  & expresi\'{o}n\_simple S \\
+\\
+
+S &  $ \rightarrow $  & oprel expresi\'{o}n\_simple \\
+\\
+
+oprel &  $ \rightarrow $   & == \\
 				  & & $ > $ \\
 				  & & $ < $ \\
-				  & & \geq \\ 
-				  & & \leq \\
+				  & & $ \geq $ \\ 
+				  & & $ \leq $\\
 				  & & /= \\
 \\
-expresi\'{o}n\_simple & \rightarrow & t\'{e}rmino T \\
+
+expresi\'{o}n\_simple & $ \rightarrow $ & t\'{e}rmino T \\
 \\
-T &  \rightarrow & + t\'{e}rmino T \\
+
+T &  $ \rightarrow $ & + t\'{e}rmino T \\
                   & & - t\'{e}rmino T \\
-                  & &  \epsilon \\
+                  & &  $ \varepsilon $ \\
 \\
-t\'{e}rmino & \rightarrow & factor F \\
+
+t\'{e}rmino & $ \rightarrow $ & factor F \\
 \\
-F & \rightarrow & * factor F \\
+
+F & $ \rightarrow $ & * factor F \\
                   & & / factor F \\
-                  & & \epsilon \\
+                  & & $ \varepsilon $ \\
 \\
-factor & \rightarrow & id \\
+
+factor & $ \rightarrow $ & id \\
                     & & num\_entero \\
                     & & num\_real \\
                     & & (expresi\'{o}n\_simple)
