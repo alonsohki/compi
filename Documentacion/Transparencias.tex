@@ -1,0 +1,187 @@
+
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+
+\documentclass[11pt,a5paper,landscape]{article}
+
+	%Establecemos el tamaño de la hoja a a4 y el tamaño de los márgenes izquierdo y derecho al mínimo
+	%\usepackage[a4paper]{geometry} 
+	\usepackage[left=2cm,top=2cm,right=2cm,bottom=0cm,nofoot]{geometry}
+
+	% Paquetes para uso de matemáticas
+	\usepackage{amssymb}
+
+	% Para poder usar \boldsymbol que nos permite poner negrita a expresiones ``matemáticas'' en modo matemático.
+	\usepackage{amsmath}
+
+	% Paquete para introducir símbolos dingbats
+	\usepackage{pifont}
+
+	% Paquete para usar imágenes jpg y png
+	\usepackage{graphicx}
+
+	% Paquete para poder usar colores
+	\usepackage{xcolor}
+	
+	% Paquete para soportar silabeo en castellano
+	\usepackage[spanish]{babel}
+
+	% Activate to begin paragraphs with an empty line rather than an indent
+	\usepackage[parfill]{parskip}
+
+	% Identar el comienzo de cada parrafo
+	\usepackage{indentfirst}
+
+	% Paquete para poder centrar verticalmente las columnas de las tablas
+	\usepackage{array}
+	
+	% Permite usar enlaces (por ejemplo desde la tabla de contenidos)
+	\usepackage{hyperref}
+ 
+    \hypersetup{
+        colorlinks,%
+        citecolor=black,%
+        filecolor=black,%
+        linkcolor=black,%
+        urlcolor=black
+    }
+
+	% Permite cambiar el títulos de las páginas
+	\usepackage{fancyhdr}
+	
+	% Personalización de las cabeceras con fancyhdr
+    \fancyhead{} % clear all header fields 
+    \fancyfoot{} % clear all footer fields 
+    \fancyhead[RE,LO]{\bfseries Compilación 1 }
+    \fancyhead[RO,LE]{\small{\bfseries Jon Ander Hernández, Alberto Alonso y Gorka Blanco (JAG)}}
+    \fancyfoot[LE,RO]{} 
+    \fancyfoot[LO,CE]{} 
+    \fancyfoot[CO,RE]{} 
+    \renewcommand{\headrulewidth}{0.4pt} 
+    \renewcommand{\footrulewidth}{0.4pt} 
+
+    \pagestyle{fancy}
+
+    \fancypagestyle{plain}{% 
+    \fancyhead{} % clear all header fields 
+    \fancyfoot{} % clear all footer fields 
+    \fancyhead[RE,LO]{\bfseries Compilación 1 }
+    \fancyhead[RO,LE]{\small{\bfseries Jon Ander Hernández, Alberto Alonso y Gorka Blanco (JAG)}}
+    \fancyfoot[LE,RO]{} 
+    \fancyfoot[LO,CE]{} 
+    \fancyfoot[CO,RE]{} 
+    \renewcommand{\headrulewidth}{0.4pt} 
+    \renewcommand{\footrulewidth}{0.4pt}}
+
+
+	% Podemos cambiar las fuentes por defecto Serif, San Serif, y Mono en _XeTeX_ y usar fuentes OpenType y AAT.
+	\usepackage{fontspec,xltxtra,xunicode}
+	\defaultfontfeatures{Mapping=tex-text}
+	%\setromanfont[Mapping=tex-text]{Hoefler Text}
+	%\setsansfont[Scale=MatchLowercase,Mapping=tex-text]{Gill Sans}
+	%\setmonofont[Scale=MatchLowercase]{Andale Mono}
+
+	% Paquete para poder incluir código fuente
+	\usepackage{listings}
+
+    % Establecemos los valores por defecto de Listings
+	\lstset{
+		language={C++},                              % Lenguaje por defecto
+		%
+		% estilos
+		keywordstyle=\bfseries\ttfamily\color[rgb]{.8,.1,.2},	% estilos de palabras clave, identificadores, etc...
+		identifierstyle=\ttfamily,
+		commentstyle=\color[rgb]{0.1,0.5,0.1},			 
+		stringstyle=\ttfamily\color[rgb]{0.2,0.2,.7},			
+		basicstyle=\large\bfseries\color[rgb]{0.2,0.2,.7},                    % the size of the fonts used for the code 
+		%
+		% numeración (desabilitadas en este momento :-)
+		numbers=left,                                % where to put the line-numbers 
+		numberstyle=\footnotesize,                   % size of the fonts used for the line-numbers 
+		stepnumber=1,                                % the step between two line-numbers. 
+		numbersep=5pt,                               % how far the line-numbers are from the code 
+		%
+		% espacios
+		showspaces=false,                            % show spaces adding particular underscores 
+		showstringspaces=false,                      % underline spaces within strings 
+		showtabs=false, 							% show tabs within strings through particular underscores 
+		tabsize=6,									% sets default tab-size to 2 spaces
+		%
+		% cuadro
+		backgroundcolor=\color{white}, 				% sets background color (needs package) 
+		frame=single, 								% adds a frame around the code
+		rulecolor=\color[rgb]{.3,.3,.3},					% set the frame's color. 
+		captionpos=b, 								% sets the caption-position to bottom 
+		%
+		% line breaking
+		breaklines=true, 							% sets automatic line breaking 
+		breakatwhitespace=false, 					% automatic breaks happen at whitespace 
+		prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}} % Nos dibuja una flecha ``guay'' cuando el código no entra en una linea
+	}
+
+% Reescribimos algunas macros para cambiar algunos parámetros
+
+	% Establecemos el interlineado a 1.2
+	\renewcommand{\baselinestretch}{1.2}
+
+
+\author{ \href{mailto:jahernandez002@ikasle.ehu.es}{Jon Ander Hernández} \and 
+         \href{mailto:aalonso065@ikasle.ehu.es}{Alberto Alonso} \and
+         \href{mailto:gblanco002@ikasle.ehu.es}{Gorka Blanco Gutierrez} \\[.5em] \and
+         %
+         \small\href{mailto:jahernandez002@ikasle.ehu.es}{jahernandez002@ikasle.ehu.es} \and 
+         \small\href{mailto:aalonso065@ikasle.ehu.es}{aalonso065@ikasle.ehu.es} \and
+         \small\href{mailto:gblanco002@ikasle.ehu.es}{gblanco002@ikasle.ehu.es} \\[1em] }
+         
+         
+\title{%
+	% Creamos un entorno de centrado
+	\begin{centering}
+		% Establecemos la fuente
+		\fontspec[Ligatures={Common},Color=000000]{Hoefler Text}\fontsize{50pt}{50pt}\selectfont 
+		% El título en grande
+		Compilación I. 
+	\end{centering}
+	%
+	\newline \Huge{1º Entrega}
+	%
+	% Dejamos un hueco flexible, de modo que los autores bajen hasta la parte de abajo del documento
+	\vfill
+}
+
+
+
+\begin{document}
+
+    \newpage
+    
+    ~
+    
+    \clearpage
+        
+    % Creamos la portada
+    \maketitle
+
+    \clearpage
+    
+    % Creamos la tabla de contenidos
+    \tableofcontents
+
+    \clearpage
+
+	\input{1-Analizador-Lexico}
+
+	%\input{2-Analizador-casos-prueba}
+	
+	\lstset{	
+		basicstyle=\footnotesize,                    % the size of the fonts used for the code
+	}
+	
+	%\input{3-Mejoras}
+	
+	%\input{4-Horas-invertidas}
+	
+	%\input{gramatica}
+	
+\end{document}  
+
