@@ -1,102 +1,115 @@
-\documentclass[11pt,twoside,a4paper]{book}
+\documentclass{article}
 \usepackage[a4paper]{geometry} 
 \usepackage{amssymb}
 \begin{document}
 \begin{tabular}{l c l}
-programa & $ \rightarrow $ & programa id \\
+programa & $ \rightarrow $ & \textbf{programa} id \\
+						{añadir\_inst(prog id.nombre;);}
                   & & declaraciones \\
                   & & decl\_de\_subprogs \\
-                  & & comienzo \\
+                  & & \textbf{comienzo} \\
                   & & lista\_de\_sentencias \\
-                  & & fin ; \\
+                  & & \textbf{fin} \textbf{;} \\
+						{añadir\_inst(halt;);}
 \\
 
-declaraciones & $ \rightarrow $ & variables lista\_de\_ident : tipo ; declaraciones \\
-                  & & $ \varepsilon $ \\
+declaraciones & $ \rightarrow $ & \textbf{variables} lista\_de\_ident \textbf{:} tipo \textbf{;} declaraciones \\
+                  & & $ \xi $ \\
 \\
 
-tipo & $ \rightarrow $ & id resto\_lista\_id \\
+lista\_ident & $ \rightarrow $ & \textbf{id} resto\_lista\_id \\
+						
 \\
 
-resto\_lista\_id & $ \rightarrow $ & , id resto\_lista\_id \\
-                  & & $ \varepsilon $ \\
+resto\_lista\_id & $ \rightarrow $ & , \textbf{id} resto\_lista\_id \\
+                  & & $ \xi $ \\
 \\
 
-tipo & $ \rightarrow $ & entero \\
-                  & & real \\
+tipo & $ \rightarrow $ & \textbf{entero} \\
+						{tipo.tipo := int }
+                  & & \textbf{real} \\
+						{tipo.tipo := real }
+\\
+
+decl\_de\_subprogs & $ \rightarrow $ & decl\_de\_subprograma decl\_de\_subprogs \\
+                  & & \xi \\
 \\
 
 decl\_de\_subprograma & $ \rightarrow $ & cabecera declaraciones \\
-                  & & comienzo lista\_de\_sentencias fin ; \\
+                  & & \textbf{comienzo} lista\_de\_sentencias \textbf{fin} \textbf{;} \\
 \\
 
-cabecera &  $ \rightarrow $  & procedimiento id argumentos\\
+cabecera &  $ \rightarrow $  & \textbf{procedimiento} \textbf{id} argumentos\\
 \\
 
-argumentos &  $ \rightarrow $  & ( lista\_de\_param ) \\
-                  & &  $ \varepsilon $ \\
+argumentos &  $ \rightarrow $  & \textbf{(} lista\_de\_param \textbf{)} \\
+                  & &  $ \xi $ \\
 \\
 
-lista\_de\_param &  $ \rightarrow $ & lista\_de\_ident : clase\_par tipo resto\_lis\_de\_param \\
+lista\_de\_param &  $ \rightarrow $ & lista\_de\_ident \textbf{:} clase\_par tipo resto\_lis\_de\_param \\
 \\
 
-clase\_par & $ \rightarrow $ & entrada I \\
-                  & &  salida \\
+clase\_par & $ \rightarrow $ & \textbf{entrada} I \\
+                  & &  \textbf{salida} \\
 \\
 
-I & $ \rightarrow $ & salida \\
-                  & &  $ \varepsilon $ \\
+I & $ \rightarrow $ & \textbf{salida} \\
+                  & &  $ \xi $ \\
 \\
 
-resto\_lis\_de\_param & $ \rightarrow $ & ; lista\_de\_ident : clase\_par tipo resto\_lis\_de\_param \\
-                  & &  $ \varepsilon $ \\
+resto\_lis\_de\_param & $ \rightarrow $ & \textbf{;} lista\_de\_ident \textbf{:} clase\_par tipo resto\_lis\_de\_param \\
+                  & &  $ \xi $ \\
 \\
 
-lista\_de\_sentencias & $ \rightarrow $ & sentencia lista\_de\_sentencias \\
-                  & &  $ \varepsilon $ \\
+lista\_de\_sentencias & $ \rightarrow $ & sentencia \textbf{;} lista\_de\_sentencias \\
+                  & &  $ \xi $ \\
 \\
 
-sentencia & $ \rightarrow $ & variable = expresi\'{o}n\_simple ; \\
-                  & & si expresi\'{o}n entonces lista\_de\_sentencias fin si ; \\
-                  & & hacer lista\_de\_sentencias mientras expresi\'{o}n fin hacer ; \\
-                  & & salir si expresi\'{o}n ; \\
-                  & & get ( variable ) ; \\
-                  & & put\_line ( expresi\'{o}n\_simple ) ; \\
+sentencia & $ \rightarrow $ & variable \textbf{=} expresi\'{o}n\_simple \\
+                  & & \textbf{si} expresi\'{o}n \textbf{entonces} lista\_de\_sentencias \textbf{fin} \textbf{si} \\
+                  & & \textbf{hacer} lista\_de\_sentencias \textbf{mientras} expresi\'{o}n \textbf{fin} \textbf{hacer} \\
+                  & & \textbf{salir} \textbf{si} expresi\'{o}n \\
+                  & & \textbf{get} \textbf{(} variable \textbf{)} \\
+						{añadir\_inst(read variable.nombre;)}
+                  & & \textbf{put\_line} \textbf{(} expresi\'{o}n\_simple \textbf{)} \\
+						{añadir\_inst(write expresión\_simple.nombre;);
+						 añadir\_inst(writeln;);}
 \\
 
-variable & $ \rightarrow $ & id \\
+variable & $ \rightarrow $ & \textbf{id} \\
+						{variable.nombre := id.nombre;}
 \\
 
 expresi\'{o}n &  $ \rightarrow $  & expresi\'{o}n\_simple oprel expresi\'{o}n\_simple \\
 \\
 
-oprel &  $ \rightarrow $ & == \\
-				  & & $ > $ \\
-				  & & $ < $ \\
-				  & & $ \geq $ \\ 
-				  & & $ \leq $\\
-				  & & /= \\
+oprel &  $ \rightarrow $ & \textbf{==} \\
+				  & & $ \textbf{>} $ \\
+				  & & $ \textbf{<} $ \\
+				  & & \textbf{$ \geq $} \\ 
+				  & & \textbf{$ \leq $}\\
+				  & & \textbf{/=} \\
 \\
 
 expresi\'{o}n\_simple & $ \rightarrow $ & t\'{e}rmino expresi\'{o}n\_simple \\
 \\
 
-T &  $ \rightarrow $ & + t\'{e}rmino T \\
-                  & & - t\'{e}rmino T \\
-                  & &  $ \varepsilon $ \\
+T &  $ \rightarrow $ & \textbf{+} t\'{e}rmino T \\
+                  & & \textbf{-} t\'{e}rmino T \\
+                  & &  $ \xi $ \\
 \\
 
 t\'{e}rmino & $ \rightarrow $ & factor F \\
 \\
 
-F & $ \rightarrow $ & * factor F \\
-                  & & / factor F \\
-                  & & $ \varepsilon $ \\
+F & $ \rightarrow $ & \textbf{*} factor F \\
+                  & & \textbf{/} factor F \\
+                  & & $ \xi $ \\
 \\
 
-factor & $ \rightarrow $ & id \\
-                    & & num\_entero \\
-                    & & num\_real \\
-                    & & (expresi\'{o}n\_simple)
+factor & $ \rightarrow $ & \textbf{id} \\
+                    & & \textbf{num\_entero} \\
+                    & & \textbf{num\_real} \\
+                    & & \textbf{(} expresi\'{o}n\_simple \textbf{)}
 \end{tabular}
 \end{document}
