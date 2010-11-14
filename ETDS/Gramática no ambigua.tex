@@ -11,11 +11,7 @@ programa & $ \rightarrow $ & programa id \\
                   & & fin ; \\
 \\
 
-declaraciones & $ \rightarrow $ & variables lista\_de\_ident : tipo ; resto\_dec \\
-                  & & $ \varepsilon $ \\
-\\
-
-resto\_dec & $ \rightarrow $ & variables lista\_de\_ident : tipo ; resto\_dec \\
+declaraciones & $ \rightarrow $ & variables lista\_de\_ident : tipo ; declaraciones \\
                   & & $ \varepsilon $ \\
 \\
 
@@ -71,13 +67,10 @@ sentencia & $ \rightarrow $ & variable = expresi\'{o}n\_simple ; \\
 variable & $ \rightarrow $ & id \\
 \\
 
-expresi\'{o}n &  $ \rightarrow $  & expresi\'{o}n\_simple S \\
+expresi\'{o}n &  $ \rightarrow $  & expresi\'{o}n\_simple oprel expresi\'{o}n\_simple \\
 \\
 
-S &  $ \rightarrow $  & oprel expresi\'{o}n\_simple \\
-\\
-
-oprel &  $ \rightarrow $   & == \\
+oprel &  $ \rightarrow $ & == \\
 				  & & $ > $ \\
 				  & & $ < $ \\
 				  & & $ \geq $ \\ 
@@ -85,7 +78,7 @@ oprel &  $ \rightarrow $   & == \\
 				  & & /= \\
 \\
 
-expresi\'{o}n\_simple & $ \rightarrow $ & t\'{e}rmino T \\
+expresi\'{o}n\_simple & $ \rightarrow $ & t\'{e}rmino expresi\'{o}n\_simple \\
 \\
 
 T &  $ \rightarrow $ & + t\'{e}rmino T \\
