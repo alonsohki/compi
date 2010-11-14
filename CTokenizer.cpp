@@ -95,6 +95,24 @@ const char* CTokenizer::ms_szErrors [ CTokenizer::NUMSTATES ] = {
 /* q18 */ 0
 };
 
+const char* CTokenizer::ms_szReserved [ ] = {
+		"programa",
+		"procedimiento",
+		"comienzo",
+		"fin",
+		"variables",
+		"entero",
+		"real",
+		"entrada",
+		"salida",
+		"si",
+		"entonces",
+		"hacer",
+		"mientras",
+		"salir",
+		"get",
+		"put_line"
+};
 
 /////////////////////////////////////////////////////////
 
@@ -206,6 +224,9 @@ bool CTokenizer::NextToken ( SToken* pToken, bool bIgnoreWhiteSpaces )
                 if ( bIgnoreWhiteSpaces == false )
                     bContinueSearching = false;
                 break;
+            case IDENTIFIER:
+            	if (IsReserved(token.value))
+            		token.eType = RESERVED;
             default:
                 bContinueSearching = false;
         }
@@ -216,7 +237,6 @@ bool CTokenizer::NextToken ( SToken* pToken, bool bIgnoreWhiteSpaces )
 
     return bRetval;
 }
-
 
 void CTokenizer::CheckMultilineComment ( unsigned char c )
 {
@@ -251,6 +271,7 @@ const char* CTokenizer::NameThisToken ( ETokenType eType ) const
         TOKTYPE(INTEGER);
         TOKTYPE(REAL);
         TOKTYPE(IDENTIFIER);
+        TOKTYPE(RESERVED);
         TOKTYPE(OPERATOR);
         TOKTYPE(COMMENT);
         TOKTYPE(SPACE);
@@ -261,4 +282,12 @@ const char* CTokenizer::NameThisToken ( ETokenType eType ) const
             return "";
     }
 #undef TOKTYPE
+}
+
+bool CTokenizer::IsReserved(const char* szTokenValue) const {
+	for (unsigned int i=0; i < NUMELEMS(ms_szReserved); i++) {
+		if (strcmp(szTokenValue,ms_szReserved[i]) == 0)
+			return true;
+	}
+	return false;
 }
