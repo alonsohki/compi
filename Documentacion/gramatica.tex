@@ -1,0 +1,180 @@
+\chapter{Gramática}
+
+\small
+\begin{tabular}{r c p{.7\textwidth}}
+	
+	programa 		&$\longrightarrow$	& \ter{programa} \ter{id} \\
+					&				 	& \sem{ añadir\_inst('prog' || id.nombre); } \\
+					&					& declaraciones \\
+					&					& decl\_de\_subprogs \\
+					&					& \ter{comienzo} \\
+					&					& lista\_de\_sentencias \\
+					&					& \ter{fin} \ter{;} \\
+					&					& \sem{ añadir\_inst('halt'); } \\
+
+	\espacio
+	
+	declaraciones 	&$\longrightarrow$ 	& \ter{variables} lista\_de\_ident \ter{:} tipo \ter{;} \\
+					&					& \sem{
+													foreach(	& lista\_de\_ident.ids as id) \\
+															& añadir\_inst(tipo.tipo || id.nombre); \\
+										  } \\
+					&					& declaraciones \\
+										
+					& | 					& $\xi$ \\
+
+	\espacio
+	
+	lista\_de\_ident	&$\longrightarrow$	& \ter{id} resto\_lista\_id \\
+					&					& \sem{lista\_de\_ident.ids := UNIR( & INILISTA(id.nombre), \\
+																			& resto\_lista\_id.ids); } \\
+
+\end{tabular}
+
+\begin{tabular}{r c p{.72\textwidth}}
+	
+	resto\_lista\_id & $\longrightarrow$ 	& \ter{,} \ter{id} resto\_lista\_id \\
+					&					& \sem{ lista\_de\_ident.ids := UNIR(	& INILISTA(id.nombre) , \\
+																			& resto\_lista\_id.ids); } \\
+																			
+					& | 					& $\xi$ \\
+					&					& \sem{ resto\_lista\_id.ids := LISTA\_VACIA(); } \\
+
+	\espacio
+	
+	tipo 			& $\longrightarrow$ 	& entero \\
+					&					& \sem{tipo.tipo := 'int'} \\
+					
+					& | 					& real \\
+					&					& \sem{tipo.tipo:='real'} \\
+
+	\espacio
+	
+	decl\_de\_subprogs 		& $\longrightarrow$ 	& decl\_de\_subprograma decl\_de\_subprogs \\
+							& | 					& $\xi$ \\
+
+	\espacio
+
+	decl\_de\_subprograma 	& $\longrightarrow$ 	& cabecera declaraciones \\
+							&					& \ter{comienzo} lista\_de\_sentencias \ter{fin} \ter{;} \\
+
+	\espacio
+	
+	cabecera 		&$\longrightarrow$	& \ter{procedimiento} \ter{id} \\
+					& 					& \sem{'proc' || id.nombre } \\
+					&					& argumentos \\
+
+	\espacio
+	
+	argumentos 		&$\longrightarrow$ 	& \ter{(} lista\_de\_param \ter{)} \\
+					& | 					& $\xi$ \\
+
+	\espacio
+		
+	lista\_de\_param &$\longrightarrow$  	& lista\_de\_ident \ter{:} clase\_par tipo \\
+					&					& \sem{ foreach(	& lista\_de\_ident.ids as id) \\
+														& AÑADIR\_INST(clase\_par.clase:=tipo.tipo||id.nombre);} \\
+					&					& resto\_lis\_de\_param \\
+					
+					
+\end{tabular}
+
+\begin{tabular}{r c p{.7\textwidth}}
+		
+	resto\_lis\_de\_param 	&$\longrightarrow$ 	& \ter{;} lista\_de\_ident \ter{:} clase\_par tipo \\
+							&					& \sem{ foreach(	& lista\_de\_ident.ids as id) \\
+																& AÑADIR\_INST(clase\_par.clase:=tipo.tipo||id.nombre);} \\
+							&					& resto\_lis\_de\_param \\
+							& |					& $\xi$ \\
+
+	\espacio
+
+	clase\_par 		& $\longrightarrow$		& entrada clase\_par' \\
+					&						& \sem{clase\_par.clase := clase\_par'.clase; } \\ 
+					& | 						& salida \\
+					&						& \sem{clase\_par:='ref'; } \\
+	
+	\espacio
+	
+	clase\_par' 		& $\longrightarrow$		& salida \\
+					&						& \sem{clase\_par:='ref'; } \\ 
+					& | 						& $\xi$ \\
+					&						& \sem{clase\_par:='val'; } \\
+					
+	\espacio
+
+	lista\_de\_sentencias' 	& $\longrightarrow$ 	& \sem{lista\_de\_sentencias.hinloop:=false} \\
+							& 					& lista\_de\_sentencias \\
+
+	\espacio
+	
+	lista\_de\_sentencias 	& $\longrightarrow$ 	& \sem{sentencia.hinloop:=lista\_de\_sentencias.hinloop} \\
+							& 					& sentencia \\
+							&					& \sem{ lista\_de\_sentencia\textsubscript{1}.hinloop:=lista\_de\_sentencias.hinloop } \\
+							&					& lista\_de\_sentencias\textsubscript{1} \\
+							&					& \sem{ lista\_de\_sentencias.salir\_si:=UNIR( 	& sentencia.salir\_si, \\
+																								& lista\_de\_sentencia\textsubscript{1}.salir\_si ) } \\
+							& | 					& $\xi$ \\
+							&					& \sem{lista\_de\_sentencias.salir\_si := LISTA\_VACIA() } \\
+
+\end{tabular}
+
+\begin{tabular}{r c p{.7\textwidth}}
+
+	sentencia 				& $\longrightarrow$ 	& variable \ter{=} expresión\_simple \ter{;} \\
+							&					& \sem{ 	& añadir\_inst(variable.nombre||'='expresion\_simple.nombre); \\
+														& sentencia.salir\_si := LISTA\_VACIA(); } \\
+							
+							& | 					& \ter{si} expresion \ter{entonces} \ter{M\textsubscript{1}} lista\_de\_sentencias \ter{fin si M\textsubscript{2}} \\
+							&					& \sem{ & completa(expresion.true := M\textsubscript{1}.ref); \\
+														& completa(expresion.false := M\textsubscript{2}.ref); \\
+														& sentencia.salir\_si := lista\_de\_sentencias.salir\_si; } \\
+						
+							& | 					& \ter{hacer M\textsubscript{1}} lista\_de\_sentencias \ter{mientras} expresión \ter{fin hacer M\textsubscript{2}} \\
+							&					& \sem{ & completa(expresion.true := M\textsubscript{1}.ref);\\
+														& completa(expresion.false := M\textsubscript{2}.ref); \\
+														& completa(lista\_de\_sentencias.salir\_si := M\textsubscript{2}.ref); \\
+														& sentencia.salir\_si := lista\_vacia(); } \\
+														
+							& | 					& \ter{salir si} expresión \ter{M} \\
+							&					& \sem{ & completa(expresion.false := M.ref); \\
+														& sentencia.salir\_si := expresion.true; } \\
+							
+							& | 					& \ter{get (} variable \ter{)} \\
+							&					& \sem{ & añadir\_inst('read' || variable.nombre); \\
+														& sentencia.salir\_si := lista\_vacia(); } \\
+
+							& | 					& \ter{put\_line (} variable \ter{)} \\
+							&					& \sem{ & añadir\_inst('write' || variable.nombre); \\
+														& añadir\_inst('writeln'); \\
+														& sentencia.salir\_si := lista\_vacia(); } \\
+																												
+%
+%	variable 				& $\longrightarrow$	& \ter{id} \\
+%							&					& \sem{ variable.nombre := id.nombre; } \\
+
+%	expresión 				& $\longrightarrow$	& expresion_simple \\
+%							&					& \sem{ expresion'. } \\
+%							&					& expresion \\
+										
+%	expresión 				& $\longrightarrow$ 	& expresión_simple == expresión_simple \\
+%					& | expresión_simple > expresión_simple \\
+%					& | expresión_simple < expresión_simple \\
+%					& | expresión_simple >= expresión_simple \\
+%					& | expresión_simple <= expresión_simple \\
+%					& | expresión_simple /= expresión_simple \\
+%
+%	expresión_simple \rightarrow	& expresión_simple + término \\
+%					& | expresión_simple - término \\
+%					& | término \\
+%
+%	término \rightarrow 		& factor \\
+%					& | término * factor \\
+%					& | término / factor \\
+%
+%	factor \rightarrow 		& id \\
+%					& | num_entero \\
+%					& | num_real \\
+%					& | ( expresión_simple ) \\
+
+\end{tabular}

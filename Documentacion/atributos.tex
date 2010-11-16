@@ -1,0 +1,121 @@
+\chapter{Atributos}
+
+Lista de atributos, detallando para cada uno una descripción y la naturaleza del atributo (léxico, sintetizado o heredado) :
+
+\begin{enumerate}
+	\item \ter{L} = léxico 
+	\item \ter{S} = sintetizado 
+	\item \ter{H} = heredado 
+\end{enumerate}
+
+\section*{Listado de atributos}
+
+\begin{tabularx}{\textwidth}{| r | c | c | X |} \hline
+
+	\ter{No terminal}	& \ter{Tipo}		& \ter{Nombre}	& \ter{Descripcion} \\ \hline \hline
+	
+	%-----
+	
+	programa 			&&& \\ \hline
+	
+	declaraciones 		&&& \\ \hline
+	
+	tipo 				& \ter{S} 		& tipo 			& El nombre interno del tipo especificado en la sintaxis. \\ \hline
+	
+	lista\_de\_ident 	& \ter{S} 		& ids			& Lista que contiene los identificadores encontrados. \\ \hline
+	
+	resto\_lista\_id 	& \ter{S} 		& ids			& Lista que contiene los identificadores encontrados. \\ \hline
+
+	decl\_de\_subprogs 	&&& \\ \hline
+	
+	decl\_de\_subprograma &&& \\ \hline
+
+	cabecera 			&&& \\ \hline
+	
+	argumentos 			&&& \\ \hline
+	
+	lista\_de\_param 	&&& \\ \hline
+	
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{| r | c | c | X |} \hline
+
+	\ter{No terminal}	& \ter{Tipo}		& \ter{Nombre}	& \ter{Descripcion} \\ \hline \hline	
+	
+	%-----
+
+	clase\_par 			& \ter{S} 		& clase			& La clase de parámetro que se ha derivado de la sintaxis (referencia o valor). \\ \hline
+
+	clase\_par’			& \ter{S} 		& clase			& La clase de parámetro que se ha derivado de la sintaxis (referencia o valor). \\ \hline
+	
+	lista\_de\_sentencias’ &&& \\ \hline
+
+	\multirow{2}{*}{lista\_de\_sentencias}  
+						& \ter{H} 		& hinloop 		& Marcador para conocer si estamos dentro de un bucle. \\ \cline{2-4} 
+						& \ter{S} 		& salir\_si		& Lista que contiene las referencias a las apariciones de la instrucción \\ \hline
+						
+	sentencia 			&&& \\ \hline
+
+	variable				& \ter{S} 		& nombre			& El nombre del identificador que define esta variable. \\ \hline
+
+	\multirow{3}{*}{Expresión} 
+						& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						& \ter{S} 		& true			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la evaluación de la expresión es cierta. \\ \cline{2-4} 
+						& \ter{S} 		& false			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la evaluación de la expresión es falsa. \\ \hline
+
+	\multirow{4}{*}{Expresión'}
+						& \ter{H} 		& hnombre		& Atributo utilizado para que los operadores binarios conozcan el 
+														  elemento de su izquierda, o en caso de ser unario o un átomo se propague de 
+														  nuevo hacia arriba el nombre original.  \\ \cline{2-4} 
+						& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el 
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						& \ter{S} 		& true			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la evaluación de la expresión es cierta.  \\ \cline{2-4}
+						& \ter{S} 		& false			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la evaluación de la expresión es falsa.  \\ \hline
+
+	opl2					& \ter{S} 		& op				& El operador especificado por el token.  \\ \hline
+
+	opl1					& \ter{S} 		& op				& El operador especificado por el token.  \\ \hline
+
+	oprel 				&&& \\ \hline
+
+	
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{| r | c | c | X |} \hline
+
+	\ter{No terminal}	& \ter{Tipo}		& \ter{Nombre}	& \ter{Descripcion} \\ \hline \hline	
+	
+	%-----
+
+	expresión\_simple	& \ter{S} 		& nombre			& El nombre de la variable del programa o temporal que contiene el 
+														  valor de evaluar la expresión. \\ \hline
+														  
+	E’					& \ter{H} 		& hnombre		& Atributo utilizado para que los operadores binarios conozcan el 
+														  elemento de su izquierda, o en caso de ser unario o un átomo se propague de 
+														  nuevo hacia arriba el nombre original. \\ \cline{2-4} 
+						
+						& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el 
+														  valor de evaluar la expresión. \\ \hline
+														  
+	T 					& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el 
+														  valor de evaluar la expresión. \\ \hline
+														  
+	T’					& \ter{H} 		& hnombre		& Atributo utilizado para que los operadores binarios conozcan el 
+														  elemento de su izquierda, o en caso de ser unario o un átomo se propague de 
+														  nuevo hacia arriba el nombre original. \\ \cline{2-4} 
+														  
+						& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el \\ \hline
+	
+	F					& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el 
+														  valor de evaluar la expresión. \\ \hline
+
+	M					& \ter{S} 		& ref			& Referencia a la instrucción que se introducirá a continuación. \\ \hline
+
+	Todos los tipos de token & \ter{L} 	& value			& El valor literal del token encontrado. \\ \hline
+
+\end{tabularx}
