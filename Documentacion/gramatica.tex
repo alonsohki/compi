@@ -1,10 +1,10 @@
 \chapter{Gramática}
 
 \small
-\begin{tabular}{r c p{.7\textwidth}}
+\begin{tabular}{r c p{.72\textwidth}}
 	
 	programa 		&$\longrightarrow$	& \ter{programa} \ter{id} \\
-					&				 	& \sem{ añadir\_inst('prog' || id.nombre); } \\
+					&				 	& \sem{ añadir\_inst('prog ' || id.value); } \\
 					&					& declaraciones \\
 					&					& decl\_de\_subprogs \\
 					&					& \ter{comienzo} \\
@@ -26,19 +26,21 @@
 	\espacio
 	
 	lista\_de\_ident	&$\longrightarrow$	& \ter{id} resto\_lista\_id \\
-					&					& \sem{lista\_de\_ident.ids := UNIR( & INILISTA(id.nombre), \\
+					&					& \sem{lista\_de\_ident.ids := unir( & ini\_lista(id.value), \\
 																			& resto\_lista\_id.ids); } \\
 
 \end{tabular}
 
+
+\small
 \begin{tabular}{r c p{.72\textwidth}}
 	
 	resto\_lista\_id & $\longrightarrow$ 	& \ter{,} \ter{id} resto\_lista\_id \\
-					&					& \sem{ lista\_de\_ident.ids := UNIR(	& INILISTA(id.nombre) , \\
+					&					& \sem{ lista\_de\_ident.ids := unir(	& ini\_lista(id.value) , \\
 																			& resto\_lista\_id.ids); } \\
 																			
 					& | 					& $\xi$ \\
-					&					& \sem{ resto\_lista\_id.ids := LISTA\_VACIA(); } \\
+					&					& \sem{ resto\_lista\_id.ids := lista\_vacia(); } \\
 
 	\espacio
 	
@@ -61,7 +63,7 @@
 	\espacio
 	
 	cabecera 		&$\longrightarrow$	& \ter{procedimiento} \ter{id} \\
-					& 					& \sem{'proc' || id.nombre } \\
+					& 					& \sem{'proc ' || id.value } \\
 					&					& argumentos \\
 
 	\espacio
@@ -73,17 +75,19 @@
 		
 	lista\_de\_param &$\longrightarrow$  	& lista\_de\_ident \ter{:} clase\_par tipo \\
 					&					& \sem{ foreach(	& lista\_de\_ident.ids as id) \\
-														& AÑADIR\_INST(clase\_par.clase || '\_' || tipo.tipo || ' ' || id);} \\
+														& añadir\_inst(clase\_par.clase || '\_' || tipo.tipo || ' ' || id);} \\
 					&					& resto\_lis\_de\_param \\
 					
 					
 \end{tabular}
 
-\begin{tabular}{r c p{.7\textwidth}}
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
 		
 	resto\_lis\_de\_param 	&$\longrightarrow$ 	& \ter{;} lista\_de\_ident \ter{:} clase\_par tipo \\
 							&					& \sem{ foreach(	& lista\_de\_ident.ids as id) \\
-																& AÑADIR\_INST(clase\_par.clase || '\_' || tipo.tipo || ' ' || id);} \\
+																& añadir\_inst(clase\_par.clase || '\_' || tipo.tipo || ' ' || id);} \\
 							&					& resto\_lis\_de\_param \\
 							& |					& $\xi$ \\
 
@@ -112,32 +116,33 @@
 							& 					& sentencia \ter{;} \\
 							&					& \sem{ lista\_de\_sentencia\textsubscript{1}.hinloop:=lista\_de\_sentencias.hinloop; } \\
 							&					& lista\_de\_sentencias\textsubscript{1} \\
-							&					& \sem{ lista\_de\_sentencias.salir\_si := UNIR( 	& sentencia.salir\_si, \\
+							&					& \sem{ lista\_de\_sentencias.salir\_si := unir( 	& sentencia.salir\_si, \\
 																								& lista\_de\_sentencia\textsubscript{1}.salir\_si ) } \\
 							& | 					& $\xi$ \\
-							&					& \sem{lista\_de\_sentencias.salir\_si := LISTA\_VACIA() } \\
+							&					& \sem{lista\_de\_sentencias.salir\_si := lista\_vacia() } \\
 
 \end{tabular}
 
-\begin{tabular}{r c p{.7\textwidth}}
+\small
+\begin{tabular}{r c p{.72\textwidth}}
 
 	sentencia 				& $\longrightarrow$ 	& variable \ter{=} expresión\_simple \ter{;} \\
 							&					& \sem{ 	& añadir\_inst(variable.nombre||':='expresion\_simple.nombre); \\
-														& sentencia.salir\_si := LISTA\_VACIA(); } \\
+														& sentencia.salir\_si := lista\_vacia(); } \\
 							
 							& | 					& \ter{si} expresion \ter{entonces} \ter{M\textsubscript{1}} lista\_de\_sentencias \ter{fin si M\textsubscript{2}} \\
-							&					& \sem{ & completa(expresion.true := M\textsubscript{1}.ref); \\
-														& completa(expresion.false := M\textsubscript{2}.ref); \\
+							&					& \sem{ & completa(expresion.true, M\textsubscript{1}.ref); \\
+														& completa(expresion.false, M\textsubscript{2}.ref); \\
 														& sentencia.salir\_si := lista\_de\_sentencias.salir\_si; } \\
 						
 							& | 					& \ter{hacer M\textsubscript{1}} lista\_de\_sentencias \ter{mientras} expresión \ter{fin hacer M\textsubscript{2}} \\
-							&					& \sem{ & completa(expresion.true := M\textsubscript{1}.ref);\\
-														& completa(expresion.false := M\textsubscript{2}.ref); \\
-														& completa(lista\_de\_sentencias.salir\_si := M\textsubscript{2}.ref); \\
+							&					& \sem{ & completa(expresion.true, M\textsubscript{1}.ref);\\
+														& completa(expresion.false, M\textsubscript{2}.ref); \\
+														& completa(lista\_de\_sentencias.salir\_si, M\textsubscript{2}.ref); \\
 														& sentencia.salir\_si := lista\_vacia(); } \\
 														
 							& | 					& \ter{salir si} expresión \ter{M} \\
-							&					& \sem{ & completa(expresion.false := M.ref); \\
+							&					& \sem{ & completa(expresion.false, M.ref); \\
 														& sentencia.salir\_si := expresion.true; } \\
 							
 							& | 					& \ter{get (} variable \ter{)} \\
@@ -152,23 +157,28 @@
 	\espacio
 	
 	variable 				& $\longrightarrow$	& \ter{id} \\
-							&					& \sem{ variable.nombre := id.nombre); } \\
+							&					& \sem{ variable.nombre := id.value); } \\
 
 	\espacio
 	
 	oprel					& $\longrightarrow$	& \ter{<} | \ter{>} | \ter{<=} | \ter{>=} | \ter{==} |  \ter{/=} \\
+							& 					& \sem{ oprel.nombre := operador.value } \\
 
 	\espacio
 	
 	expresión 				& $\longrightarrow$	& expresion\_simple\textsubscript{1} oprel expresion\_simple\textsubscript{2} \\
-							&					& \sem{	& \multicolumn{2}{l}{expresión.true:=obtener\_ref();} \\
-														& añadir\_inst('if ' || 	& expresion\_simple\textsubscript{1}.nombre || oprel.value || \\
-														&						& expresion\_simple\textsubscript{2}); } \\
+							&					& \sem{	& \multicolumn{2}{l}{expresión.true:=ini\_lista(obtener\_ref());} \\
+														& añadir\_inst('if ' || 	& expresion\_simple\textsubscript{1}.nombre || oprel.nombre || \\
+														&						& expresion\_simple\textsubscript{2}.nombre || 'goto') ; \\
+														& \multicolumn{2}{l}{expresión.false:=ini\_lista(obtener\_ref()); } \\
+														& \multicolumn{2}{l}{añadir\_inst('goto'); } } \\
 										
 	
 \end{tabular}
 
-\begin{tabular}{r c p{.7\textwidth}}
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
 	
 	expresion\_simple		& $\longrightarrow$	& término \\
 							&					& \sem{ expresion\_simple'.hnombre := término.nombre; } \\
@@ -177,13 +187,14 @@
 	\espacio
 	
 	opl2						& $\longrightarrow$	& \ter{+} | \ter{-} \\
+							& 					& \sem{ opl.nombre := operador.value } \\
 	
 	\espacio
 	
 	expresion\_simple'		& $\longrightarrow$	& opl2 término \\
-							& 					& \sem{	& \multicolumn{2}{l}{expresion\_simple'\textsubscript{1}.hnombre := obtener\_ref()} \\
+							& 					& \sem{	& \multicolumn{2}{l}{expresion\_simple'\textsubscript{1}.hnombre := nuevo\_ident()} \\
 														& añadir\_inst(	& expresion\_simple'\textsubscript{1}.hnombre || ':=' || \\
-														&				& expresion\_simple'.hnombre || opl2.value || \\
+														&				& expresion\_simple'.hnombre || opl2.nombre || \\
 														&				& término.nombre); } \\
 							&					& expresion\_simple'\textsubscript{1} \\
 							
@@ -200,13 +211,14 @@
 	\espacio					
 	
 	opl1						& $\longrightarrow$	& \ter{*} | \ter{/} \\
+							& 					& \sem{ opl2.nombre := operador.value } \\
 	
 	\espacio
 					
 	termino'					& $\longrightarrow$	& opl1 factor \\
-							& 					& \sem{	& \multicolumn{2}{l}{termino'\textsubscript{1}.hnombre := obtener\_ref()} \\
+							& 					& \sem{	& \multicolumn{2}{l}{termino'\textsubscript{1}.hnombre := nuevo\_ident()} \\
 														& añadir\_inst(	& término'\textsubscript{1}.hnombre || ':=' || término'.hnombre || \\
-														&				& opl2.value || factor.nombre); } \\
+														&				& opl1.nombre || factor.nombre); } \\
 							&					& termino'\textsubscript{1} \\
 							&					& \sem{término'.nombre := término'\textsubscript{1}.nombre} \\
 							
@@ -215,17 +227,14 @@
 
 \end{tabular}
 
-\begin{tabular}{r c p{.7\textwidth}}
+\small
+\begin{tabular}{r c p{.72\textwidth}}
 	
 	factor 					& $\longrightarrow$	& \ter{id} \\
-							&					& \sem{ factor.nombre := id.nombre; } \\
+							&					& \sem{ factor.nombre := id.value; } \\
 							
 							& |					& numero \\ 
 							&					& \sem{ factor.nombre := numero.value} \\
-							
-							& |					& \ter{not} factor\textsubscript{1} \\
-							&					& \sem{	& factor.nombre := obtener\_ref(); \\
-														& añadir\_inst(factor.nombre||':= not' || factor.nombre\textsubscript{1}); } \\
 														
 							& |					& \ter{(} expresion\_simple \ter{)} \\
 							&					& \sem{ factor.nombre := expresion\_simple.nombre; } \\
@@ -233,5 +242,5 @@
 	\espacio
 	
 	M						& $\longrightarrow$ 	& $\xi$ \\
-							&					& \sem{ M.ref := obten\_ref(); } \\
+							&					& \sem{ M.ref := obtener\_ref(); } \\
 \end{tabular}

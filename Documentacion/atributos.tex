@@ -38,55 +38,17 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 	
 	lista\_de\_param 	&&& \\ \hline
 	
-\end{tabularx}
-
-\begin{tabularx}{\textwidth}{| r | c | c | X |} \hline
-
-	\ter{No terminal}	& \ter{Tipo}		& \ter{Nombre}	& \ter{Descripcion} \\ \hline \hline	
-	
-	%-----
-
 	clase\_par 			& \ter{S} 		& clase			& La clase de parámetro que se ha derivado de la sintaxis (referencia o valor). \\ \hline
 
 	clase\_par’			& \ter{S} 		& clase			& La clase de parámetro que se ha derivado de la sintaxis (referencia o valor). \\ \hline
 	
 	lista\_de\_sentencias’ &&& \\ \hline
-
-	\multirow{2}{*}{lista\_de\_sentencias}  
-						& \ter{H} 		& hinloop 		& Marcador para conocer si estamos dentro de un bucle. \\ \cline{2-4} 
-						& \ter{S} 		& salir\_si		& Lista que contiene las referencias a las apariciones de la instrucción \\ \hline
-						
-	sentencia 			&&& \\ \hline
-
-	variable				& \ter{S} 		& nombre			& El nombre del identificador que define esta variable. \\ \hline
-
-	\multirow{3}{*}{Expresión} 
-						& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
-														  valor de evaluar la expresión.  \\ \cline{2-4} 
-						& \ter{S} 		& true			& Lista de referencias a saltos que han de completarse para definir a 
-														  dónde saltará el programa si la evaluación de la expresión es cierta. \\ \cline{2-4} 
-						& \ter{S} 		& false			& Lista de referencias a saltos que han de completarse para definir a 
-														  dónde saltará el programa si la evaluación de la expresión es falsa. \\ \hline
-
-	\multirow{4}{*}{Expresión'}
-						& \ter{H} 		& hnombre		& Atributo utilizado para que los operadores binarios conozcan el 
-														  elemento de su izquierda, o en caso de ser unario o un átomo se propague de 
-														  nuevo hacia arriba el nombre original.  \\ \cline{2-4} 
-						& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el 
-														  valor de evaluar la expresión.  \\ \cline{2-4} 
-						& \ter{S} 		& true			& Lista de referencias a saltos que han de completarse para definir a 
-														  dónde saltará el programa si la evaluación de la expresión es cierta.  \\ \cline{2-4}
-						& \ter{S} 		& false			& Lista de referencias a saltos que han de completarse para definir a 
-														  dónde saltará el programa si la evaluación de la expresión es falsa.  \\ \hline
-
-	opl2					&&&	\\ \hline
-
-	opl1					&&& \\ \hline
-
-	oprel 				&&& \\ \hline
-
 	
 \end{tabularx}
+
+\vfill
+
+\clearpage
 
 \begin{tabularx}{\textwidth}{| r | c | c | X |} \hline
 
@@ -94,6 +56,28 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 	
 	%-----
 
+	\multirow{2}{*}{lista\_de\_sentencias}  
+						& \ter{H} 		& hinloop 		& Marcador que indica si estamos dentro de un bucle. \\ \cline{2-4} 
+						& \ter{S} 		& salir\_si		& Lista de referencias a las instrucciones "salir\_si" contenidas dentro del ámbito de lista de sentencias. \\ \hline
+						
+	sentencia 			& \ter{S} 		& salir\_si		& Lista de referencias a las instrucciones "salir\_si" contenidas dentro de la sentencia. \\ \hline
+
+	variable				& \ter{S} 		& nombre			& El nombre del identificador que define esta variable. \\ \hline
+
+	\multirow{3}{*}{expresión} 
+						& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						& \ter{S} 		& true			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						& \ter{S} 		& false			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \hline
+
+	opl2					& \ter{S}		& nombre			& Contiene el nombre del \emph{operador aritmético} (+ o -) \\ \hline
+
+	opl1					& \ter{S}		& nombre			& Contiene el nombre del \emph{operador aritmético} (* o /) \\ \hline
+
+	oprel 				& \ter{S}		& nombre			& Contiene el nombre del \emph{operador relacional} (+ o -) \\ \hline
+	
 	expresión\_simple	& \ter{S} 		& nombre			& El nombre de la variable del programa o temporal que contiene el 
 														  valor de evaluar la expresión. \\ \hline
 														  
@@ -117,5 +101,5 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 														  valor de evaluar la expresión. \\ \hline
 
 	M					& \ter{S} 		& ref			& Referencia a la instrucción que se introducirá a continuación. \\ \hline
-
+	
 \end{tabularx}
