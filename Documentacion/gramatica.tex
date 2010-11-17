@@ -17,7 +17,7 @@
 	declaraciones 	&$\longrightarrow$ 	& \ter{variables} lista\_de\_ident \ter{:} tipo \ter{;} \\
 					&					& \sem{
 													foreach(	& lista\_de\_ident.ids as id) \\
-															& añadir\_inst(tipo.tipo || id.nombre); \\
+															& añadir\_inst(tipo.tipo || id); \\
 										  } \\
 					&					& declaraciones \\
 										
@@ -46,7 +46,7 @@
 					&					& \sem{tipo.tipo := 'int'} \\
 					
 					& | 					& real \\
-					&					& \sem{tipo.tipo:='real'} \\
+					&					& \sem{tipo.tipo := 'real'} \\
 
 	\espacio
 	
@@ -73,7 +73,7 @@
 		
 	lista\_de\_param &$\longrightarrow$  	& lista\_de\_ident \ter{:} clase\_par tipo \\
 					&					& \sem{ foreach(	& lista\_de\_ident.ids as id) \\
-														& AÑADIR\_INST(clase\_par.clase:=tipo.tipo||id.nombre);} \\
+														& AÑADIR\_INST(clase\_par.clase || '\_' || tipo.tipo || ' ' || id);} \\
 					&					& resto\_lis\_de\_param \\
 					
 					
@@ -83,7 +83,7 @@
 		
 	resto\_lis\_de\_param 	&$\longrightarrow$ 	& \ter{;} lista\_de\_ident \ter{:} clase\_par tipo \\
 							&					& \sem{ foreach(	& lista\_de\_ident.ids as id) \\
-																& AÑADIR\_INST(clase\_par.clase:=tipo.tipo||id.nombre);} \\
+																& AÑADIR\_INST(clase\_par.clase || '\_' || tipo.tipo || ' ' || id);} \\
 							&					& resto\_lis\_de\_param \\
 							& |					& $\xi$ \\
 
@@ -92,27 +92,27 @@
 	clase\_par 		& $\longrightarrow$		& entrada clase\_par' \\
 					&						& \sem{clase\_par.clase := clase\_par'.clase; } \\ 
 					& | 						& salida \\
-					&						& \sem{clase\_par:='ref'; } \\
+					&						& \sem{clase\_par := 'ref'; } \\
 	
 	\espacio
 	
 	clase\_par' 		& $\longrightarrow$		& salida \\
-					&						& \sem{clase\_par:='ref'; } \\ 
+					&						& \sem{clase\_par := 'ref'; } \\ 
 					& | 						& $\xi$ \\
-					&						& \sem{clase\_par:='val'; } \\
+					&						& \sem{clase\_par := 'val'; } \\
 					
 	\espacio
 
-	lista\_de\_sentencias' 	& $\longrightarrow$ 	& \sem{lista\_de\_sentencias.hinloop:=false} \\
+	lista\_de\_sentencias' 	& $\longrightarrow$ 	& \sem{ lista\_de\_sentencias.hinloop := false; } \\
 							& 					& lista\_de\_sentencias \\
 
 	\espacio
 	
 	lista\_de\_sentencias 	& $\longrightarrow$ 	& \sem{sentencia.hinloop:=lista\_de\_sentencias.hinloop} \\
-							& 					& sentencia \\
-							&					& \sem{ lista\_de\_sentencia\textsubscript{1}.hinloop:=lista\_de\_sentencias.hinloop } \\
+							& 					& sentencia \ter{;} \\
+							&					& \sem{ lista\_de\_sentencia\textsubscript{1}.hinloop:=lista\_de\_sentencias.hinloop; } \\
 							&					& lista\_de\_sentencias\textsubscript{1} \\
-							&					& \sem{ lista\_de\_sentencias.salir\_si:=UNIR( 	& sentencia.salir\_si, \\
+							&					& \sem{ lista\_de\_sentencias.salir\_si := UNIR( 	& sentencia.salir\_si, \\
 																								& lista\_de\_sentencia\textsubscript{1}.salir\_si ) } \\
 							& | 					& $\xi$ \\
 							&					& \sem{lista\_de\_sentencias.salir\_si := LISTA\_VACIA() } \\
@@ -122,7 +122,7 @@
 \begin{tabular}{r c p{.7\textwidth}}
 
 	sentencia 				& $\longrightarrow$ 	& variable \ter{=} expresión\_simple \ter{;} \\
-							&					& \sem{ 	& añadir\_inst(variable.nombre||'='expresion\_simple.nombre); \\
+							&					& \sem{ 	& añadir\_inst(variable.nombre||':='expresion\_simple.nombre); \\
 														& sentencia.salir\_si := LISTA\_VACIA(); } \\
 							
 							& | 					& \ter{si} expresion \ter{entonces} \ter{M\textsubscript{1}} lista\_de\_sentencias \ter{fin si M\textsubscript{2}} \\
@@ -141,40 +141,97 @@
 														& sentencia.salir\_si := expresion.true; } \\
 							
 							& | 					& \ter{get (} variable \ter{)} \\
-							&					& \sem{ & añadir\_inst('read' || variable.nombre); \\
+							&					& \sem{ & añadir\_inst('read ' || variable.nombre); \\
 														& sentencia.salir\_si := lista\_vacia(); } \\
 
 							& | 					& \ter{put\_line (} variable \ter{)} \\
-							&					& \sem{ & añadir\_inst('write' || variable.nombre); \\
+							&					& \sem{ & añadir\_inst('write ' || variable.nombre); \\
 														& añadir\_inst('writeln'); \\
 														& sentencia.salir\_si := lista\_vacia(); } \\
 																												
-%
-%	variable 				& $\longrightarrow$	& \ter{id} \\
-%							&					& \sem{ variable.nombre := id.nombre; } \\
+	\espacio
+	
+	variable 				& $\longrightarrow$	& \ter{id} \\
+							&					& \sem{ variable.nombre := id.nombre); } \\
 
-%	expresión 				& $\longrightarrow$	& expresion_simple \\
-%							&					& \sem{ expresion'. } \\
-%							&					& expresion \\
+	\espacio
+	
+	oprel					& $\longrightarrow$	& \ter{<} | \ter{>} | \ter{<=} | \ter{>=} | \ter{==} |  \ter{/=} \\
+
+	\espacio
+	
+	expresión 				& $\longrightarrow$	& expresion\_simple\textsubscript{1} oprel expresion\_simple\textsubscript{2} \\
+							&					& \sem{	& \multicolumn{2}{l}{expresión.true:=obtener\_ref();} \\
+														& añadir\_inst('if ' || 	& expresion\_simple\textsubscript{1}.nombre || oprel.value || \\
+														&						& expresion\_simple\textsubscript{2}); } \\
 										
-%	expresión 				& $\longrightarrow$ 	& expresión_simple == expresión_simple \\
-%					& | expresión_simple > expresión_simple \\
-%					& | expresión_simple < expresión_simple \\
-%					& | expresión_simple >= expresión_simple \\
-%					& | expresión_simple <= expresión_simple \\
-%					& | expresión_simple /= expresión_simple \\
-%
-%	expresión_simple \rightarrow	& expresión_simple + término \\
-%					& | expresión_simple - término \\
-%					& | término \\
-%
-%	término \rightarrow 		& factor \\
-%					& | término * factor \\
-%					& | término / factor \\
-%
-%	factor \rightarrow 		& id \\
-%					& | num_entero \\
-%					& | num_real \\
-%					& | ( expresión_simple ) \\
+	
+\end{tabular}
 
+\begin{tabular}{r c p{.7\textwidth}}
+	
+	expresion\_simple		& $\longrightarrow$	& término \\
+							&					& \sem{ expresion\_simple'.hnombre := término.nombre; } \\
+							&					& expresion\_simple' \\
+							&					& \sem{ expresion\_simple.nombre := expresion\_simple'.nombre; } \\
+	\espacio
+	
+	opl2						& $\longrightarrow$	& \ter{+} | \ter{-} \\
+	
+	\espacio
+	
+	expresion\_simple'		& $\longrightarrow$	& opl2 término \\
+							& 					& \sem{	& \multicolumn{2}{l}{expresion\_simple'\textsubscript{1}.hnombre := obtener\_ref()} \\
+														& añadir\_inst(	& expresion\_simple'\textsubscript{1}.hnombre || ':=' || \\
+														&				& expresion\_simple'.hnombre || opl2.value || \\
+														&				& término.nombre); } \\
+							&					& expresion\_simple'\textsubscript{1} \\
+							
+							& | 					& $\xi$ \\
+							&					& \sem{ expresion\_simple'.nombre = expresion\_simple'.hnombre; } \\
+	
+	\espacio
+							
+	termino					& $\longrightarrow$	& factor \\ 
+							&					& \sem{ término'.hnombre := factor.nombre; } \\
+							&					& término' \\
+							&					& \sem{ término.nombre := término'.nombre; } \\
+
+	\espacio					
+	
+	opl1						& $\longrightarrow$	& \ter{*} | \ter{/} \\
+	
+	\espacio
+					
+	termino'					& $\longrightarrow$	& opl1 factor \\
+							& 					& \sem{	& \multicolumn{2}{l}{termino'\textsubscript{1}.hnombre := obtener\_ref()} \\
+														& añadir\_inst(	& término'\textsubscript{1}.hnombre || ':=' || término'.hnombre || \\
+														&				& opl2.value || factor.nombre); } \\
+							&					& termino'\textsubscript{1} \\
+							&					& \sem{término'.nombre := término'\textsubscript{1}.nombre} \\
+							
+							& | 					& $\xi$ \\
+							&					& \sem{ termino'.nombre = termino'.hnombre; } \\
+
+\end{tabular}
+
+\begin{tabular}{r c p{.7\textwidth}}
+	
+	factor 					& $\longrightarrow$	& \ter{id} \\
+							&					& \sem{ factor.nombre := id.nombre; } \\
+							
+							& |					& numero \\ 
+							&					& \sem{ factor.nombre := numero.value} \\
+							
+							& |					& \ter{not} factor\textsubscript{1} \\
+							&					& \sem{	& factor.nombre := obtener\_ref(); \\
+														& añadir\_inst(factor.nombre||':= not' || factor.nombre\textsubscript{1}); } \\
+														
+							& |					& \ter{(} expresion\_simple \ter{)} \\
+							&					& \sem{ factor.nombre := expresion\_simple.nombre; } \\
+							
+	\espacio
+	
+	M						& $\longrightarrow$ 	& $\xi$ \\
+							&					& \sem{ M.ref := obten\_ref(); } \\
 \end{tabular}

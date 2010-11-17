@@ -16,6 +16,8 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 	
 	%-----
 	
+	\ter{Todos los tipos de token} & \ter{L} 	& value			& El valor literal del token encontrado. \\ \hline
+		
 	programa 			&&& \\ \hline
 	
 	declaraciones 		&&& \\ \hline
@@ -77,9 +79,9 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						& \ter{S} 		& false			& Lista de referencias a saltos que han de completarse para definir a 
 														  dónde saltará el programa si la evaluación de la expresión es falsa.  \\ \hline
 
-	opl2					& \ter{S} 		& op				& El operador especificado por el token.  \\ \hline
+	opl2					&&&	\\ \hline
 
-	opl1					& \ter{S} 		& op				& El operador especificado por el token.  \\ \hline
+	opl1					&&& \\ \hline
 
 	oprel 				&&& \\ \hline
 
@@ -95,27 +97,25 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 	expresión\_simple	& \ter{S} 		& nombre			& El nombre de la variable del programa o temporal que contiene el 
 														  valor de evaluar la expresión. \\ \hline
 														  
-	E’					& \ter{H} 		& hnombre		& Atributo utilizado para que los operadores binarios conozcan el 
+	expresión\_simple’	& \ter{H} 		& hnombre		& Atributo utilizado para que los operadores binarios conozcan el 
 														  elemento de su izquierda, o en caso de ser unario o un átomo se propague de 
 														  nuevo hacia arriba el nombre original. \\ \cline{2-4} 
 						
 						& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el 
 														  valor de evaluar la expresión. \\ \hline
 														  
-	T 					& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el 
+	término				& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el 
 														  valor de evaluar la expresión. \\ \hline
 														  
-	T’					& \ter{H} 		& hnombre		& Atributo utilizado para que los operadores binarios conozcan el 
+	término’				& \ter{H} 		& hnombre		& Atributo utilizado para que los operadores binarios conozcan el 
 														  elemento de su izquierda, o en caso de ser unario o un átomo se propague de 
 														  nuevo hacia arriba el nombre original. \\ \cline{2-4} 
 														  
 						& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el \\ \hline
 	
-	F					& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el 
+	factor				& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el 
 														  valor de evaluar la expresión. \\ \hline
 
 	M					& \ter{S} 		& ref			& Referencia a la instrucción que se introducirá a continuación. \\ \hline
-
-	Todos los tipos de token & \ter{L} 	& value			& El valor literal del token encontrado. \\ \hline
 
 \end{tabularx}
