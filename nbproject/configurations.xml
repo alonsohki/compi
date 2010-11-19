@@ -6,6 +6,7 @@
                    projectFiles="true"
                    kind="SOURCE_LOGICAL_FOLDER">
       <itemPath>CClassifier.h</itemPath>
+      <itemPath>CString.h</itemPath>
       <itemPath>CTokenizer.h</itemPath>
       <itemPath>CTranslator.h</itemPath>
       <itemPath>util.h</itemPath>
