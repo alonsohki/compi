@@ -44,7 +44,7 @@ private:
     static const ETokenType         ms_eFinalStates [ NUMSTATES ];
     static fn_stateTrigger          ms_fnTriggers [ NUMSTATES ];
     static const char*              ms_szErrors [ NUMSTATES ];
-    static const char*				ms_szReserved [ ];
+    static const char*              ms_szReserved [ ];
 
 public:
                     CTokenizer      ( std::istream& isInput );
@@ -55,7 +55,7 @@ private:
     bool            ReadToken       ( SToken* pToken = 0 );
 public:
     const char*     NameThisToken   ( ETokenType eType ) const;
-    bool			IsReserved		( const char* szTokenValue ) const;
+    bool            IsReserved      ( const char* szTokenValue ) const;
     const char*     GetErrorForToken( const SToken& token ) const { return ms_szErrors [ token.uiState ] != 0 ? ms_szErrors [ token.uiState ] : ""; }
 
 private:

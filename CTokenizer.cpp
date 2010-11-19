@@ -1,7 +1,7 @@
 #include "CTokenizer.h"
 #include "CClassifier.h"
 #include "util.h"
-#include <memory.h>
+#include <string.h>
 
 const int CTokenizer::ms_iTransitions [ CTokenizer::NUMSTATES ] [ CClassifier::GROUP_MAX ] = {
 /*          ALPHA  DIGIT  eE     DOT    UNDER  EQUAL  LT     GT     PLUS   MINUS  STAR   SLASH  CR     LF     SPACE  SEP    UNKN */
@@ -96,22 +96,22 @@ const char* CTokenizer::ms_szErrors [ CTokenizer::NUMSTATES ] = {
 };
 
 const char* CTokenizer::ms_szReserved [ ] = {
-		"programa",
-		"procedimiento",
-		"comienzo",
-		"fin",
-		"variables",
-		"entero",
-		"real",
-		"entrada",
-		"salida",
-		"si",
-		"entonces",
-		"hacer",
-		"mientras",
-		"salir",
-		"get",
-		"put_line"
+    "programa",
+    "procedimiento",
+    "comienzo",
+    "fin",
+    "variables",
+    "entero",
+    "real",
+    "entrada",
+    "salida",
+    "si",
+    "entonces",
+    "hacer",
+    "mientras",
+    "salir",
+    "get",
+    "put_line"
 };
 
 /////////////////////////////////////////////////////////
@@ -284,10 +284,12 @@ const char* CTokenizer::NameThisToken ( ETokenType eType ) const
 #undef TOKTYPE
 }
 
-bool CTokenizer::IsReserved(const char* szTokenValue) const {
-	for (unsigned int i=0; i < NUMELEMS(ms_szReserved); i++) {
-		if (strcmp(szTokenValue,ms_szReserved[i]) == 0)
-			return true;
-	}
-	return false;
+bool CTokenizer::IsReserved ( const char* szTokenValue ) const
+{
+    for ( unsigned int i = 0; i < NUMELEMS(ms_szReserved); ++i )
+    {
+        if ( strcmp ( szTokenValue, ms_szReserved [ i ] ) == 0 )
+            return true;
+    }
+    return false;
 }
