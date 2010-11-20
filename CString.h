@@ -1,12 +1,7 @@
-/* 
- * File:   CString.h
- * Author: Alberto Alonso
- *
- */
-
 #ifndef CSTRING_H
 #define	CSTRING_H
 
+#include <cstdio>
 #include <cstdarg>
 #include <string>
 #include "util.h"

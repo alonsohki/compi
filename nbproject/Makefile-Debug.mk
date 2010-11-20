@@ -35,6 +35,7 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/CClassifier.o \
 	${OBJECTDIR}/main.o \
+	${OBJECTDIR}/CRules.o \
 	${OBJECTDIR}/CTranslator.o \
 	${OBJECTDIR}/CTokenizer.o
 
@@ -72,6 +73,11 @@ ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
+
+${OBJECTDIR}/CRules.o: CRules.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/CRules.o CRules.cpp
 
 ${OBJECTDIR}/CTranslator.o: CTranslator.cpp 
 	${MKDIR} -p ${OBJECTDIR}

@@ -1,10 +1,12 @@
 #include "CTranslator.h"
 #include "CTokenizer.h"
+#include "CRules.h"
 
 CTranslator::CTranslator(std::istream& ifsOrig,
                          std::ostream& ofsDest)
 : m_isOrig ( ifsOrig )
 , m_osDest ( ofsDest )
+, m_tokenizer ( ifsOrig )
 {
 }
 
@@ -20,6 +22,7 @@ bool CTranslator::IsOk () const
 
 bool CTranslator::Translate ()
 {
+#if 0
     CTokenizer tokenizer ( m_isOrig );
     CTokenizer::SToken token;
 
@@ -42,6 +45,6 @@ bool CTranslator::Translate ()
                                             );
         }
     }
-
+#endif
     return true;
 }

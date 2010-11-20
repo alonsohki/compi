@@ -1,11 +1,14 @@
 #ifndef CTRANSLATOR_H
 #define	CTRANSLATOR_H
 
-#include <string>
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include "CTokenizer.h"
+#include "CString.h"
 
-class CTranslator {
+class CTranslator
+{
 public:
                     CTranslator     (std::istream& ifsOrig,
                                      std::ostream& ofsDest);
@@ -16,8 +19,10 @@ public:
     bool            Translate       ();
 
 private:
-    std::istream&       m_isOrig;
-    std::ostream&       m_osDest;
+    std::istream&           m_isOrig;
+    std::ostream&           m_osDest;
+    CTokenizer              m_tokenizer;
+    std::vector<CString>    m_vecInstructions;
 };
 
 #endif	/* CTRANSLATOR_H */
