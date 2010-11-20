@@ -2,4 +2,5 @@
 
 DEFINE_RULE(programa)
 {
+    puts("Programa!");
 }

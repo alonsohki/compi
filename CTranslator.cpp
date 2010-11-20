@@ -46,5 +46,9 @@ bool CTranslator::Translate ()
         }
     }
 #endif
+
+    // Regla inicial.
+    RULE(programa)();
+
     return true;
 }

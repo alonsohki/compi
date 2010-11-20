@@ -6,7 +6,6 @@
                    projectFiles="true"
                    kind="SOURCE_LOGICAL_FOLDER">
       <itemPath>CClassifier.h</itemPath>
-      <itemPath>CRules.cpp</itemPath>
       <itemPath>CRules.h</itemPath>
       <itemPath>CRules_internal.h</itemPath>
       <itemPath>CString.h</itemPath>
@@ -24,6 +23,7 @@
                    projectFiles="true"
                    kind="SOURCE_LOGICAL_FOLDER">
       <itemPath>CClassifier.cpp</itemPath>
+      <itemPath>CRules.cpp</itemPath>
       <itemPath>CTokenizer.cpp</itemPath>
       <itemPath>CTranslator.cpp</itemPath>
       <itemPath>main.cpp</itemPath>

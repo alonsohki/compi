@@ -10,13 +10,15 @@
 class CTranslator
 {
 public:
-                    CTranslator     (std::istream& ifsOrig,
-                                     std::ostream& ofsDest);
-    virtual         ~CTranslator    ();
+                            CTranslator     (std::istream& ifsOrig,
+                                             std::ostream& ofsDest);
+    virtual                 ~CTranslator    ();
+
+    std::vector<CString>&   GetInstructions () { return m_vecInstructions; }
 
 public:
-    bool            IsOk            () const;
-    bool            Translate       ();
+    bool                    IsOk            () const;
+    bool                    Translate       ();
 
 private:
     std::istream&           m_isOrig;
