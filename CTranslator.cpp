@@ -53,7 +53,7 @@ bool CTranslator::Translate ()
           it != m_vecInstructions.end();
           ++it )
     {
-        m_osDest << i << ": " << *(*it) << std::endl;
+        m_osDest << i << ": " << *(*it) << ";" << std::endl;
     }
 
     return true;
