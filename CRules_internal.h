@@ -111,8 +111,9 @@ private:
 #define MAP_ATTRIBUTE_TYPE(attr) CString (attr)
 #define DECLARE_RULE(x, ...) class BUILD_RULE_CLASS_NAME(x) : public __CRule__Base__ \
 { \
+public: \
     FOR_EACH_PARAM(MAP_ATTRIBUTE_TYPE, __VA_ARGS__); \
-public: BUILD_RULE_CLASS_NAME(x) ( CTranslator* pTranslator ) : __CRule__Base__(pTranslator) {} \
+    BUILD_RULE_CLASS_NAME(x) ( CTranslator* pTranslator ) : __CRule__Base__(pTranslator) {} \
     void operator() (); \
 }
 #define DEFINE_RULE(x) void BUILD_RULE_CLASS_NAME(x) :: operator() ()
