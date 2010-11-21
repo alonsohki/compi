@@ -6,6 +6,7 @@
                    projectFiles="true"
                    kind="SOURCE_LOGICAL_FOLDER">
       <itemPath>CClassifier.h</itemPath>
+      <itemPath>CListInString.h</itemPath>
       <itemPath>CRules.h</itemPath>
       <itemPath>CRules_internal.h</itemPath>
       <itemPath>CString.h</itemPath>
@@ -64,7 +65,7 @@
           <commandlineTool>as</commandlineTool>
         </asmTool>
         <linkerTool>
-          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/analex</output>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/compiler</output>
           <commandlineTool>g++</commandlineTool>
         </linkerTool>
       </compileType>
@@ -93,7 +94,7 @@
           <commandlineTool>as</commandlineTool>
         </asmTool>
         <linkerTool>
-          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/analex</output>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/compiler</output>
           <commandlineTool>g++</commandlineTool>
         </linkerTool>
       </compileType>

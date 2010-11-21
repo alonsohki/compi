@@ -1,21 +1,66 @@
 #ifndef CRULES_INTERNAL_H
 #define	CRULES_INTERNAL_H
 
+#include <cstdlib>
 #include <vector>
+#include "CTranslator.h"
 #include "CString.h"
+#include "CListInString.h"
 
 // Estructura de datos base de las reglas.
 class __CRule__Base__
 {
-public:
-    __CRule__Base__ ( std::vector<CString>& vecInstructions )
-    : m_vecInstructions ( vecInstructions )
+protected:
+    __CRule__Base__ ( CTranslator* pTranslator )
+    : m_pTranslator ( pTranslator )
     {}
 
-    std::vector<CString>&   GetInstructionsVector () { return m_vecInstructions; }
-    
+    CTranslator*        GetTranslator   () { return m_pTranslator; }
+    CTokenizer::SToken  match           ( CTokenizer::ETokenType eType,
+                                          const CString& requiredValue = "" )
+    {
+        return m_pTranslator->Match ( eType, requiredValue );
+    }
+    void            push_instruction    ( const CString& strCode )
+    {
+        m_pTranslator->PushInstruction ( strCode );
+    }
+    CString         get_ref             ()
+    {
+        char szTemp [ 32 ];
+        snprintf ( szTemp, NUMELEMS(szTemp), "%u", m_pTranslator->GetRef () );
+        return CString ( szTemp );
+    }
+    CString         empty_list          ()
+    {
+        return CListInString::EmptyList ();
+    }
+    CString         init_list           ( const CString& strFirstElement )
+    {
+        return CListInString::InitList ( strFirstElement );
+    }
+    CString         join_lists          ( const CString& listLeft, const CString& listRight )
+    {
+        return CListInString::Join ( listLeft, listRight );
+    }
+    void            complete            ( const CString& list, const CString& ref )
+    {
+        std::vector<unsigned int> listNumbers;
+        std::vector<CString> listStrings;
+        CListInString::GetListElements(list, listStrings);
+
+        for ( std::vector<CString>::iterator it = listStrings.begin ();
+              it != listStrings.end();
+              ++it )
+        {
+            listNumbers.push_back ( static_cast < unsigned int > ( atoi ( *it ) ) );
+        }
+
+        m_pTranslator->Complete ( listNumbers, static_cast < unsigned int > ( atoi(ref) ) );
+    }
+
 private:
-    std::vector<CString>&   m_vecInstructions;
+    CTranslator*   m_pTranslator;
 };
 
 // Macros de uso interno.
@@ -67,17 +112,38 @@ private:
 #define DECLARE_RULE(x, ...) class BUILD_RULE_CLASS_NAME(x) : public __CRule__Base__ \
 { \
     FOR_EACH_PARAM(MAP_ATTRIBUTE_TYPE, __VA_ARGS__); \
-public: BUILD_RULE_CLASS_NAME(x) (std::vector<CString>& v) : __CRule__Base__(v) {} \
-        void operator() (); \
+public: BUILD_RULE_CLASS_NAME(x) ( CTranslator* pTranslator ) : __CRule__Base__(pTranslator) {} \
+    void operator() (); \
 }
 #define DEFINE_RULE(x) void BUILD_RULE_CLASS_NAME(x) :: operator() ()
 
-#define THIS (*this)
+#define FIRST_RULE_IS(x) class __CRuleFirst__ : public BUILD_RULE_CLASS_NAME(x) { \
+public: \
+    __CRuleFirst__ ( CTranslator* pTranslator ) : BUILD_RULE_CLASS_NAME(x) (pTranslator) {} \
+    void operator() () { BUILD_RULE_CLASS_NAME(x) :: operator() (); } \
+}
 
 #define RULE(T, ...) RULE_I(T, NUMARGS(__VA_ARGS__), __VA_ARGS__)
 #define RULE_I(T, n, ...) CAT(RULE_I_, n)(T, ## __VA_ARGS__)
-#define RULE_I_0(T, varName) BUILD_RULE_CLASS_NAME(T) ( this->GetInstructions() )
-#define RULE_I_1(T, varName) BUILD_RULE_CLASS_NAME(T) (varName) ( this->GetInstructions() ); (varName)
+#define RULE_I_0(T, varName) BUILD_RULE_CLASS_NAME(T) ( this->GetTranslator() )
+#define RULE_I_1(T, varName) BUILD_RULE_CLASS_NAME(T) (varName) ( this->GetTranslator() ); (varName)
+
+#define EXECUTE_FIRST_RULE(T) __CRuleFirst__ ( this ) ()
+
+
+#define THIS (*this)
+#define TT(x) CTokenizer:: x
+#define TOKEN CTokenizer::SToken
+#define MATCH(T, ...) MATCH_I(T, NUMARGS(__VA_ARGS__), __VA_ARGS__)
+#define MATCH_I(T, n, ...) CAT(MATCH_I_, n)(T, __VA_ARGS__)
+#define MATCH_I_0(T, req) match(TT(T))
+#define MATCH_I_1(T, req) match(TT(T), (req))
+#define ADD_INST(x) push_instruction(CString() || x )
+#define GET_REF() get_ref()
+#define EMPTY_LIST empty_list
+#define INIT_LIST init_list
+#define JOIN join_lists
+#define COMPLETE complete
 
 #endif	/* CRULES_INTERNAL_H */
 

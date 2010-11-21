@@ -58,11 +58,11 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-Debug.mk dist/Debug/MinGW-Windows/analex.exe
+	"${MAKE}"  -f nbproject/Makefile-Debug.mk dist/Debug/MinGW-Windows/compiler.exe
 
-dist/Debug/MinGW-Windows/analex.exe: ${OBJECTFILES}
+dist/Debug/MinGW-Windows/compiler.exe: ${OBJECTFILES}
 	${MKDIR} -p dist/Debug/MinGW-Windows
-	g++ -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/analex ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	g++ -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/compiler ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/CClassifier.o: CClassifier.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -95,7 +95,7 @@ ${OBJECTDIR}/CTokenizer.o: CTokenizer.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r build/Debug
-	${RM} dist/Debug/MinGW-Windows/analex.exe
+	${RM} dist/Debug/MinGW-Windows/compiler.exe
 
 # Subprojects
 .clean-subprojects:

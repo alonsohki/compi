@@ -55,6 +55,90 @@ public:
         ret.m_str.append ( Right );
         return ret;
     }
+
+    bool operator== ( const char* Right ) const
+    {
+        return m_str == Right;
+    }
+    bool operator== ( const CString& Right ) const
+    {
+        return m_str == Right.m_str;
+    }
+    bool operator!= ( const char* Right ) const
+    {
+        return !operator==(Right);
+    }
+    bool operator!= ( const CString& Right ) const
+    {
+        return !operator==(Right);
+    }
+
+    char& operator[] ( int idx )
+    {
+        return m_str.operator[] ( idx );
+    }
+    const char& operator[] ( int idx ) const
+    {
+        return m_str.operator[] ( idx );
+    }
+
+    unsigned int Length () const
+    {
+        return m_str.length ();
+    }
+
+    void Resize ( unsigned int uiSize )
+    {
+        m_str.resize ( uiSize );
+    }
+    void Resize ( unsigned int uiSize, char c )
+    {
+        m_str.resize ( uiSize, c );
+    }
+
+    void Append ( const CString& Right )
+    {
+        m_str.append ( Right.m_str );
+    }
+    void Append ( const char* str )
+    {
+        m_str.append ( str );
+    }
+
+    void CollapseWhiteSpaces ()
+    {
+        unsigned int uiLength = Length ();
+        char szTemp [ uiLength + 1 ];
+        unsigned int copyPos = 0;
+
+        for ( unsigned int i = 0; i < uiLength; ++i )
+        {
+            if ( m_str[i] != ' ' && m_str[i] != '\t' && m_str[i] != 160 &&
+                 m_str[i] != '\r' && m_str[i] != '\n' )
+            {
+                szTemp [ copyPos ] = m_str [ i ];
+                ++copyPos;
+            }
+        }
+        
+        szTemp [ copyPos ] = '\0';
+        m_str.assign ( szTemp );
+    }
+
+    std::vector<CString>& Split ( char cSeparator, std::vector<CString>& to ) const
+    {
+        int iPos = std::string::npos;
+        int iLastPos = 0;
+        
+        while ( ( iPos = m_str.find ( cSeparator, iPos + 1 ) ) != std::string::npos )
+        {
+            to.push_back ( m_str.substr(iLastPos, iPos - iLastPos) );
+            iLastPos = iPos + 1;
+        }
+        to.push_back ( m_str.substr( iLastPos, m_str.length() - iLastPos ) );
+
+        return to;
+    }
 };
 
 class Format : public CString

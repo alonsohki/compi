@@ -30,6 +30,14 @@ public:
 
     struct SToken
     {
+        SToken ()
+        : eType ( UNKNOWN )
+        , uiValueLength ( 0 )
+        , uiLine ( 0 )
+        , uiCol ( 0 )
+        , uiState ( 0 )
+        {}
+        
         ETokenType      eType;
         char            value [ 1024 ];
         unsigned int    uiValueLength;
@@ -56,7 +64,7 @@ private:
 public:
     const char*     NameThisToken   ( ETokenType eType ) const;
     bool            IsReserved      ( const char* szTokenValue ) const;
-    const char*     GetErrorForToken( const SToken& token ) const { return ms_szErrors [ token.uiState ] != 0 ? ms_szErrors [ token.uiState ] : ""; }
+    const char*     GetErrorForToken( const SToken& token ) const { return ms_szErrors [ token.uiState ]; }
 
 private:
     void            CheckMultilineComment   ( unsigned char c );

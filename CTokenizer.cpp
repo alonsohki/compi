@@ -1,7 +1,7 @@
+#include <cstring>
 #include "CTokenizer.h"
 #include "CClassifier.h"
 #include "util.h"
-#include <string.h>
 
 const int CTokenizer::ms_iTransitions [ CTokenizer::NUMSTATES ] [ CClassifier::GROUP_MAX ] = {
 /*          ALPHA  DIGIT  eE     DOT    UNDER  EQUAL  LT     GT     PLUS   MINUS  STAR   SLASH  CR     LF     SPACE  SEP    UNKN */
@@ -225,8 +225,10 @@ bool CTokenizer::NextToken ( SToken* pToken, bool bIgnoreWhiteSpaces )
                     bContinueSearching = false;
                 break;
             case IDENTIFIER:
-            	if (IsReserved(token.value))
-            		token.eType = RESERVED;
+                if ( IsReserved ( token.value ) == true )
+                    token.eType = RESERVED;
+                bContinueSearching = false;
+                break;
             default:
                 bContinueSearching = false;
         }
@@ -288,7 +290,7 @@ bool CTokenizer::IsReserved ( const char* szTokenValue ) const
 {
     for ( unsigned int i = 0; i < NUMELEMS(ms_szReserved); ++i )
     {
-        if ( strcmp ( szTokenValue, ms_szReserved [ i ] ) == 0 )
+        if ( strcasecmp ( szTokenValue, ms_szReserved [ i ] ) == 0 )
             return true;
     }
     return false;
