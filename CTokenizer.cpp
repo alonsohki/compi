@@ -62,7 +62,7 @@ CTokenizer::fn_stateTrigger CTokenizer::ms_fnTriggers [ CTokenizer::NUMSTATES ] 
 /* q7  */ 0,
 /* q8  */ 0,
 /* q9  */ 0,
-/* q10 */ &CTokenizer::CheckMultilineComment,
+/* q10 */ 0,
 /* q11 */ 0,
 /* q12 */ 0,
 /* q13 */ 0,
@@ -119,8 +119,6 @@ const char* CTokenizer::ms_szReserved [ ] = {
 CTokenizer::CTokenizer ( std::istream& isInput )
 : m_buffer ( isInput )
 , m_uiState ( 0 )
-, m_uiLine ( 0 )
-, m_uiCol ( 0 )
 , m_isInput ( isInput )
 {
 }
@@ -140,8 +138,8 @@ bool CTokenizer::ReadToken ( SToken* pToken )
     {
         memset ( pToken->value, 0, sizeof ( pToken->value ) );
         pToken->uiValueLength = 0;
-        pToken->uiCol = m_uiCol;
-        pToken->uiLine = m_uiLine;
+        pToken->uiCol = m_buffer.GetCol ();
+        pToken->uiLine = m_buffer.GetLine ();
     }
 
     // Inicializamos el autómata.
@@ -165,8 +163,6 @@ bool CTokenizer::ReadToken ( SToken* pToken )
                 m_buffer.Rollback ();
             else
             {
-                ++m_uiCol;
-
                 // Añadimos el caracter recientemente leído al token.
                 if ( pToken != 0 )
                 {
@@ -186,7 +182,6 @@ bool CTokenizer::ReadToken ( SToken* pToken )
             pToken->value [ pToken->uiValueLength ] = c;
             pToken->uiValueLength++;
         }
-        ++m_uiCol;
 
         if ( ms_fnTriggers [ m_uiState ] != 0 )
             ((*this).*(ms_fnTriggers [ m_uiState ])) ( c );
@@ -217,8 +212,6 @@ bool CTokenizer::NextToken ( SToken* pToken, bool bIgnoreWhiteSpaces )
         switch ( token.eType )
         {
             case NEWLINE:
-                ++m_uiLine;
-                m_uiCol = 0;
             case COMMENT:
             case SPACE:
                 if ( bIgnoreWhiteSpaces == false )
@@ -238,31 +231,6 @@ bool CTokenizer::NextToken ( SToken* pToken, bool bIgnoreWhiteSpaces )
         *pToken = token;
 
     return bRetval;
-}
-
-void CTokenizer::CheckMultilineComment ( unsigned char c )
-{
-    static bool bLastCharWasCR = false;
-
-    switch ( c )
-    {
-        case '\r':
-            bLastCharWasCR = true;
-            ++m_uiLine;
-            m_uiCol = 0;
-            break;
-        case '\n':
-            m_uiCol = 0;
-            if ( bLastCharWasCR == true )
-            {
-                bLastCharWasCR = false;
-            }
-            else
-            {
-                ++m_uiLine;
-            }
-            break;
-    }
 }
 
 const char* CTokenizer::NameThisToken ( ETokenType eType ) const

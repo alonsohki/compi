@@ -74,8 +74,6 @@ private:
 
 
     unsigned int    m_uiState;
-    unsigned int    m_uiLine;
-    unsigned int    m_uiCol;
     std::istream&   m_isInput;
 };
 

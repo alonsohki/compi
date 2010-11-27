@@ -9,15 +9,27 @@ class CBufferedReader
     unsigned char   data [ BUFFER_SIZE ];
     unsigned char*  pos;
     unsigned char*  end;
+    std::istream&   isInput;
+    bool            bLastCharWasCR;
+    unsigned int    uiLine;
+    unsigned int    uiCol;
 
 public:
-    CBufferedReader ( std::istream& isInput ) : m_isInput ( isInput ) { Initialize (); }
+    CBufferedReader ( std::istream& p_isInput )
+    : isInput ( p_isInput )
+    , bLastCharWasCR ( false )
+    , uiLine ( 0 )
+    , uiCol ( 0 )
+    {
+        Initialize ();
+    }
 
+private:
     bool ReadFromStream ()
     {
         // Inicializamos el buffer.
-        m_isInput.read ( reinterpret_cast < char* > ( &data[0] ), BUFFER_SIZE );
-        unsigned int uiCount = m_isInput.gcount ();
+        isInput.read ( reinterpret_cast < char* > ( &data[0] ), BUFFER_SIZE );
+        unsigned int uiCount = isInput.gcount ();
         if ( uiCount != 0 )
         {
             pos = data;
@@ -35,12 +47,37 @@ public:
 
     bool Initialize () { return ReadFromStream (); }
 
+public:
     bool Get ( unsigned char* c = 0 )
     {
         // Rellenamos el buffer si es necesario.
         if ( pos >= end )
             if ( ReadFromStream () == false )
                 return false;
+
+        // Comprobamos saltos de linea.
+        switch ( pos [ 0 ] )
+        {
+            case '\r':
+                bLastCharWasCR = true;
+                ++uiLine;
+                uiCol = 0;
+                break;
+            case '\n':
+                if ( bLastCharWasCR == true )
+                {
+                    bLastCharWasCR = false;
+                }
+                else
+                {
+                    ++uiLine;
+                }
+                uiCol = 0;
+                break;
+            default:
+                ++uiCol;
+                bLastCharWasCR = false;
+        }
 
         if ( c != 0 )
             *c = pos [ 0 ];
@@ -51,10 +88,14 @@ public:
     void Rollback ()
     {
         --pos;
+        if ( uiCol > 0 )
+            --uiCol;
+        else
+            --uiLine;
     }
 
-    private:
-        std::istream& m_isInput;
+    unsigned int GetLine () const { return uiLine; }
+    unsigned int GetCol () const { return uiCol; }
 };
 
 #endif	/* CBUFFEREDREADER_H */
