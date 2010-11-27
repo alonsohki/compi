@@ -2,6 +2,7 @@
 #include "CTranslator.h"
 #include "CTokenizer.h"
 #include "CRules.h"
+#include "CTypeInfo.h"
 
 CTranslator::CTranslator(std::istream& ifsOrig,
                          std::ostream& ofsDest)
