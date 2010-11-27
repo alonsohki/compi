@@ -1,8 +1,8 @@
 #ifndef CTOKENIZER_H
 #define	CTOKENIZER_H
 
+#include "CBufferedReader.h"
 #include "CClassifier.h"
-#include <istream>
 
 class CTokenizer
 {
@@ -70,57 +70,8 @@ private:
     void            CheckMultilineComment   ( unsigned char c );
 
 private:
-    struct BufferedReader
-    {
-        unsigned char   data [ BUFFER_SIZE ];
-        unsigned char*  pos;
-        unsigned char*  end;
+    CBufferedReader < BUFFER_SIZE > m_buffer;
 
-        BufferedReader ( std::istream& isInput ) : m_isInput ( isInput ) { Initialize (); }
-
-        bool ReadFromStream ()
-        {
-            // Inicializamos el buffer.
-            m_isInput.read ( reinterpret_cast < char* > ( &data[0] ), BUFFER_SIZE );
-            unsigned int uiCount = m_isInput.gcount ();
-            if ( uiCount != 0 )
-            {
-                pos = data;
-                end = data + uiCount;
-            }
-            else
-            {
-                // Marcamos que no se ha podido leer nada.
-                end = data;
-                pos = end + 1;
-            }
-
-            return ( uiCount != 0 );
-        }
-
-        bool Initialize () { return ReadFromStream (); }
-        
-        bool Get ( unsigned char* c = 0 )
-        {
-            // Rellenamos el buffer si es necesario.
-            if ( pos >= end )
-                if ( ReadFromStream () == false )
-                    return false;
-
-            if ( c != 0 )
-                *c = pos [ 0 ];
-            ++pos;
-            return true;
-        }
-
-        void Rollback ()
-        {
-            --pos;
-        }
-
-        private:
-            std::istream& m_isInput;
-    } m_buffer;
 
     unsigned int    m_uiState;
     unsigned int    m_uiLine;

@@ -5,6 +5,7 @@
                    displayName="Header Files"
                    projectFiles="true"
                    kind="SOURCE_LOGICAL_FOLDER">
+      <itemPath>CBufferedReader.h</itemPath>
       <itemPath>CClassifier.h</itemPath>
       <itemPath>CListInString.h</itemPath>
       <itemPath>CRules.h</itemPath>
@@ -46,8 +47,8 @@
     <conf name="Debug" type="1">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
-        <compilerSet>MinGW|MinGW</compilerSet>
-        <platform>3</platform>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
       </toolsSet>
       <compileType>
         <cTool>

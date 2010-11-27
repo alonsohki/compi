@@ -127,8 +127,8 @@ public:
 
     std::vector<CString>& Split ( char cSeparator, std::vector<CString>& to ) const
     {
-        int iPos = std::string::npos;
-        int iLastPos = 0;
+        size_t iPos = std::string::npos;
+        size_t iLastPos = 0;
         
         while ( ( iPos = m_str.find ( cSeparator, iPos + 1 ) ) != std::string::npos )
         {

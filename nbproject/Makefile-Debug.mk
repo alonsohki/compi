@@ -21,7 +21,7 @@ FC=g77
 AS=as
 
 # Macros
-CND_PLATFORM=MinGW-Windows
+CND_PLATFORM=GNU-Linux-x86
 CND_CONF=Debug
 CND_DISTDIR=dist
 
@@ -58,10 +58,10 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-Debug.mk dist/Debug/MinGW-Windows/compiler.exe
+	"${MAKE}"  -f nbproject/Makefile-Debug.mk dist/Debug/GNU-Linux-x86/compiler
 
-dist/Debug/MinGW-Windows/compiler.exe: ${OBJECTFILES}
-	${MKDIR} -p dist/Debug/MinGW-Windows
+dist/Debug/GNU-Linux-x86/compiler: ${OBJECTFILES}
+	${MKDIR} -p dist/Debug/GNU-Linux-x86
 	g++ -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/compiler ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/CClassifier.o: CClassifier.cpp 
@@ -95,7 +95,7 @@ ${OBJECTDIR}/CTokenizer.o: CTokenizer.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r build/Debug
-	${RM} dist/Debug/MinGW-Windows/compiler.exe
+	${RM} dist/Debug/GNU-Linux-x86/compiler
 
 # Subprojects
 .clean-subprojects:
