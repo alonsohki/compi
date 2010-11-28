@@ -11,8 +11,10 @@
       <itemPath>CRules.h</itemPath>
       <itemPath>CRules_internal.h</itemPath>
       <itemPath>CString.h</itemPath>
+      <itemPath>CSymbolTable.h</itemPath>
       <itemPath>CTokenizer.h</itemPath>
       <itemPath>CTranslator.h</itemPath>
+      <itemPath>CTypeInfo.h</itemPath>
       <itemPath>util.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -26,6 +28,7 @@
                    kind="SOURCE_LOGICAL_FOLDER">
       <itemPath>CClassifier.cpp</itemPath>
       <itemPath>CRules.cpp</itemPath>
+      <itemPath>CSymbolTable.cpp</itemPath>
       <itemPath>CTokenizer.cpp</itemPath>
       <itemPath>CTranslator.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
@@ -53,10 +56,16 @@
       <compileType>
         <cTool>
           <commandlineTool>gcc</commandlineTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
           <commandLine>-Wall</commandLine>
         </cTool>
         <ccTool>
           <commandlineTool>g++</commandlineTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
           <commandLine>-Wall</commandLine>
         </ccTool>
         <fortranCompilerTool>
@@ -70,21 +79,6 @@
           <commandlineTool>g++</commandlineTool>
         </linkerTool>
       </compileType>
-      <folder path="TestFiles/f1">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f1</output>
-        </linkerTool>
-      </folder>
     </conf>
     <conf name="Release" type="1">
       <toolsSet>
@@ -96,10 +90,16 @@
         <cTool>
           <developmentMode>5</developmentMode>
           <commandlineTool>gcc</commandlineTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
           <commandlineTool>g++</commandlineTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -114,21 +114,6 @@
           <commandlineTool>g++</commandlineTool>
         </linkerTool>
       </compileType>
-      <folder path="TestFiles/f1">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f1</output>
-        </linkerTool>
-      </folder>
     </conf>
   </confs>
 </configurationDescriptor>
