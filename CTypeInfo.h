@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <cassert>
+#include <cstdlib>
 #include "CString.h"
 
 class CTypeInfo
@@ -25,10 +26,19 @@ public:
         BOOLEAN,
         ARRAY,
         PROCEDURE,
-        FUNCTION
+        FUNCTION,
+
+        UNKNOWN
     };
 
 public:
+    CTypeInfo ()
+    {
+        m_eType = UNKNOWN;
+        memset ( &m_array, 0, sizeof (m_array) );
+        memset ( &m_params, 0, sizeof (m_params) );
+    }
+
     // Constructor copia
     CTypeInfo ( const CTypeInfo& Right )
     {
@@ -141,7 +151,11 @@ private:
     {
         Cleanup ();
 
-        if ( str.compare( 0, 8, "integer#" ) == 0 )
+        if ( str.compare( 0, 8, "unknown#" ) == 0 )
+        {
+            m_eType = UNKNOWN;
+        }
+        else if ( str.compare( 0, 8, "integer#" ) == 0 )
         {
             m_eType = INTEGER;
             return 8;
@@ -222,6 +236,9 @@ public:
         CString ret;
         switch ( m_eType )
         {
+            case UNKNOWN:
+                ret = "unknown#";
+                break;
             case INTEGER:
                 ret = "integer#";
                 break;
@@ -309,6 +326,47 @@ public:
         return *this;
     }
 
+    bool operator== ( const CTypeInfo& Right ) const
+    {
+        bool bEquals = ( m_eType == Right.m_eType );
+
+        if ( bEquals == true )
+        {
+            switch ( m_eType )
+            {
+                case ARRAY:
+                    bEquals = ( m_array.numDimensions == Right.m_array.numDimensions ) &&
+                              ( *(m_array.contentType) == *(Right.m_array.contentType) );
+                    if ( bEquals )
+                    {
+                        for ( unsigned int i = 0; bEquals && i < m_array.numDimensions; ++i )
+                            bEquals = m_array.dimensionsLength[i] == Right.m_array.dimensionsLength[i];
+                    }
+                    break;
+                case FUNCTION:
+                    bEquals = *(m_params.returns) == *(Right.m_params.returns);
+                case PROCEDURE:
+                    bEquals = bEquals && (m_params.numParams == Right.m_params.numParams);
+                    if ( bEquals )
+                    {
+                        for ( unsigned int i = 0; bEquals && i < m_params.numParams; ++i )
+                            bEquals = *(m_params.paramTypes[i]) == *(Right.m_params.paramTypes[i]);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return bEquals;
+    }
+
+    bool operator!= ( const CTypeInfo& Right ) const
+    {
+        return ( operator==(Right) == false );
+    }
+    
+
     // "Getters"
     EType               GetType             () const { return m_eType; }
 
@@ -342,6 +400,9 @@ public:
                 {
                     uiSize *= m_array.dimensionsLength [ i ];
                 }
+                break;
+            case UNKNOWN:
+                uiSize = 0;
                 break;
         }
 

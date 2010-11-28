@@ -3,7 +3,9 @@
 
 #include <cstdio>
 #include <cstdarg>
+#include <cstring>
 #include <string>
+#include <vector>
 #include "util.h"
 
 class CString
@@ -73,6 +75,23 @@ public:
     bool operator!= ( const CString& Right ) const
     {
         return !operator==(Right);
+    }
+
+    bool operator< ( const CString& Right ) const
+    {
+        return ( strcmp ( *this, Right ) < 0 );
+    }
+    bool operator<= ( const CString& Right ) const
+    {
+        return ( strcmp ( *this, Right ) <= 0 );
+    }
+    bool operator> ( const CString& Right ) const
+    {
+        return ( strcmp ( *this, Right ) > 0 );
+    }
+    bool operator>= ( const CString& Right ) const
+    {
+        return ( strcmp ( *this, Right ) >= 0 );
     }
 
     char& operator[] ( int idx )
