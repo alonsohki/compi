@@ -58,6 +58,14 @@ protected:
 
         m_pTranslator->Complete ( listNumbers, static_cast < unsigned int > ( atoi(ref) ) );
     }
+    void            symbol_table_push   ()
+    {
+        m_pTranslator->ST_Push();
+    }
+    void            symbol_table_pop    ()
+    {
+        m_pTranslator->ST_Pop();
+    }
 
 private:
     CTranslator*   m_pTranslator;
@@ -130,7 +138,7 @@ public: \
 
 #define EXECUTE_FIRST_RULE(T) __CRuleFirst__ ( this ) ()
 
-
+// Abstracciones funcionales de la ETDS, y macros de apoyo.
 #define THIS (*this)
 #define TT(x) CTokenizer:: x
 #define TOKEN CTokenizer::SToken
@@ -139,11 +147,13 @@ public: \
 #define MATCH_I_0(T, req) match(TT(T))
 #define MATCH_I_1(T, req) match(TT(T), (req))
 #define ADD_INST(x) push_instruction(CString() || x )
-#define GET_REF() get_ref()
+#define GET_REF get_ref
 #define EMPTY_LIST empty_list
 #define INIT_LIST init_list
 #define JOIN join_lists
 #define COMPLETE complete
+#define ST_PUSH symbol_table_push
+#define ST_POP symbol_table_pop
 
 #endif	/* CRULES_INTERNAL_H */
 

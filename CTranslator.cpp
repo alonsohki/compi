@@ -132,3 +132,13 @@ void CTranslator::Complete ( const std::vector<unsigned int>& refs, unsigned int
         instruction.Append ( strRef );
     }
 }
+
+unsigned int CTranslator::ST_Push ()
+{
+    return m_symbolTable.Push ();
+}
+
+unsigned int CTranslator::ST_Pop ()
+{
+    return m_symbolTable.Pop ();
+}

@@ -6,6 +6,7 @@
 #include <vector>
 #include "CTokenizer.h"
 #include "CString.h"
+#include "CSymbolTable.h"
 
 class CTranslator
 {
@@ -45,6 +46,9 @@ private:
     void            PushInstruction     ( const CString& strCode );
     unsigned int    GetRef              () const;
     void            Complete            ( const std::vector<unsigned int>& refs, unsigned int ref );
+    // Tabla de símbolos.
+    unsigned int    ST_Push             ();
+    unsigned int    ST_Pop              ();
 
 public:
     bool        IsOk            () const;
@@ -60,6 +64,7 @@ private:
     CTokenizer::SToken      m_lookahead;
     std::vector<CString>    m_vecInstructions;
     bool                    m_bEOFReached;
+    CSymbolTable            m_symbolTable;
 };
 
 #endif	/* CTRANSLATOR_H */
