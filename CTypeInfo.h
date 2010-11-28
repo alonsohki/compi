@@ -1,6 +1,11 @@
 #ifndef CTYPEINFO_H
 #define	CTYPEINFO_H
 
+#include <vector>
+#include <string>
+#include <cassert>
+#include "CString.h"
+
 class CTypeInfo
 {
     // Configuración.
@@ -27,6 +32,8 @@ public:
     // Constructor copia
     CTypeInfo ( const CTypeInfo& Right )
     {
+        memset ( &m_array, 0, sizeof (m_array) );
+        memset ( &m_params, 0, sizeof (m_params) );
         operator= ( Right );
     }
 
@@ -87,6 +94,182 @@ public:
         Cleanup ();
     }
 
+    // String <-> CTypeInfo
+    // El formato es el siguiente (los espacios se han añadido por claridad):
+    // nombreTipo $ datos11:datos12 $ datos21:datos22 $ ... $ datosN #
+    //
+    // Los $ separan las distintas secciones de datos, los : separan los
+    // distintos datos de cada sección y la # marca el final de la definición
+    // del tipo.
+    //
+    // Los tipos básicos (entero, real, booleano) no tienen datos:
+    //  - integer#
+    //  - real#
+    //  - boolean#
+    //
+    // Los datos para el resto de tipos son:
+    //  - array $ dimension1:dimension2:...:dimensionN $ tipoAlmacenado #
+    //  - procedure $ tipoParam1:tipoParam2:...:tipoParamN #
+    //  - function $ tipoRetorno $ tipoParam1:tipoParam2:...:tipoParamN #
+    //
+public:
+    CTypeInfo ( const CString& str )
+    {
+        memset ( &m_array, 0, sizeof (m_array) );
+        memset ( &m_params, 0, sizeof (m_params) );
+        LoadFromString ( str.GetString() );
+    }
+
+    CTypeInfo& operator= ( const CString& str )
+    {
+        LoadFromString ( str.GetString() );
+        return *this;
+    }
+
+private:
+    CTypeInfo ( const std::string& str, size_t* sizeFromString )
+    {
+        memset ( &m_array, 0, sizeof (m_array) );
+        memset ( &m_params, 0, sizeof (m_params) );
+        if ( sizeFromString != 0 )
+            *sizeFromString = LoadFromString ( str );
+        else
+            LoadFromString ( str );
+    }
+
+    size_t LoadFromString ( const std::string& str )
+    {
+        Cleanup ();
+
+        if ( str.compare( 0, 8, "integer#" ) == 0 )
+        {
+            m_eType = INTEGER;
+            return 8;
+        }
+        else if ( str.compare ( 0, 5, "real#" ) == 0 )
+        {
+            m_eType = REAL;
+            return 5;
+        }
+        else if ( str.compare ( 0, 8, "boolean#" ) == 0 )
+        {
+            m_eType = BOOLEAN;
+            return 8;
+        }
+        else if ( str.compare ( 0, 6, "array$" ) == 0 )
+        {
+            size_t pos = str.find ( '$', 6 );
+            assert ( pos != std::string::npos );
+            std::vector<CString> dims;
+            CString ( str.substr(6, pos-6) ).Split ( ':', dims );
+
+            m_array.numDimensions = 0;
+            for ( std::vector<CString>::const_iterator it = dims.begin ();
+                  it != dims.end ();
+                  ++it )
+            {
+                m_array.dimensionsLength [ m_array.numDimensions ] = atoi ( *it );
+                ++m_array.numDimensions;
+            }
+
+            size_t subLen;
+            m_array.contentType = new CTypeInfo ( str.substr ( pos + 1 ), &subLen );
+            m_eType = ARRAY;
+
+            assert ( str [ pos + 1 + subLen ] == '#' );
+            return subLen + pos + 2; // Nos saltamos también el #
+        }
+        else
+        {
+            size_t start;
+            if ( str.compare ( 0, 9, "function$" ) == 0 )
+            {
+                size_t retLen;
+                m_params.returns = new CTypeInfo ( str.substr ( 9 ), &retLen );
+
+                m_eType = FUNCTION;
+                start = 9 + retLen + 1;// +1 por el segundo $ de function$retorno$
+            }
+            else
+            {
+                m_eType = PROCEDURE;
+                start = 10; // strlen("procedure$");
+            }
+            assert ( str [ start - 1 ] == '$' );
+
+            // Extraemos los parámetros.
+            m_params.numParams = 0;
+            if ( str [ start ] != '#' )
+            {
+                do
+                {
+                    size_t paramLen;
+                    m_params.paramTypes [ m_params.numParams ]
+                        = new CTypeInfo ( str.substr ( start ), &paramLen );
+                    ++m_params.numParams;
+                    start += paramLen + 1;
+                } while ( str [ start - 1 ] == ':' );
+                --start;
+            }
+
+            return start;
+        }
+    }
+
+public:
+    CString toString () const
+    {
+        CString ret;
+        switch ( m_eType )
+        {
+            case INTEGER:
+                ret = "integer#";
+                break;
+            case REAL:
+                ret = "real#";
+                break;
+            case BOOLEAN:
+                ret = "boolean#";
+                break;
+            case ARRAY:
+                ret = "array$";
+                for ( unsigned int i = 0; i < m_array.numDimensions; ++i )
+                {
+                    char szTemp [ 32 ];
+                    snprintf ( szTemp, NUMELEMS(szTemp), "%u", m_array.dimensionsLength [ i ] );
+                    ret.Append ( szTemp );
+                    ret.Append ( ":" );
+                }
+                ret.Resize ( ret.Length() - 1 );
+                ret.Append ( "$" );
+                ret.Append ( m_array.contentType->toString () );
+                ret.Append ( "#" );
+                break;
+            case FUNCTION:
+            case PROCEDURE:
+                if ( m_eType == FUNCTION )
+                {
+                    ret = "function$";
+                    ret.Append ( m_params.returns->toString () );
+                    ret.Append ( "$" );
+                }
+                else
+                {
+                    ret = "procedure$";
+                }
+
+                for ( unsigned int i = 0; i < m_params.numParams; ++i )
+                {
+                    ret.Append ( m_params.paramTypes[i]->toString () );
+                    ret.Append ( ":" );
+                }
+                ret.Resize ( ret.Length () - 1 );
+                ret.Append ( "#" );
+                break;
+        }
+
+        return ret;
+    }
 
 private:
     void Cleanup ()

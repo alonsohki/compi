@@ -42,6 +42,8 @@ public:
         return m_str.c_str ();
     }
 
+    const std::string& GetString () const { return m_str; }
+
     CString operator|| ( const CString& Right ) const
     {
         CString ret ( *this );
