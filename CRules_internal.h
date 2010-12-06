@@ -49,6 +49,10 @@ protected:
         snprintf ( szTemp, NUMELEMS(szTemp), "%u", m_pTranslator->GetRef () );
         return CString ( szTemp );
     }
+    CString         new_ident           ()
+    {
+        return m_pTranslator->NewIdent ();
+    }
     CString         empty_list          ()
     {
         return CListInString::EmptyList ();
@@ -178,6 +182,7 @@ public: \
 #define MATCH_I_1(T, req) match(TT(T), (req), ms_nextToken, __FILE__, __LINE__ )
 #define ADD_INST(x) push_instruction(CString() || x )
 #define GET_REF get_ref
+#define NEW_IDENT new_ident
 #define EMPTY_LIST empty_list
 #define INIT_LIST init_list
 #define JOIN join_lists

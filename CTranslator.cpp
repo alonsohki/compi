@@ -11,6 +11,7 @@ CTranslator::CTranslator(std::istream& ifsOrig,
 , m_osDest ( ofsDest )
 , m_tokenizer ( ifsOrig )
 , m_bEOFReached ( false )
+, m_uiLastIdent ( 0 )
 {
 }
 
@@ -137,6 +138,11 @@ void CTranslator::PushInstruction ( const CString& strCode )
 unsigned int CTranslator::GetRef () const
 {
     return m_vecInstructions.size ();
+}
+
+CString CTranslator::NewIdent ()
+{
+    return m_uiLastIdent++;
 }
 
 void CTranslator::Complete ( const std::vector<unsigned int>& refs, unsigned int ref )

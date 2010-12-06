@@ -49,6 +49,7 @@ private:
                                           const CString& requiredValue = "" );
     void            PushInstruction     ( const CString& strCode );
     unsigned int    GetRef              () const;
+    CString         NewIdent            ();
     void            Complete            ( const std::vector<unsigned int>& refs, unsigned int ref );
     // Tabla de símbolos.
     unsigned int    ST_Push             ();
@@ -69,6 +70,7 @@ private:
     std::vector<CString>    m_vecInstructions;
     bool                    m_bEOFReached;
     CSymbolTable            m_symbolTable;
+    unsigned int            m_uiLastIdent;
 };
 
 #endif	/* CTRANSLATOR_H */
