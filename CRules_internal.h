@@ -159,8 +159,8 @@ public: \
 #define COMPLETE complete
 #define ST_PUSH symbol_table_push
 #define ST_POP symbol_table_pop
-#define MAP_FIRST_IS( elem ) || first_is ( elem ) 
-#define FIRST_IS(elem, ...) first_is ( elem ) FOR_EACH_PARAM(MAP_FIRST_IS, __VA_ARGS__)
+#define MAP_FIRST_IS(elem) || first_is elem 
+#define FIRST_IS(elem, ...) first_is elem FOR_EACH_PARAM(MAP_FIRST_IS, __VA_ARGS__)
 
 #endif	/* CRULES_INTERNAL_H */
 
