@@ -17,9 +17,10 @@ protected:
 
     CTranslator*        GetTranslator   () { return m_pTranslator; }
     CTokenizer::SToken  match           ( CTokenizer::ETokenType eType,
-                                          const CString& requiredValue = "" )
+                                          const CString& requiredValue,
+                                          const CTokenizer::SToken* pNextToken )
     {
-        return m_pTranslator->Match ( eType, requiredValue );
+        return m_pTranslator->Match ( eType, requiredValue, pNextToken );
     }
     bool                first_is        ( CTokenizer::ETokenType eType,
                                           const CString& requiredValue = "" )
@@ -123,12 +124,22 @@ private:
 #define MAP_ATTRIBUTE_TYPE(attr) CString (attr);
 #define DECLARE_RULE(x, ...) class BUILD_RULE_CLASS_NAME(x) : public __CRule__Base__ \
 { \
+private: \
+    static const CTokenizer::SToken ms_nextToken []; \
+\
 public: \
     FOR_EACH_PARAM(MAP_ATTRIBUTE_TYPE, __VA_ARGS__); \
     BUILD_RULE_CLASS_NAME(x) ( CTranslator* pTranslator ) : __CRule__Base__(pTranslator) {} \
     void operator() (); \
 }
-#define DEFINE_RULE(x) void BUILD_RULE_CLASS_NAME(x) :: operator() ()
+
+#define MAP_NEXT_TOKEN_INITIALIZATION(elem) CTokenizer::SToken elem ,
+#define DEFINE_RULE(x, ...) \
+const CTokenizer::SToken BUILD_RULE_CLASS_NAME(x) :: ms_nextToken [] = { \
+FOR_EACH_PARAM(MAP_NEXT_TOKEN_INITALIZATION, __VA_ARGS__) \
+CTokenizer::SToken ( CTokenizer::UNKNOWN ) \
+}; \
+void BUILD_RULE_CLASS_NAME(x) :: operator() ()
 
 #define FIRST_RULE_IS(x) class __CRuleFirst__ : public BUILD_RULE_CLASS_NAME(x) { \
 public: \
@@ -149,8 +160,8 @@ public: \
 #define TOKEN CTokenizer::SToken
 #define MATCH(T, ...) MATCH_I(T, NUMARGS(__VA_ARGS__), __VA_ARGS__)
 #define MATCH_I(T, n, ...) CAT(MATCH_I_, n)(T, __VA_ARGS__)
-#define MATCH_I_0(T, req) match(TT(T))
-#define MATCH_I_1(T, req) match(TT(T), (req))
+#define MATCH_I_0(T, req) match(TT(T), "", ms_nextToken )
+#define MATCH_I_1(T, req) match(TT(T), (req), ms_nextToken )
 #define ADD_INST(x) push_instruction(CString() || x )
 #define GET_REF get_ref
 #define EMPTY_LIST empty_list

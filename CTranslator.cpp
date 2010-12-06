@@ -76,7 +76,8 @@ void CTranslator::NextLookahead ()
 }
 
 CTokenizer::SToken CTranslator::Match ( CTokenizer::ETokenType eType,
-                                        const CString& requiredValue )
+                                        const CString& requiredValue,
+                                        const CTokenizer::SToken* pNextToken )
 {
     CTokenizer::SToken ret;
 

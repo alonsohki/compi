@@ -42,7 +42,8 @@ private:
     friend class __CRule__Base__;
 
     CTokenizer::SToken  Match           ( CTokenizer::ETokenType eType,
-                                          const CString& requiredValue = "" );
+                                          const CString& requiredValue,
+                                          const CTokenizer::SToken* pNextToken );
     bool                Check           ( CTokenizer::ETokenType eType,
                                           const CString& requiredValue = "" );
     void            PushInstruction     ( const CString& strCode );
