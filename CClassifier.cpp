@@ -20,7 +20,7 @@ const CClassifier::ECharacterGroup CClassifier::ms_eClassifier [ 256 ] = {
 //      50  P   51  Q   52  R   53  S   54  T   55  U   56  V   57  W   58  X   59  Y
         ALPHA,  ALPHA,  ALPHA,  ALPHA,  ALPHA,  ALPHA,  ALPHA,  ALPHA,  ALPHA,  ALPHA,
 //      5A  Z   5B  [   5C  \   5D  ]   5E  ^   5F  _   60  `   61  a   62  b   63  c
-        ALPHA,  UNKN,   UNKN,   UNKN,   UNKN,   UNDER,  UNKN,   ALPHA,  ALPHA,  ALPHA,
+        ALPHA,  SEP,    UNKN,   SEP,    UNKN,   UNDER,  UNKN,   ALPHA,  ALPHA,  ALPHA,
 //      64  d   65  e   66  f   67  g   68  h   69  i   6A  j   6B  k   6C  l   6D  m
         ALPHA,  eE,     ALPHA,  ALPHA,  ALPHA,  ALPHA,  ALPHA,  ALPHA,  ALPHA,  ALPHA,
 //      6E  n   6F  o   70  p   71  q   72  r   73  s   74  t   75  u   76  v   77  w

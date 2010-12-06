@@ -111,7 +111,14 @@ const char* CTokenizer::ms_szReserved [ ] = {
     "mientras",
     "salir",
     "get",
-    "put_line"
+    "put_line",
+    "true",
+    "false",
+    "retorna",
+    "retornar",
+    "funcion",
+    "array",
+    "de"
 };
 
 /////////////////////////////////////////////////////////
