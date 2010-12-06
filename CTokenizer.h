@@ -3,6 +3,7 @@
 
 #include "CBufferedReader.h"
 #include "CClassifier.h"
+#include <cstring>
 
 class CTokenizer
 {

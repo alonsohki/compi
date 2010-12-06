@@ -27,6 +27,7 @@ public:
         ARRAY,
         PROCEDURE,
         FUNCTION,
+        VOID,
 
         UNKNOWN
     };
@@ -69,7 +70,23 @@ public:
             m_array.dimensionsLength [ m_array.numDimensions ] = *it;
             ++m_array.numDimensions;
         }
-        m_array.contentType = new CTypeInfo ( contentInfo );
+
+        // Si es un array de arrays, lo transformamos a un solo array concatenando
+        // las dimensiones y copiando el tipo contenido en el array de la derecha.
+        if ( contentInfo.m_eType == ARRAY )
+        {
+            for ( unsigned int i = 0; i < contentInfo.m_array.numDimensions; ++i )
+            {
+                m_array.dimensionsLength [ m_array.numDimensions + i ] =
+                        contentInfo.m_array.dimensionsLength [ i ];
+            }
+            m_array.numDimensions += contentInfo.m_array.numDimensions;
+            m_array.contentType = new CTypeInfo ( *(contentInfo.m_array.contentType) );
+        }
+        else
+        {
+            m_array.contentType = new CTypeInfo ( contentInfo );
+        }
     }
 
     // Procedimientos/Funciones
@@ -154,6 +171,7 @@ private:
         if ( str.compare( 0, 8, "unknown#" ) == 0 )
         {
             m_eType = UNKNOWN;
+            return 8;
         }
         else if ( str.compare( 0, 8, "integer#" ) == 0 )
         {
@@ -169,6 +187,11 @@ private:
         {
             m_eType = BOOLEAN;
             return 8;
+        }
+        else if ( str.compare ( 0, 5, "void#" ) == 0 )
+        {
+            m_eType = VOID;
+            return 5;
         }
         else if ( str.compare ( 0, 6, "array$" ) == 0 )
         {
@@ -247,6 +270,9 @@ public:
                 break;
             case BOOLEAN:
                 ret = "boolean#";
+                break;
+            case VOID:
+                ret = "void#";
                 break;
             case ARRAY:
                 ret = "array$";
@@ -401,6 +427,7 @@ public:
                     uiSize *= m_array.dimensionsLength [ i ];
                 }
                 break;
+            case VOID:
             case UNKNOWN:
                 uiSize = 0;
                 break;

@@ -36,6 +36,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/CClassifier.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/CRules.o \
+	${OBJECTDIR}/CSymbolTable.o \
 	${OBJECTDIR}/CTranslator.o \
 	${OBJECTDIR}/CTokenizer.o
 
@@ -67,27 +68,32 @@ dist/Release/MinGW-Windows/compiler.exe: ${OBJECTFILES}
 ${OBJECTDIR}/CClassifier.o: CClassifier.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/CClassifier.o CClassifier.cpp
+	$(COMPILE.cc) -O2 -I. -MMD -MP -MF $@.d -o ${OBJECTDIR}/CClassifier.o CClassifier.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -O2 -I. -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
 
 ${OBJECTDIR}/CRules.o: CRules.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/CRules.o CRules.cpp
+	$(COMPILE.cc) -O2 -I. -MMD -MP -MF $@.d -o ${OBJECTDIR}/CRules.o CRules.cpp
+
+${OBJECTDIR}/CSymbolTable.o: CSymbolTable.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -I. -MMD -MP -MF $@.d -o ${OBJECTDIR}/CSymbolTable.o CSymbolTable.cpp
 
 ${OBJECTDIR}/CTranslator.o: CTranslator.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/CTranslator.o CTranslator.cpp
+	$(COMPILE.cc) -O2 -I. -MMD -MP -MF $@.d -o ${OBJECTDIR}/CTranslator.o CTranslator.cpp
 
 ${OBJECTDIR}/CTokenizer.o: CTokenizer.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/CTokenizer.o CTokenizer.cpp
+	$(COMPILE.cc) -O2 -I. -MMD -MP -MF $@.d -o ${OBJECTDIR}/CTokenizer.o CTokenizer.cpp
 
 # Subprojects
 .build-subprojects:
