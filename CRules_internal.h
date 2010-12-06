@@ -21,6 +21,11 @@ protected:
     {
         return m_pTranslator->Match ( eType, requiredValue );
     }
+    bool                first_is        ( CTokenizer::ETokenType eType,
+                                          const CString& requiredValue = "" )
+    {
+        return m_pTranslator->Check ( eType, requiredValue );
+    }
     void            push_instruction    ( const CString& strCode )
     {
         m_pTranslator->PushInstruction ( strCode );
@@ -154,6 +159,8 @@ public: \
 #define COMPLETE complete
 #define ST_PUSH symbol_table_push
 #define ST_POP symbol_table_pop
+#define MAP_FIRST_IS( elem ) || first_is ( elem ) 
+#define FIRST_IS(elem, ...) first_is ( elem ) FOR_EACH_PARAM(MAP_FIRST_IS, __VA_ARGS__)
 
 #endif	/* CRULES_INTERNAL_H */
 

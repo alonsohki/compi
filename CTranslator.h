@@ -43,6 +43,8 @@ private:
 
     CTokenizer::SToken  Match           ( CTokenizer::ETokenType eType,
                                           const CString& requiredValue = "" );
+    bool                Check           ( CTokenizer::ETokenType eType,
+                                          const CString& requiredValue = "" );
     void            PushInstruction     ( const CString& strCode );
     unsigned int    GetRef              () const;
     void            Complete            ( const std::vector<unsigned int>& refs, unsigned int ref );

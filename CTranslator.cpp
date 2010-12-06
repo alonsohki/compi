@@ -1,4 +1,5 @@
 #include <cstring>
+#include <vector>
 #include "CTranslator.h"
 #include "CTokenizer.h"
 #include "CRules.h"
@@ -106,6 +107,18 @@ CTokenizer::SToken CTranslator::Match ( CTokenizer::ETokenType eType,
     NextLookahead ();
     
     return ret;
+}
+
+bool CTranslator::Check ( CTokenizer::ETokenType eType,
+                          const CString& requiredValue )
+{
+    if ( m_bEOFReached == true )
+        return false;
+    if ( m_lookahead.eType != eType )
+        return false;
+    if ( requiredValue != "" && requiredValue != m_lookahead.value )
+        return false;
+    return true;
 }
 
 void CTranslator::PushInstruction ( const CString& strCode )
