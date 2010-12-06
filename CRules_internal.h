@@ -22,10 +22,21 @@ protected:
     {
         return m_pTranslator->Match ( eType, requiredValue, pNextToken );
     }
-    bool                first_is        ( CTokenizer::ETokenType eType,
+    bool                is_first        ( CTokenizer::ETokenType eType,
                                           const CString& requiredValue = "" )
     {
         return m_pTranslator->Check ( eType, requiredValue );
+    }
+    bool                is_rule_first   ( const CTokenizer::SToken tokens [] )
+    {
+        bool bFound = false;
+        for ( unsigned int i = 0;
+              bFound == false && tokens[i].eType != CTokenizer::UNKNOWN;
+              ++i )
+        {
+            bFound = is_first ( tokens[i].eType, tokens[i].value );
+        }
+        return bFound;
     }
     void            push_instruction    ( const CString& strCode )
     {
@@ -124,7 +135,8 @@ private:
 #define MAP_ATTRIBUTE_TYPE(attr) CString (attr);
 #define DECLARE_RULE(x, ...) class BUILD_RULE_CLASS_NAME(x) : public __CRule__Base__ \
 { \
-private: \
+public: \
+    static const CTokenizer::SToken ms_firstToken []; \
     static const CTokenizer::SToken ms_nextToken []; \
 \
 public: \
@@ -133,12 +145,12 @@ public: \
     void operator() (); \
 }
 
-#define MAP_NEXT_TOKEN_INITIALIZATION(elem) CTokenizer::SToken elem ,
-#define DEFINE_RULE(x, ...) \
-const CTokenizer::SToken BUILD_RULE_CLASS_NAME(x) :: ms_nextToken [] = { \
-FOR_EACH_PARAM(MAP_NEXT_TOKEN_INITALIZATION, __VA_ARGS__) \
-CTokenizer::SToken ( CTokenizer::UNKNOWN ) \
-}; \
+#define MAP_STOKEN(elem) CTokenizer::SToken elem ,
+#define FIRST(...) { FOR_EACH_PARAM(MAP_STOKEN, __VA_ARGS__) CTokenizer::SToken ( CTokenizer::UNKNOWN, "" ) }
+#define NEXT(...) { FOR_EACH_PARAM(MAP_STOKEN, __VA_ARGS__) CTokenizer::SToken ( CTokenizer::UNKNOWN, "" ) }
+#define DEFINE_RULE(x, first, next) \
+const CTokenizer::SToken BUILD_RULE_CLASS_NAME(x) :: ms_firstToken [] = first; \
+const CTokenizer::SToken BUILD_RULE_CLASS_NAME(x) :: ms_nextToken [] = next; \
 void BUILD_RULE_CLASS_NAME(x) :: operator() ()
 
 #define FIRST_RULE_IS(x) class __CRuleFirst__ : public BUILD_RULE_CLASS_NAME(x) { \
@@ -170,8 +182,8 @@ public: \
 #define COMPLETE complete
 #define ST_PUSH symbol_table_push
 #define ST_POP symbol_table_pop
-#define MAP_FIRST_IS(elem) || first_is elem 
-#define FIRST_IS(elem, ...) first_is elem FOR_EACH_PARAM(MAP_FIRST_IS, __VA_ARGS__)
+#define IS_FIRST(x, ...) is_first ( CTokenizer:: x, ## __VA_ARGS__ )
+#define IS_RULE_FIRST(x) is_rule_first ( BUILD_RULE_CLASS_NAME(x) :: ms_firstToken )
 
 #endif	/* CRULES_INTERNAL_H */
 
