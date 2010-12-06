@@ -119,7 +119,10 @@ const char* CTokenizer::ms_szReserved [ ] = {
     "get",
     "put_line",
     "true",
-    "false"
+    "false",
+    "or",
+    "and",
+    "not"
 };
 
 /////////////////////////////////////////////////////////
