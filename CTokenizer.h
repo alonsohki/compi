@@ -30,13 +30,17 @@ public:
 
     struct SToken
     {
-        SToken ()
+        SToken ( ETokenType type = UNKNOWN, const char* szValue = "" )
         : eType ( UNKNOWN )
-        , uiValueLength ( 0 )
         , uiLine ( 0 )
         , uiCol ( 0 )
         , uiState ( 0 )
-        {}
+        {
+            uiValueLength = strlen ( szValue );
+            if ( uiValueLength > 0 )
+                strncpy ( value, szValue, uiValueLength );
+            value [ uiValueLength ] = '\0';
+        }
         
         ETokenType      eType;
         char            value [ 1024 ];
