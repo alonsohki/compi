@@ -321,63 +321,63 @@ DEFINE_RULE(sentencia,
 {
     if (IS_FIRST ( IDENTIFIER ) )
     {
-    	MATCH ( IDENTIFIER );
-    	RULE  ( expresiones )();
-    	MATCH ( SEPARATOR, ";" );
+        MATCH ( IDENTIFIER );
+        RULE  ( expresiones )();
+        MATCH ( SEPARATOR, ";" );
     }
     else if (IS_FIRST ( RESERVED, "si" ) )
     {
-    	MATCH ( RESERVED, "si" );
-    	RULE  ( expresion )();
-    	MATCH ( RESERVED, "entonces" );
-    	RULE  ( M )();
-    	RULE  ( lista_de_sentencias )();
-    	MATCH ( RESERVED, "fin");
-    	MATCH ( RESERVED, "si");
-    	RULE  ( M )();
-    	MATCH ( SEPARATOR, ";");
+        MATCH ( RESERVED, "si" );
+        RULE  ( expresion )();
+        MATCH ( RESERVED, "entonces" );
+        RULE  ( M )();
+        RULE  ( lista_de_sentencias )();
+        MATCH ( RESERVED, "fin");
+        MATCH ( RESERVED, "si");
+        RULE  ( M )();
+        MATCH ( SEPARATOR, ";");
     }
     else if (IS_FIRST ( RESERVED, "hacer" ) )
     {
-    	MATCH ( RESERVED, "hacer" );
-    	RULE  ( M )();
-    	RULE  ( lista_de_sentencias, ls );
-    	ls.hinloop = true;
-    	ls();
-    	MATCH ( RESERVED, "mientras" );
-    	RULE  ( expresion )();
-    	MATCH ( RESERVED, "fin" );
-    	MATCH ( RESERVED, "hacer" );
-    	RULE  ( M )();
-    	MATCH ( SEPARATOR, ";");
+        MATCH ( RESERVED, "hacer" );
+        RULE  ( M )();
+        RULE  ( lista_de_sentencias, ls );
+        ls.hinloop = true;
+        ls();
+        MATCH ( RESERVED, "mientras" );
+        RULE  ( expresion )();
+        MATCH ( RESERVED, "fin" );
+        MATCH ( RESERVED, "hacer" );
+        RULE  ( M )();
+        MATCH ( SEPARATOR, ";");
     }
     else if (IS_FIRST ( RESERVED, "salir"))
     {
-    	MATCH ( RESERVED, "salir" );
-    	MATCH ( RESERVED, "si" );
-    	RULE  ( expresion )();
-    	RULE  ( M )();
-    	MATCH ( SEPARATOR, ";");
+        MATCH ( RESERVED, "salir" );
+        MATCH ( RESERVED, "si" );
+        RULE  ( expresion )();
+        RULE  ( M )();
+        MATCH ( SEPARATOR, ";");
     }
     else if (IS_FIRST ( RESERVED, "get"))
     {
-    	MATCH ( RESERVED, "get" );
-    	MATCH ( SEPARATOR, "(" );
-    	MATCH ( IDENTIFIER );
-    	RULE  ( expresiones )();
-    	MATCH ( SEPARATOR, ")");
-    	MATCH ( SEPARATOR, ";");
+        MATCH ( RESERVED, "get" );
+        MATCH ( SEPARATOR, "(" );
+        MATCH ( IDENTIFIER );
+        RULE  ( expresiones )();
+        MATCH ( SEPARATOR, ")");
+        MATCH ( SEPARATOR, ";");
     }
     else if (IS_FIRST ( RESERVED, "put_line"))
     {
-    	MATCH ( RESERVED, "put_line" );
-    	MATCH ( SEPARATOR, "(" );
-    	RULE  ( expresion )();
-    	MATCH ( SEPARATOR, ")");
-    	MATCH ( SEPARATOR, ";");
+        MATCH ( RESERVED, "put_line" );
+        MATCH ( SEPARATOR, "(" );
+        RULE  ( expresion )();
+        MATCH ( SEPARATOR, ")");
+        MATCH ( SEPARATOR, ";");
     }
     else {
-    	// error
+        // error
     }
 
 }
@@ -389,24 +389,24 @@ DEFINE_RULE(expresiones,
                 )
 )
 {
-	if (IS_FIRST( OPERATOR, "=" ))
-	{
-		MATCH ( OPERATOR, "=" );
-		RULE  ( expresion )();
-	}
-	else if (IS_RULE_FIRST( acceso_a_array ))
-	{
-		RULE  ( acceso_a_array )();
-		MATCH ( OPERATOR, "=" );
-		RULE  ( expresion )();
-	}
-	else if (IS_RULE_FIRST( parametros_llamada ))
-	{
-		RULE  ( parametros_llamada )();
-	}
-	else {
-		// error
-	}
+    if (IS_FIRST( OPERATOR, "=" ))
+    {
+        MATCH ( OPERATOR, "=" );
+        RULE  ( expresion )();
+    }
+    else if (IS_RULE_FIRST( acceso_a_array ))
+    {
+        RULE  ( acceso_a_array )();
+        MATCH ( OPERATOR, "=" );
+        RULE  ( expresion )();
+    }
+    else if (IS_RULE_FIRST( parametros_llamadas ))
+    {
+        RULE  ( parametros_llamadas )();
+    }
+    else {
+        // error
+    }
 }
 
 DEFINE_RULE(acceso_a_array,
@@ -416,12 +416,12 @@ DEFINE_RULE(acceso_a_array,
                 )
 )
 {
-	if (IS_FIRST( SEPARATOR, "[" ))
-	{
-		MATCH ( SEPARATOR, "[" );
-		RULE  ( lista_de_expr )();
-		MATCH ( SEPARATOR, "]" );
-	}
+    if (IS_FIRST( SEPARATOR, "[" ))
+    {
+        MATCH ( SEPARATOR, "[" );
+        RULE  ( lista_de_expr )();
+        MATCH ( SEPARATOR, "]" );
+    }
 }
 
 DEFINE_RULE(parametros_llamadas,
@@ -431,12 +431,12 @@ DEFINE_RULE(parametros_llamadas,
                 )
 )
 {
-	if (IS_FIRST( SEPARATOR, "(" ))
-	{
-		MATCH ( SEPARATOR, "(" );
-		RULE  ( lista_de_expr )();
-		MATCH ( SEPARATOR, ")" );
-	}
+    if (IS_FIRST( SEPARATOR, "(" ))
+    {
+        MATCH ( SEPARATOR, "(" );
+        RULE  ( lista_de_expr )();
+        MATCH ( SEPARATOR, ")" );
+    }
 }
 
 DEFINE_RULE(expresion,
@@ -446,7 +446,7 @@ DEFINE_RULE(expresion,
                 )
 )
 {
-	RULE ( disyuncion )();
+    RULE ( disyuncion )();
 }
 
 DEFINE_RULE(disyuncion,
@@ -456,8 +456,8 @@ DEFINE_RULE(disyuncion,
                 )
 )
 {
-	RULE ( conjuncion )();
-	RULE ( disyuncion_prima )();
+    RULE ( conjuncion )();
+    RULE ( disyuncion_prima )();
 }
 
 DEFINE_RULE(disyuncion_prima,
@@ -467,13 +467,13 @@ DEFINE_RULE(disyuncion_prima,
                 )
 )
 {
-	if (IS_FIRST (RESERVED, "or")) {
-		MATCH ( RESERVED, "or");
-		RULE  ( conjuncion )();
-		RULE  ( disyuncion_prima )();
-	} else {
-		// vacio
-	}
+    if (IS_FIRST (RESERVED, "or")) {
+        MATCH ( RESERVED, "or");
+        RULE  ( conjuncion )();
+        RULE  ( disyuncion_prima )();
+    } else {
+        // vacio
+    }
 }
 
 DEFINE_RULE(conjuncion,
@@ -483,8 +483,8 @@ DEFINE_RULE(conjuncion,
                 )
 )
 {
-	RULE ( relacional )();
-	RULE ( conjuncion_prima )();
+    RULE ( relacional )();
+    RULE ( conjuncion_prima )();
 }
 
 DEFINE_RULE(conjuncion_prima,
@@ -494,13 +494,13 @@ DEFINE_RULE(conjuncion_prima,
                 )
 )
 {
-	if (IS_FIRST (RESERVED, "and")) {
-		MATCH ( RESERVED, "and");
-		RULE  ( relacional )();
-		RULE  ( conjuncion_prima )();
-	} else {
-		// vacio
-	}
+    if (IS_FIRST (RESERVED, "and")) {
+        MATCH ( RESERVED, "and");
+        RULE  ( relacional )();
+        RULE  ( conjuncion_prima )();
+    } else {
+        // vacio
+    }
 }
 
 DEFINE_RULE(relacional,
@@ -510,8 +510,8 @@ DEFINE_RULE(relacional,
                 )
 )
 {
-	RULE ( aritmetica )();
-	RULE ( relacional_prima )();
+    RULE ( aritmetica )();
+    RULE ( relacional_prima )();
 }
 
 DEFINE_RULE(relacional_prima,
@@ -521,13 +521,13 @@ DEFINE_RULE(relacional_prima,
                 )
 )
 {
-	if (IS_RULE_FIRST ( oprel )) {
-		RULE ( oprel )();
-		RULE ( aritmetica )();
-		RULE ( relacional_prima )();
-	} else {
-		// vacio
-	}
+    if (IS_RULE_FIRST ( oprel )) {
+        RULE ( oprel )();
+        RULE ( aritmetica )();
+        RULE ( relacional_prima )();
+    } else {
+        // vacio
+    }
 }
 
 DEFINE_RULE(aritmetica,
@@ -537,8 +537,8 @@ DEFINE_RULE(aritmetica,
                 )
 )
 {
-	RULE ( termino )();
-	RULE ( aritmetica_prima )();
+    RULE ( termino )();
+    RULE ( aritmetica_prima )();
 }
 
 DEFINE_RULE(aritmetica_prima,
@@ -548,13 +548,13 @@ DEFINE_RULE(aritmetica_prima,
                 )
 )
 {
-	if (IS_RULE_FIRST ( opl2 )) {
-		RULE ( opl2 )();
-		RULE ( termino )();
-		RULE ( aritmetica_prima )();
-	} else {
-		// vacio
-	}
+    if (IS_RULE_FIRST ( opl2 )) {
+        RULE ( opl2 )();
+        RULE ( termino )();
+        RULE ( aritmetica_prima )();
+    } else {
+        // vacio
+    }
 }
 
 DEFINE_RULE(termino,
@@ -564,8 +564,8 @@ DEFINE_RULE(termino,
                 )
 )
 {
-	RULE ( negacion )();
-	RULE ( termino_prima )();
+    RULE ( negacion )();
+    RULE ( termino_prima )();
 }
 
 DEFINE_RULE(termino_prima,
@@ -575,13 +575,13 @@ DEFINE_RULE(termino_prima,
                 )
 )
 {
-	if (IS_RULE_FIRST ( opl1 )) {
-		RULE ( opl1 )();
-		RULE ( negacion )();
-		RULE ( termino_prima )();
-	} else {
-		// vacio
-	}
+    if (IS_RULE_FIRST ( opl1 )) {
+        RULE ( opl1 )();
+        RULE ( negacion )();
+        RULE ( termino_prima )();
+    } else {
+        // vacio
+    }
 }
 
 
@@ -592,18 +592,19 @@ DEFINE_RULE(negacion,
                 )
 )
 {
-	if (IS_FIRST ( RESERVED, "not")) {
-		MATCH ( RESERVED, "not");
-		RULE  ( factor )();
-	}
-	else if (IS_RULE_FIRST ( factor )) {
-	{
-		RULE  ( factor )();
-	}
-	else
-	{
-		// error
-	}
+    if (IS_FIRST ( RESERVED, "not"))
+    {
+        MATCH ( RESERVED, "not");
+        RULE  ( factor )();
+    }
+    else if (IS_RULE_FIRST ( factor ))
+    {
+        RULE  ( factor )();
+    }
+    else
+    {
+        // error
+    }
 }
 
 DEFINE_RULE(factor,
@@ -613,18 +614,18 @@ DEFINE_RULE(factor,
                 )
 )
 {
-	if (IS_FIRST ( OPERATOR, "-" )) {
-		MATCH ( OPERATOR, "-" );
-		RULE ( factor_prima )();
-	}
-	else if (IS_RULE_FIRST ( factor_prima ))
-	{
-		RULE ( factor_prima )();
-	}
-	else
-	{
-		// error
-	}
+    if (IS_FIRST ( OPERATOR, "-" )) {
+        MATCH ( OPERATOR, "-" );
+        RULE ( factor_prima )();
+    }
+    else if (IS_RULE_FIRST ( factor_prima ))
+    {
+        RULE ( factor_prima )();
+    }
+    else
+    {
+        // error
+    }
 }
 
 DEFINE_RULE(factor_prima,
@@ -634,32 +635,32 @@ DEFINE_RULE(factor_prima,
                 )
 )
 {
-	if (IS_FIRST ( IDENTIFIER )) {
-		MATCH ( IDENTIFIER);
-		RULE  ( array_o_llamada )();
-	}
-	else if (IS_FIRST ( INTEGER ))
-	{
-		MATCH ( INTEGER );
-	}
-	else if (IS_FIRST ( REAL ))
-	{
-		MATCH ( REAL );
-	}
-	else if (IS_RULE_FIRST ( booleano ))
-	{
-		RULE  ( booleano )();
-	}
-	else if (IS_FIRST ( SEPARATOR, "(" ))
-	{
-		MATCH ( SEPARATOR, "(" );
-		RULE  ( expresion )();
-		MATCH ( SEPARATOR, ")" );
-	}
-	else
-	{
-		// error
-	}
+    if (IS_FIRST ( IDENTIFIER )) {
+        MATCH ( IDENTIFIER);
+        RULE  ( array_o_llamada )();
+    }
+    else if (IS_FIRST ( INTEGER ))
+    {
+        MATCH ( INTEGER );
+    }
+    else if (IS_FIRST ( REAL ))
+    {
+        MATCH ( REAL );
+    }
+    else if (IS_RULE_FIRST ( booleano ))
+    {
+        RULE  ( booleano )();
+    }
+    else if (IS_FIRST ( SEPARATOR, "(" ))
+    {
+        MATCH ( SEPARATOR, "(" );
+        RULE  ( expresion )();
+        MATCH ( SEPARATOR, ")" );
+    }
+    else
+    {
+        // error
+    }
 }
 
 DEFINE_RULE(array_o_llamada,
@@ -669,16 +670,16 @@ DEFINE_RULE(array_o_llamada,
                 )
 )
 {
-	if (IS_RULE_FIRST ( parametros_llamada )) {
-		RULE  ( parametros_llamada )();
-	}
-	else if (IS_RULE_FIRST ( acceso_a_array )) {
-		RULE  ( acceso_a_array )();
-	}
-	else
-	{
-		// vacioooooo
-	}
+    if (IS_RULE_FIRST ( parametros_llamadas )) {
+        RULE  ( parametros_llamadas )();
+    }
+    else if (IS_RULE_FIRST ( acceso_a_array )) {
+        RULE  ( acceso_a_array )();
+    }
+    else
+    {
+        // vacioooooo
+    }
 }
 
 DEFINE_RULE(opl1,
@@ -688,16 +689,16 @@ DEFINE_RULE(opl1,
                 )
 )
 {
-	if (IS_FIRST ( OPERATOR, "*" )) {
-		MATCH ( OPERATOR, "*" );
-	}
-	else if (IS_FIRST ( OPERATOR, "/" )) {
-		MATCH ( OPERATOR, "/" );
-	}
-	else
-	{
-		// error
-	}
+    if (IS_FIRST ( OPERATOR, "*" )) {
+        MATCH ( OPERATOR, "*" );
+    }
+    else if (IS_FIRST ( OPERATOR, "/" )) {
+        MATCH ( OPERATOR, "/" );
+    }
+    else
+    {
+        // error
+    }
 }
 
 DEFINE_RULE(opl2,
@@ -707,16 +708,16 @@ DEFINE_RULE(opl2,
                 )
 )
 {
-	if (IS_FIRST ( OPERATOR, "-" )) {
-		MATCH ( OPERATOR, "-" );
-	}
-	else if (IS_FIRST ( OPERATOR, "+" )) {
-		MATCH ( OPERATOR, "+" );
-	}
-	else
-	{
-		// error
-	}
+    if (IS_FIRST ( OPERATOR, "-" )) {
+        MATCH ( OPERATOR, "-" );
+    }
+    else if (IS_FIRST ( OPERATOR, "+" )) {
+        MATCH ( OPERATOR, "+" );
+    }
+    else
+    {
+        // error
+    }
 }
 
 DEFINE_RULE(oprel,
@@ -726,28 +727,28 @@ DEFINE_RULE(oprel,
                 )
 )
 {
-	if (IS_FIRST ( OPERATOR, "<" )) {
-		MATCH ( OPERATOR, "<" );
-	}
-	else if (IS_FIRST ( OPERATOR, ">" )) {
-		MATCH ( OPERATOR, ">" );
-	}
-	else if (IS_FIRST ( OPERATOR, "<=" )) {
-		MATCH ( OPERATOR, "<=" );
-	}
-	else if (IS_FIRST ( OPERATOR, ">=" )) {
-		MATCH ( OPERATOR, ">=" );
-	}
-	else if (IS_FIRST ( OPERATOR, "==" )) {
-		MATCH ( OPERATOR, "==" );
-	}
-	else if (IS_FIRST ( OPERATOR, "/=" )) {
-		MATCH ( OPERATOR, "/=" );
-	}
-	else
-	{
-		// fail
-	}
+    if (IS_FIRST ( OPERATOR, "<" )) {
+        MATCH ( OPERATOR, "<" );
+    }
+    else if (IS_FIRST ( OPERATOR, ">" )) {
+        MATCH ( OPERATOR, ">" );
+    }
+    else if (IS_FIRST ( OPERATOR, "<=" )) {
+        MATCH ( OPERATOR, "<=" );
+    }
+    else if (IS_FIRST ( OPERATOR, ">=" )) {
+        MATCH ( OPERATOR, ">=" );
+    }
+    else if (IS_FIRST ( OPERATOR, "==" )) {
+        MATCH ( OPERATOR, "==" );
+    }
+    else if (IS_FIRST ( OPERATOR, "/=" )) {
+        MATCH ( OPERATOR, "/=" );
+    }
+    else
+    {
+        // fail
+    }
 }
 
 DEFINE_RULE(booleano,
@@ -757,16 +758,16 @@ DEFINE_RULE(booleano,
                 )
 )
 {
-	if (IS_FIRST ( RESERVED, "true" )) {
-		MATCH ( "true" );
-	}
-	else if (IS_FIRST ( RESERVED, "false" )) {
-		MATCH ( "false" );
-	}
-	else
-	{
-		// error
-	}
+    if (IS_FIRST ( RESERVED, "true" )) {
+        MATCH ( RESERVED, "true" );
+    }
+    else if (IS_FIRST ( RESERVED, "false" )) {
+        MATCH ( RESERVED, "false" );
+    }
+    else
+    {
+        // error
+    }
 }
 
 DEFINE_RULE(M,
@@ -785,8 +786,8 @@ DEFINE_RULE(lista_de_expr,
                 )
 )
 {
-	RULE ( expresion )();
-	RULE ( resto_lista_expr)();
+    RULE ( expresion )();
+    RULE ( resto_lista_expr)();
 }
 
 DEFINE_RULE(resto_lista_expr,
@@ -796,7 +797,7 @@ DEFINE_RULE(resto_lista_expr,
                 )
 )
 {
-	MATCH ( SEPARATOR, ",");
-	RULE  ( expresion )();
-	RULE  ( resto_lista_expr )();
+    MATCH ( SEPARATOR, ",");
+    RULE  ( expresion )();
+    RULE  ( resto_lista_expr )();
 }

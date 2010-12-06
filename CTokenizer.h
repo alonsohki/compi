@@ -20,6 +20,7 @@ public:
         NEWLINE,
         SEPARATOR,
         UNKNOWN,
+        EMPTY,
         MAX_TOKEN_TYPE
     };
 

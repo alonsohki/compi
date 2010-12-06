@@ -28,14 +28,25 @@ protected:
     {
         return m_pTranslator->Check ( eType, requiredValue );
     }
-    bool                is_rule_first   ( const CTokenizer::SToken tokens [] )
+    bool                is_rule_first   ( const CTokenizer::SToken tokensFirst [],
+                                          const CTokenizer::SToken tokensNext [] )
     {
         bool bFound = false;
         for ( unsigned int i = 0;
-              bFound == false && tokens[i].eType != CTokenizer::UNKNOWN;
+              bFound == false && tokensFirst[i].eType != CTokenizer::UNKNOWN;
               ++i )
         {
-            bFound = is_first ( tokens[i].eType, tokens[i].value );
+            if ( tokensFirst[i].eType == CTokenizer::EMPTY )
+            {
+                for ( unsigned int j = 0;
+                      bFound == false && tokensNext[j].eType != CTokenizer::UNKNOWN;
+                      ++j )
+                {
+                    bFound = is_first ( tokensNext[j].eType, tokensNext[j].value );
+                }
+            }
+            else
+                bFound = is_first ( tokensFirst[i].eType, tokensFirst[i].value );
         }
         return bFound;
     }
@@ -168,7 +179,7 @@ public: \
 #define RULE(T, ...) RULE_I(T, NUMARGS(__VA_ARGS__), __VA_ARGS__)
 #define RULE_I(T, n, ...) CAT(RULE_I_, n)(T, ## __VA_ARGS__)
 #define RULE_I_0(T, varName) BUILD_RULE_CLASS_NAME(T) ( this->GetTranslator() )
-#define RULE_I_1(T, varName) BUILD_RULE_CLASS_NAME(T) (varName) ( this->GetTranslator() ); (varName)
+#define RULE_I_1(T, varName) BUILD_RULE_CLASS_NAME(T) (varName) ( this->GetTranslator() )
 
 #define EXECUTE_FIRST_RULE(T) __CRuleFirst__ ( this ) ()
 
@@ -190,7 +201,7 @@ public: \
 #define ST_PUSH symbol_table_push
 #define ST_POP symbol_table_pop
 #define IS_FIRST(x, ...) is_first ( CTokenizer:: x, ## __VA_ARGS__ )
-#define IS_RULE_FIRST(x) is_rule_first ( BUILD_RULE_CLASS_NAME(x) :: ms_firstToken )
+#define IS_RULE_FIRST(x) is_rule_first ( BUILD_RULE_CLASS_NAME(x) :: ms_firstToken , BUILD_RULE_CLASS_NAME(x) :: ms_nextToken )
 
 #endif	/* CRULES_INTERNAL_H */
 
