@@ -216,7 +216,7 @@ DEFINE_RULE(lista_de_param,
 {
     RULE  ( lista_de_ident )();
     MATCH ( SEPARATOR, ":" );
-    RULE  ( clase_par )();
+    RULE  ( clase_param )();
     RULE  ( tipo )();
     RULE  ( resto_lis_de_param )();
 }
@@ -233,7 +233,7 @@ DEFINE_RULE(resto_lis_de_param,
         MATCH ( SEPARATOR, ";" );
         RULE  ( lista_de_ident )();
         MATCH ( SEPARATOR, ":" );
-        RULE  ( clase_par )();
+        RULE  ( clase_param )();
         RULE  ( tipo )();
         RULE  ( resto_lis_de_param )();
     }
@@ -242,7 +242,7 @@ DEFINE_RULE(resto_lis_de_param,
     }
 }
 
-DEFINE_RULE(clase_par,
+DEFINE_RULE(clase_param,
             FIRST(
                  ),
             NEXT(
@@ -252,7 +252,7 @@ DEFINE_RULE(clase_par,
     if ( IS_FIRST( RESERVED, "entrada" ) )
     {
         MATCH ( RESERVED, "entrada" );
-        RULE  ( clase_par_prima )();
+        RULE  ( clase_param_prima )();
     }
     else if ( IS_FIRST( RESERVED, "salida" ) )
     {
@@ -264,7 +264,7 @@ DEFINE_RULE(clase_par,
     }
 }
 
-DEFINE_RULE(clase_par_prima,
+DEFINE_RULE(clase_param_prima,
             FIRST(
                  ),
             NEXT(
@@ -277,7 +277,7 @@ DEFINE_RULE(clase_par_prima,
     }
     else
     {
-        // Else asumir clase_par_prima -> epsilon
+        // Else asumir clase_param_prima -> epsilon
     }
 }
 
