@@ -2,8 +2,10 @@
 
 DEFINE_RULE (programa,
             FIRST(
+                    ( RESERVED, "programa" )
                  ),
             NEXT(
+                    // Final de fichero
                 )
 )
 {
@@ -19,8 +21,13 @@ DEFINE_RULE (programa,
 
 DEFINE_RULE(declaraciones,
             FIRST(
+                    ( RESERVED, "variables" ),
+                    ( EMPTY )
                  ),
             NEXT(
+                    ( RESERVED, "procedimiento"),
+                    ( RESERVED, "funcion"),
+                    ( RESERVED, "comienzo")
                 )
 )
 {
@@ -42,8 +49,10 @@ DEFINE_RULE(declaraciones,
 
 DEFINE_RULE(lista_de_ident,
             FIRST(
+                    ( IDENTIFIER )
                  ),
             NEXT(
+                    ( RESERVED, ":" )
                 )
 )
 {
@@ -53,8 +62,11 @@ DEFINE_RULE(lista_de_ident,
 
 DEFINE_RULE(resto_lista_ident,
             FIRST(
+                    ( SEPARATOR, "," ),
+                    ( EMPTY )
                  ),
             NEXT(
+                    ( RESERVED, ":" )
                 )
 )
 {
@@ -78,6 +90,10 @@ DEFINE_RULE(tipo,
                     ( RESERVED, "array" )
                  ),
             NEXT(
+                    ( SEPARATOR, ";" ),
+                    ( RESERVED, "variables" ),
+                    ( RESERVED, "comienzo" ),
+                    ( SEPARATOR, ")" )
                 )
 )
 {
@@ -107,8 +123,11 @@ DEFINE_RULE(tipo,
 
 DEFINE_RULE(decl_de_subprogs,
             FIRST(
+                   ( RESERVED, "procedimiento" ),
+                   ( RESERVED, "funcion" )
                  ),
             NEXT(
+                   ( RESERVED, "comienzo" )
                 )
 )
 {
@@ -133,6 +152,9 @@ DEFINE_RULE(decl_de_procedimiento,
                     ( RESERVED, "procedimiento" )
                  ),
             NEXT(
+                    ( RESERVED, "procedimiento" ),
+                    ( RESERVED, "funcion" ),
+                    ( RESERVED, "comienzo" )
                 )
 )
 {
@@ -149,6 +171,9 @@ DEFINE_RULE(decl_de_funcion,
                     ( RESERVED, "funcion" )
                  ),
             NEXT(
+                    ( RESERVED, "procedimiento" ),
+                    ( RESERVED, "funcion" ),
+                    ( RESERVED, "comienzo" )
                 )
 )
 {
@@ -156,7 +181,7 @@ DEFINE_RULE(decl_de_funcion,
     RULE  ( declaraciones )();
     MATCH ( RESERVED, "comienzo" );
     RULE  ( lista_de_sentencias_prima )();
-    MATCH ( RESERVED, "retorna" );
+    MATCH ( RESERVED, "retornar" );
     RULE  ( expresion )();
     MATCH ( RESERVED, "fin" );
     MATCH ( SEPARATOR, ";" );
@@ -164,8 +189,11 @@ DEFINE_RULE(decl_de_funcion,
 
 DEFINE_RULE(cabecera_procedimiento,
             FIRST(
+                    ( RESERVED, "procedimiento" )
                  ),
             NEXT(
+                    ( RESERVED, "variables"),
+                    ( RESERVED, "comienzo")
                 )
 )
 {
@@ -176,8 +204,11 @@ DEFINE_RULE(cabecera_procedimiento,
 
 DEFINE_RULE(cabecera_funcion,
             FIRST(
+                    ( RESERVED, "funcion" )
                  ),
             NEXT(
+                    ( RESERVED, "variables"),
+                    ( RESERVED, "comienzo")
                 )
 )
 {
@@ -190,8 +221,13 @@ DEFINE_RULE(cabecera_funcion,
 
 DEFINE_RULE(argumentos,
             FIRST(
+                    ( SEPARATOR, "(" ),
+                    ( EMPTY )
                  ),
             NEXT(
+                    ( RESERVED, "variables"),
+                    ( RESERVED, "comienzo"),
+                    ( RESERVED, "retorna")
                 )
 )
 {
@@ -209,8 +245,10 @@ DEFINE_RULE(argumentos,
 
 DEFINE_RULE(lista_de_param,
             FIRST(
+                    ( IDENTIFIER )
                  ),
             NEXT(
+                    ( SEPARATOR, ")" )
                 )
 )
 {
@@ -223,8 +261,11 @@ DEFINE_RULE(lista_de_param,
 
 DEFINE_RULE(resto_lis_de_param,
             FIRST(
+                    ( SEPARATOR, ";" ),
+                    ( EMPTY )
                  ),
             NEXT(
+                    ( SEPARATOR, ")" )
                 )
 )
 {
@@ -244,8 +285,14 @@ DEFINE_RULE(resto_lis_de_param,
 
 DEFINE_RULE(clase_param,
             FIRST(
+                    ( RESERVED, "entrada" ),
+                    ( RESERVED, "salida" )
                  ),
             NEXT(
+                    ( RESERVED, "entero" ),
+                    ( RESERVED, "real"),
+                    ( RESERVED, "booleano"),
+                    ( RESERVED, "array" )
                 )
 )
 {
@@ -266,8 +313,14 @@ DEFINE_RULE(clase_param,
 
 DEFINE_RULE(clase_param_prima,
             FIRST(
+                    ( RESERVED, "salida" ),
+                    ( EMPTY )
                  ),
             NEXT(
+                    ( RESERVED, "entero" ),
+                    ( RESERVED, "real"),
+                    ( RESERVED, "booleano"),
+                    ( RESERVED, "array" )
                 )
 )
 {
@@ -283,8 +336,17 @@ DEFINE_RULE(clase_param_prima,
 
 DEFINE_RULE(lista_de_sentencias_prima,
             FIRST(
+                    ( IDENTIFIER ),
+                    ( RESERVED, "si" ),
+                    ( RESERVED, "hacer" ),
+                    ( RESERVED, "salir" ),
+                    ( RESERVED, "get" ),
+                    ( RESERVED, "put_line" ),
+                    ( EMPTY )
                  ),
             NEXT(
+                    ( RESERVED, "fin" ),
+                    ( RESERVED, "retorna" )
                 )
 )
 {
@@ -296,8 +358,18 @@ DEFINE_RULE(lista_de_sentencias_prima,
 
 DEFINE_RULE(lista_de_sentencias,
             FIRST(
+                    ( IDENTIFIER ),
+                    ( RESERVED, "si" ),
+                    ( RESERVED, "hacer" ),
+                    ( RESERVED, "salir" ),
+                    ( RESERVED, "get" ),
+                    ( RESERVED, "put_line" ),
+                    ( EMPTY )
                  ),
             NEXT(
+                    ( RESERVED, "fin" ),
+                    ( RESERVED, "retorna" ),
+                    ( RESERVED, "mientras" )
                 )
 )
 {
@@ -314,8 +386,23 @@ DEFINE_RULE(lista_de_sentencias,
 
 DEFINE_RULE(sentencia,
             FIRST(
+                    ( IDENTIFIER ),
+                    ( RESERVED, "si" ),
+                    ( RESERVED, "hacer" ),
+                    ( RESERVED, "salir" ),
+                    ( RESERVED, "get" ),
+                    ( RESERVED, "put_line" )
                  ),
             NEXT(
+                    ( IDENTIFIER ),
+                    ( RESERVED, "si" ),
+                    ( RESERVED, "hacer" ),
+                    ( RESERVED, "salir" ),
+                    ( RESERVED, "get" ),
+                    ( RESERVED, "put_line" ),
+                    ( RESERVED, "fin" ),
+                    ( RESERVED, "retorna" ),
+                    ( RESERVED, "mientras" )
                 )
 )
 {
@@ -342,8 +429,8 @@ DEFINE_RULE(sentencia,
         MATCH ( RESERVED, "hacer" );
         RULE  ( M )();
         RULE  ( lista_de_sentencias, ls );
-        ls.hinloop = true;
-        ls();
+        /* ls.hinloop = true;
+           ls(); */
         MATCH ( RESERVED, "mientras" );
         RULE  ( expresion )();
         MATCH ( RESERVED, "fin" );
@@ -384,8 +471,13 @@ DEFINE_RULE(sentencia,
 
 DEFINE_RULE(expresiones,
             FIRST(
+                    ( OPERATOR, "=" ),
+                    ( OPERATOR, "[" ),
+                    ( OPERATOR, "(" )
                  ),
             NEXT(
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" )
                 )
 )
 {
@@ -411,8 +503,11 @@ DEFINE_RULE(expresiones,
 
 DEFINE_RULE(acceso_a_array,
             FIRST(
+                    ( OPERATOR, "[" )
                  ),
             NEXT(
+                    ( OPERATOR, "=" )
+                    // Falta...
                 )
 )
 {
@@ -426,8 +521,11 @@ DEFINE_RULE(acceso_a_array,
 
 DEFINE_RULE(parametros_llamadas,
             FIRST(
+                    ( OPERATOR, "(" )
                  ),
             NEXT(
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" )
                 )
 )
 {
@@ -441,8 +539,20 @@ DEFINE_RULE(parametros_llamadas,
 
 DEFINE_RULE(expresion,
             FIRST(
+                    ( IDENTIFIER ),
+                    ( RESERVED, "not" ),
+                    ( INTEGER ),
+                    ( REAL ),
+                    ( RESERVED, "true" ),
+                    ( RESERVED, "false" ),
+                    ( SEPARATOR, "(" )
                  ),
             NEXT(
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
@@ -451,8 +561,20 @@ DEFINE_RULE(expresion,
 
 DEFINE_RULE(disyuncion,
             FIRST(
+                    ( IDENTIFIER ),
+                    ( RESERVED, "not" ),
+                    ( INTEGER ),
+                    ( REAL ),
+                    ( RESERVED, "true" ),
+                    ( RESERVED, "false" ),
+                    ( SEPARATOR, "(" )
                  ),
             NEXT(
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
@@ -464,6 +586,11 @@ DEFINE_RULE(disyuncion_prima,
             FIRST(
                  ),
             NEXT(
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
@@ -478,6 +605,13 @@ DEFINE_RULE(disyuncion_prima,
 
 DEFINE_RULE(conjuncion,
             FIRST(
+                    ( IDENTIFIER ),
+                    ( RESERVED, "not" ),
+                    ( INTEGER ),
+                    ( REAL ),
+                    ( RESERVED, "true" ),
+                    ( RESERVED, "false" ),
+                    ( SEPARATOR, "(" )
                  ),
             NEXT(
                 )
@@ -505,6 +639,13 @@ DEFINE_RULE(conjuncion_prima,
 
 DEFINE_RULE(relacional,
             FIRST(
+                    ( IDENTIFIER ),
+                    ( RESERVED, "not" ),
+                    ( INTEGER ),
+                    ( REAL ),
+                    ( RESERVED, "true" ),
+                    ( RESERVED, "false" ),
+                    ( SEPARATOR, "(" )
                  ),
             NEXT(
                 )
@@ -532,8 +673,30 @@ DEFINE_RULE(relacional_prima,
 
 DEFINE_RULE(aritmetica,
             FIRST(
+                    ( IDENTIFIER ),
+                    ( RESERVED, "not" ),
+                    ( INTEGER ),
+                    ( REAL ),
+                    ( RESERVED, "true" ),
+                    ( RESERVED, "false" ),
+                    ( SEPARATOR, "(" )
                  ),
             NEXT(
+                    // Operaciones relacionales (oprel)
+                    ( OPERATOR, "<"),
+                    ( OPERATOR, ">"),
+                    ( OPERATOR, "<="),
+                    ( OPERATOR, ">="),
+                    ( OPERATOR, "=="),
+                    ( OPERATOR, "/="),
+                    // Fin operadores relacionales
+                    ( RESERVED, "and" ),
+                    ( RESERVED, "or" ),
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
