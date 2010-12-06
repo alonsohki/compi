@@ -77,19 +77,25 @@ void CTranslator::NextLookahead ()
 
 CTokenizer::SToken CTranslator::Match ( CTokenizer::ETokenType eType,
                                         const CString& requiredValue,
-                                        const CTokenizer::SToken* pNextToken )
+                                        const CTokenizer::SToken* pNextToken,
+                                        const char* szFile, unsigned int uiLine )
 {
+    char debuggingPrefix [ 64 ];
     CTokenizer::SToken ret;
 
+    snprintf ( debuggingPrefix, NUMELEMS(debuggingPrefix), "[%s:%d] ", szFile, uiLine );
+
     if ( m_bEOFReached == true )
-        throw Exception ( 0, 0, "Unexpected end of file" );
+        throw Exception ( 0, 0, Format( "%sUnexpected end of file", debuggingPrefix ) );
 
     if ( m_lookahead.eType != eType )
     {
         throw Exception ( m_lookahead.uiLine + 1, m_lookahead.uiCol + 1,
-                          Format("Expected token of type '%s', but got a token of type '%s'",
+                          Format("%sExpected token of type '%s', but got a token of type '%s': %s",
+                                 debuggingPrefix,
                                  m_tokenizer.NameThisToken(eType),
-                                 m_tokenizer.NameThisToken(m_lookahead.eType)
+                                 m_tokenizer.NameThisToken(m_lookahead.eType),
+                                 m_lookahead.value
                                 )
                         );
     }
@@ -97,7 +103,8 @@ CTokenizer::SToken CTranslator::Match ( CTokenizer::ETokenType eType,
     if ( requiredValue != "" && strcasecmp ( requiredValue, m_lookahead.value ) != 0 )
     {
         throw Exception ( m_lookahead.uiLine + 1, m_lookahead.uiCol + 1,
-                          Format("Expected token '%s', but got '%s'",
+                          Format("%sExpected token '%s', but got '%s'",
+                                 debuggingPrefix,
                                  *requiredValue,
                                  m_lookahead.value
                                 )

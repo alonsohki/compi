@@ -18,9 +18,10 @@ protected:
     CTranslator*        GetTranslator   () { return m_pTranslator; }
     CTokenizer::SToken  match           ( CTokenizer::ETokenType eType,
                                           const CString& requiredValue,
-                                          const CTokenizer::SToken* pNextToken )
+                                          const CTokenizer::SToken* pNextToken,
+                                          const char* szFile, unsigned int uiLine )
     {
-        return m_pTranslator->Match ( eType, requiredValue, pNextToken );
+        return m_pTranslator->Match ( eType, requiredValue, pNextToken, szFile, uiLine );
     }
     bool                is_first        ( CTokenizer::ETokenType eType,
                                           const CString& requiredValue = "" )
@@ -145,7 +146,8 @@ public: \
     void operator() (); \
 }
 
-#define MAP_STOKEN(elem) CTokenizer::SToken elem ,
+#define MAP_STOKEN2(type, ...) ( CTokenizer:: type , ## __VA_ARGS__ )
+#define MAP_STOKEN(elem) CTokenizer::SToken MAP_STOKEN2 elem ,
 #define FIRST(...) { FOR_EACH_PARAM(MAP_STOKEN, __VA_ARGS__) CTokenizer::SToken ( CTokenizer::UNKNOWN, "" ) }
 #define NEXT(...) { FOR_EACH_PARAM(MAP_STOKEN, __VA_ARGS__) CTokenizer::SToken ( CTokenizer::UNKNOWN, "" ) }
 #define DEFINE_RULE(x, first, next) \
@@ -172,8 +174,8 @@ public: \
 #define TOKEN CTokenizer::SToken
 #define MATCH(T, ...) MATCH_I(T, NUMARGS(__VA_ARGS__), __VA_ARGS__)
 #define MATCH_I(T, n, ...) CAT(MATCH_I_, n)(T, __VA_ARGS__)
-#define MATCH_I_0(T, req) match(TT(T), "", ms_nextToken )
-#define MATCH_I_1(T, req) match(TT(T), (req), ms_nextToken )
+#define MATCH_I_0(T, req) match(TT(T), "", ms_nextToken, __FILE__, __LINE__ )
+#define MATCH_I_1(T, req) match(TT(T), (req), ms_nextToken, __FILE__, __LINE__ )
 #define ADD_INST(x) push_instruction(CString() || x )
 #define GET_REF get_ref
 #define EMPTY_LIST empty_list

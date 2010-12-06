@@ -24,14 +24,20 @@ DEFINE_RULE(declaraciones,
                 )
 )
 {
-    MATCH ( RESERVED, "variables" );
-    RULE  ( lista_de_ident )();
-    MATCH ( SEPARATOR, ":" );
-    RULE  ( tipo )();
-    MATCH ( SEPARATOR, ";" );
-    /* Falta semántica */
-    RULE  ( declaraciones )();
-    // Esto puede ser vacio
+    if ( IS_FIRST ( RESERVED, "variables" ) )
+    {
+        MATCH ( RESERVED, "variables" );
+        RULE  ( lista_de_ident )();
+        MATCH ( SEPARATOR, ":" );
+        RULE  ( tipo )();
+        MATCH ( SEPARATOR, ";" );
+        /* Falta semántica */
+        RULE  ( declaraciones )();
+    }
+    else
+    {
+        // Esto ES vacio
+    }
 }
 
 DEFINE_RULE(lista_de_ident,
@@ -52,26 +58,51 @@ DEFINE_RULE(resto_lista_ident,
                 )
 )
 {
-    MATCH ( SEPARATOR, "," );
-    MATCH ( IDENTIFIER );
-    RULE  ( resto_lista_ident )();
-    // vacio
+    if ( IS_FIRST ( SEPARATOR, "," ) )
+    {
+        MATCH ( SEPARATOR, "," );
+        MATCH ( IDENTIFIER );
+        RULE  ( resto_lista_ident )();
+    }
+    else
+    {
+        // vacio
+    }
 }
 
 DEFINE_RULE(tipo,
             FIRST(
+                    ( RESERVED, "entero" ),
+                    ( RESERVED, "real" ),
+                    ( RESERVED, "booleano" ),
+                    ( RESERVED, "array" )
                  ),
             NEXT(
                 )
 )
 {
-    // Falta arreglar <- decidir un camino u otro
-    MATCH ( RESERVED, "entero" );
-    MATCH ( RESERVED, "real" );
-    MATCH ( RESERVED, "booleano" );
-    MATCH ( RESERVED, "array" );
-    MATCH ( RESERVED, "de" );
-    RULE  ( tipo )();
+    if ( IS_FIRST ( RESERVED, "entero" ) )
+    {
+        MATCH ( RESERVED, "entero" );
+    }
+    else if ( IS_FIRST ( RESERVED, "real" ) )
+    {
+        MATCH ( RESERVED, "real" );
+    }
+    else if ( IS_FIRST ( RESERVED, "booleano" ) )
+    {
+        MATCH ( RESERVED, "booleano" );
+    }
+    else if ( IS_FIRST ( RESERVED, "array" ) )
+    {
+        MATCH ( RESERVED, "array" );
+        MATCH ( RESERVED, "de" );
+        RULE  ( tipo )();
+    }
+    else
+    {
+        // Error.
+    }
 }
 
 DEFINE_RULE(decl_de_subprogs,
@@ -81,14 +112,25 @@ DEFINE_RULE(decl_de_subprogs,
                 )
 )
 {
-    RULE  ( decl_de_procedimiento )();
-    RULE  ( decl_de_funcion )();
-    RULE  ( decl_de_subprogs )();
-    // Vacio ?
+    if ( IS_RULE_FIRST ( decl_de_procedimiento ) )
+    {
+        RULE ( decl_de_procedimiento )();
+        RULE ( decl_de_subprogs )();
+    }
+    else if ( IS_RULE_FIRST ( decl_de_funcion ) )
+    {
+        RULE ( decl_de_funcion )();
+        RULE ( decl_de_subprogs )();
+    }
+    else
+    {
+        // Vacío.
+    }
 }
 
 DEFINE_RULE(decl_de_procedimiento,
             FIRST(
+                    ( RESERVED, "procedimiento" )
                  ),
             NEXT(
                 )
@@ -104,6 +146,7 @@ DEFINE_RULE(decl_de_procedimiento,
 
 DEFINE_RULE(decl_de_funcion,
             FIRST(
+                    ( RESERVED, "funcion" )
                  ),
             NEXT(
                 )
@@ -126,7 +169,7 @@ DEFINE_RULE(cabecera_procedimiento,
                 )
 )
 {
-    MATCH ( RESERVED, "prodecimiento" );
+    MATCH ( RESERVED, "procedimiento" );
     MATCH ( IDENTIFIER );
     RULE  ( argumentos )();
 }
@@ -152,10 +195,16 @@ DEFINE_RULE(argumentos,
                 )
 )
 {
-    MATCH ( SEPARATOR, "(" );
-    RULE  ( lista_de_param )();
-    MATCH ( SEPARATOR, ")" );
-    // Vacío ?
+    if ( IS_FIRST ( SEPARATOR, "(" ) )
+    {
+        MATCH ( SEPARATOR, "(" );
+        RULE  ( lista_de_param )();
+        MATCH ( SEPARATOR, ")" );
+    }
+    else
+    {
+        // Vacío
+    }
 }
 
 DEFINE_RULE(lista_de_param,
@@ -167,9 +216,9 @@ DEFINE_RULE(lista_de_param,
 {
     RULE  ( lista_de_ident )();
     MATCH ( SEPARATOR, ":" );
-    RULE  (clase_par)();
-    RULE  (tipo)();
-    RULE  (resto_lis_de_param)();
+    RULE  ( clase_par )();
+    RULE  ( tipo )();
+    RULE  ( resto_lis_de_param )();
 }
 
 DEFINE_RULE(resto_lis_de_param,
@@ -179,13 +228,17 @@ DEFINE_RULE(resto_lis_de_param,
                 )
 )
 {
-    RULE  ( lista_de_ident )();
-    MATCH ( SEPARATOR, ";" );
-    RULE  (  clase_par )();
-    RULE  ( tipo  )();
-    if ( IS_FIRST ( IDENTIFIER ) )
+    if ( IS_FIRST ( SEPARATOR, ";" ) )
     {
+        MATCH ( SEPARATOR, ";" );
+        RULE  ( lista_de_ident )();
+        MATCH ( SEPARATOR, ":" );
+        RULE  ( clase_par )();
+        RULE  ( tipo )();
         RULE  ( resto_lis_de_param )();
+    }
+    else
+    {
     }
 }
 
@@ -239,7 +292,6 @@ DEFINE_RULE(lista_de_sentencias_prima,
     ls.hinloop = FALSE;
     ls(); */
     RULE  ( lista_de_sentencias )();
-
 }
 
 DEFINE_RULE(lista_de_sentencias,

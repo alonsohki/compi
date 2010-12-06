@@ -32,7 +32,7 @@ public:
     struct SToken
     {
         SToken ( ETokenType type = UNKNOWN, const char* szValue = "" )
-        : eType ( UNKNOWN )
+        : eType ( type )
         , uiLine ( 0 )
         , uiCol ( 0 )
         , uiState ( 0 )

@@ -98,11 +98,17 @@ const char* CTokenizer::ms_szErrors [ CTokenizer::NUMSTATES ] = {
 const char* CTokenizer::ms_szReserved [ ] = {
     "programa",
     "procedimiento",
+    "funcion",
+    "retorna",
+    "retornar",
     "comienzo",
     "fin",
     "variables",
     "entero",
     "real",
+    "booleano",
+    "array",
+    "de",
     "entrada",
     "salida",
     "si",
@@ -113,12 +119,7 @@ const char* CTokenizer::ms_szReserved [ ] = {
     "get",
     "put_line",
     "true",
-    "false",
-    "retorna",
-    "retornar",
-    "funcion",
-    "array",
-    "de"
+    "false"
 };
 
 /////////////////////////////////////////////////////////

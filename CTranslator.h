@@ -43,7 +43,8 @@ private:
 
     CTokenizer::SToken  Match           ( CTokenizer::ETokenType eType,
                                           const CString& requiredValue,
-                                          const CTokenizer::SToken* pNextToken );
+                                          const CTokenizer::SToken* pNextToken,
+                                          const char* szFile, unsigned int uiLine );
     bool                Check           ( CTokenizer::ETokenType eType,
                                           const CString& requiredValue = "" );
     void            PushInstruction     ( const CString& strCode );
