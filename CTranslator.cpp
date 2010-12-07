@@ -123,7 +123,7 @@ bool CTranslator::Check ( CTokenizer::ETokenType eType,
                           const CString& requiredValue )
 {
     if ( EOFReached () == true )
-        return false;
+        return ( eType == CTokenizer::END_OF_FILE );
     if ( m_lookahead.eType != eType )
         return false;
     if ( requiredValue != "" && requiredValue != m_lookahead.value )
