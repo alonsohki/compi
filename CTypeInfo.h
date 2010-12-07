@@ -32,6 +32,28 @@ public:
         UNKNOWN
     };
 
+    // Clases de parámetros.
+    enum EParamClass
+    {
+        PARAM_COPY,
+        PARAM_REF,
+        PARAM_COPY_AND_RESTORE
+    };
+
+    static const char* NameThisParamClass ( EParamClass paramClass )
+    {
+        switch ( paramClass )
+        {
+            case PARAM_COPY: return "copy";
+            case PARAM_REF: return "ref";
+            case PARAM_COPY_AND_RESTORE: return "copyandrestore";
+        }
+        
+        // No debería llegar hasta aquí nunca.
+        assert ( false );
+        return "";
+    }
+
 public:
     CTypeInfo ()
     {
@@ -60,6 +82,7 @@ public:
     CTypeInfo ( const std::vector<unsigned int>& dimensionsLength, const CTypeInfo& contentInfo )
     : m_eType ( ARRAY )
     {
+        memset ( &m_array, 0, sizeof (m_array) );
         memset ( &m_params, 0, sizeof (m_params) );
 
         m_array.numDimensions = 0;
@@ -90,9 +113,12 @@ public:
     }
 
     // Procedimientos/Funciones
-    CTypeInfo ( const std::vector<CTypeInfo>& paramTypes, const CTypeInfo* returns = 0 )
+    CTypeInfo ( const std::vector<CTypeInfo>& paramTypes,
+                const std::vector<EParamClass>& paramClasses,
+                const CTypeInfo* returns = 0 )
     {
         memset ( &m_array, 0, sizeof (m_array) );
+        memset ( &m_params, 0, sizeof (m_params) );
 
         if ( returns != 0 )
         {
@@ -106,11 +132,13 @@ public:
         }
 
         m_params.numParams = 0;
+        std::vector<EParamClass>::const_iterator cit = paramClasses.begin ();
         for ( std::vector<CTypeInfo>::const_iterator it = paramTypes.begin ();
               it != paramTypes.end ();
-              ++it )
+              ++it, ++cit )
         {
             m_params.paramTypes [ m_params.numParams ] = new CTypeInfo ( *it );
+            m_params.paramClasses [ m_params.numParams ] = *cit;
             ++m_params.numParams;
         }
     }
@@ -243,8 +271,30 @@ private:
                     size_t paramLen;
                     m_params.paramTypes [ m_params.numParams ]
                         = new CTypeInfo ( str.substr ( start ), &paramLen );
-                    ++m_params.numParams;
                     start += paramLen + 1;
+
+                    // Extraemos el tipo de parámetro.
+                    assert ( str [ start - 1 ] == ':' );
+                    if ( str.compare ( start, 14, "copyandrestore" ) == 0 )
+                    {
+                        m_params.paramClasses [ m_params.numParams ] = PARAM_COPY_AND_RESTORE;
+                        start += 14;
+                    }
+                    else if ( str.compare ( start, 4, "copy" ) == 0 )
+                    {
+                        m_params.paramClasses [ m_params.numParams ] = PARAM_COPY;
+                        start += 4;
+                    }
+                    else if ( str.compare ( start, 3, "ref" ) == 0 )
+                    {
+                        m_params.paramClasses [ m_params.numParams ] = PARAM_REF;
+                        start += 3;
+                    }
+                    else assert ( false ); // No debería suceder nunca.
+
+                    // Nos saltamos los :
+                    ++start;
+                    ++m_params.numParams;
                 } while ( str [ start - 1 ] == ':' );
                 --start;
             }
@@ -304,6 +354,8 @@ public:
                 for ( unsigned int i = 0; i < m_params.numParams; ++i )
                 {
                     ret.Append ( m_params.paramTypes[i]->toString () );
+                    ret.Append ( ":" );
+                    ret.Append ( NameThisParamClass ( m_params.paramClasses[i] ) );
                     ret.Append ( ":" );
                 }
                 ret.Resize ( ret.Length () - 1 );
@@ -376,7 +428,10 @@ public:
                     if ( bEquals )
                     {
                         for ( unsigned int i = 0; bEquals && i < m_params.numParams; ++i )
-                            bEquals = *(m_params.paramTypes[i]) == *(Right.m_params.paramTypes[i]);
+                        {
+                            bEquals = *(m_params.paramTypes[i]) == *(Right.m_params.paramTypes[i]) &&
+                                      m_params.paramClasses[i] == Right.m_params.paramClasses[i];
+                        }
                     }
                     break;
                 default:
@@ -449,6 +504,7 @@ private:
     {
         CTypeInfo*      returns;
         CTypeInfo*      paramTypes [ MAX_PARAMS ];
+        EParamClass     paramClasses [ MAX_PARAMS ];
         unsigned int    numParams;
     } m_params;
 };
