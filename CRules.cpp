@@ -121,12 +121,50 @@ DEFINE_RULE(tipo,
     else if ( IS_FIRST ( RESERVED, "array" ) )
     {
         MATCH ( RESERVED, "array" );
+        MATCH ( SEPARATOR, "[" );
+        RULE  ( lista_de_enteros )();
+        MATCH ( SEPARATOR, "]" );
         MATCH ( RESERVED, "de" );
         RULE  ( tipo )();
     }
     else
     {
         // Error.
+    }
+}
+
+DEFINE_RULE(lista_de_enteros,
+            FIRST(
+                ( INTEGER )
+            ),
+            NEXT(
+                ( SEPARATOR, "]" )
+            )
+)
+{
+    MATCH ( INTEGER );
+    RULE ( resto_lista_enteros )();
+}
+
+DEFINE_RULE(resto_lista_enteros,
+            FIRST(
+                ( SEPARATOR, "," ),
+                ( EMPTY )
+            ),
+            NEXT(
+                ( SEPARATOR, "]" )
+            )
+)
+{
+    if ( IS_FIRST ( SEPARATOR, "," ) )
+    {
+        MATCH ( SEPARATOR, "," );
+        MATCH ( INTEGER );
+        RULE ( resto_lista_enteros )();
+    }
+    else
+    {
+        // Vacío.
     }
 }
 
