@@ -16,6 +16,10 @@ protected:
     {}
 
     CTranslator*        GetTranslator   () { return m_pTranslator; }
+    bool                panic_mode      () const
+    {
+        return m_pTranslator->IsInPanic ();
+    }
     CTokenizer::SToken  match           ( CTokenizer::ETokenType eType,
                                           const CString& requiredValue,
                                           const CTokenizer::SToken* pNextToken,
@@ -187,7 +191,7 @@ public: \
 #define THIS (*this)
 #define TT(x) CTokenizer:: x
 #define TOKEN CTokenizer::SToken
-#define MATCH(T, ...) MATCH_I(T, NUMARGS(__VA_ARGS__), __VA_ARGS__)
+#define MATCH(T, ...) MATCH_I(T, NUMARGS(__VA_ARGS__), __VA_ARGS__); if ( panic_mode() == true ) return
 #define MATCH_I(T, n, ...) CAT(MATCH_I_, n)(T, __VA_ARGS__)
 #define MATCH_I_0(T, req) match(TT(T), "", ms_nextToken, __FILE__, __LINE__ )
 #define MATCH_I_1(T, req) match(TT(T), (req), ms_nextToken, __FILE__, __LINE__ )

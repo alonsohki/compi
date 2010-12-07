@@ -63,6 +63,22 @@ private:
     void        NextLookahead   ();
     bool        EOFReached      () const { return m_lookahead.eType == CTokenizer::END_OF_FILE; }
 
+    // Modo pánico.
+    enum EPanicStrategy
+    {
+        PANIC_STRATEGY_FAIL,        // La compilación se aborta.
+        PANIC_STRATEGY_IGNORE,      // Se hace como si el match hubiera sido certero.
+        PANIC_STRATEGY_TRYAGAIN,    // Igual que el anterior, pero manteniendo el lookahead.
+        PANIC_STRATEGY_FINDIT,      // Busca tokens hasta encontrar el que se había solicitado.
+        PANIC_STRATEGY_FINDNEXT     // Busca tokens hasta encontrar un siguiente de la regla.
+    };
+    bool        PanicMode       ( CTokenizer::ETokenType eType,
+                                  const CString& requiredValue,
+                                  const CTokenizer::SToken* pNextToken );
+    void        SetInPanic      ( bool bInPanic ) { m_bInPanic = bInPanic; }
+    bool        IsInPanic       ( ) const { return m_bInPanic; }
+    void        SetPanicStrategy( EPanicStrategy eStrategy ) { m_ePanicStrategy = eStrategy; }
+
 private:
     std::istream&           m_isOrig;
     std::ostream&           m_osDest;
@@ -71,6 +87,9 @@ private:
     std::vector<CString>    m_vecInstructions;
     CSymbolTable            m_symbolTable;
     unsigned int            m_uiLastIdent;
+    bool                    m_bInPanic;
+    EPanicStrategy          m_ePanicStrategy;
+    bool                    m_bKeepCurrentLookahead;
 };
 
 #endif	/* CTRANSLATOR_H */

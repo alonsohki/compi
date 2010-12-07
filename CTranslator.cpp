@@ -11,6 +11,9 @@ CTranslator::CTranslator(std::istream& ifsOrig,
 , m_osDest ( ofsDest )
 , m_tokenizer ( ifsOrig )
 , m_uiLastIdent ( 0 )
+, m_bInPanic ( false )
+, m_ePanicStrategy ( PANIC_STRATEGY_FAIL )
+, m_bKeepCurrentLookahead ( false )
 {
 }
 
@@ -35,8 +38,16 @@ bool CTranslator::Translate ()
     }
     catch ( Exception& e )
     {
-        fprintf ( stderr, "Error [%u:%u]: %s.\n",
-                  e.GetLine(), e.GetColumn(), *(e.GetReason()) );
+        // Comprobamos si debemos mostrar fila y columna.
+        if ( e.GetLine () == 0 && e.GetColumn() == 0 )
+        {
+            fprintf ( stderr, "Error: %s\n", *(e.GetReason()) );
+        }
+        else
+        {
+            fprintf ( stderr, "Error [%u:%u]: %s\n",
+                      e.GetLine(), e.GetColumn(), *(e.GetReason()) );
+        }
         return false;
     }
 
@@ -63,19 +74,136 @@ bool CTranslator::Translate ()
 
 void CTranslator::NextLookahead ()
 {
-    if ( m_tokenizer.NextToken ( &m_lookahead, true ) == false )
+    if ( EOFReached() == false && m_bKeepCurrentLookahead == false )
     {
-        m_lookahead = CTokenizer::SToken ( CTokenizer::END_OF_FILE, "" );
+        if ( m_tokenizer.NextToken ( &m_lookahead, true ) == false )
+        {
+            m_lookahead = CTokenizer::SToken ( CTokenizer::END_OF_FILE, "" );
+        }
+        else if ( m_lookahead.eType == CTokenizer::UNKNOWN )
+        {
+            const char* szError = m_tokenizer.GetErrorForToken ( m_lookahead );
+            if ( szError == 0 )
+                throw Exception ( m_lookahead.uiLine + 1, m_lookahead.uiCol + 1, Format("Unexpected token: %s", m_lookahead.value) );
+            else
+                throw Exception ( m_lookahead.uiLine + 1, m_lookahead.uiCol + 1, szError );
+        }
     }
-    else if ( m_lookahead.eType == CTokenizer::UNKNOWN )
+    m_bKeepCurrentLookahead = false;
+}
+
+
+bool CTranslator::PanicMode ( CTokenizer::ETokenType eType,
+                              const CString& requiredValue,
+                              const CTokenizer::SToken* pNextToken )
+{
+    enum
     {
-        const char* szError = m_tokenizer.GetErrorForToken ( m_lookahead );
-        if ( szError == 0 )
-            throw Exception ( m_lookahead.uiLine + 1, m_lookahead.uiCol + 1, Format("Unexpected token: %s", m_lookahead.value) );
-        else
-            throw Exception ( m_lookahead.uiLine + 1, m_lookahead.uiCol + 1, szError );
+        DEADLY_PANIC = true,
+        PANIC_RECOVER = false
+    };
+
+    switch ( m_ePanicStrategy )
+    {
+        default: case PANIC_STRATEGY_FAIL:
+            return DEADLY_PANIC;
+
+        case PANIC_STRATEGY_IGNORE:
+            return PANIC_RECOVER;
+
+        case PANIC_STRATEGY_TRYAGAIN:
+            m_bKeepCurrentLookahead = true;
+            return PANIC_RECOVER;
+
+        case PANIC_STRATEGY_FINDIT:
+        {
+            bool bFound;
+            do
+            {
+                // Obtenemos el siguiente token, ignorando cualquier error que pudiera
+                // obtenerse por encontrar tokens inválidos.
+                bool bKeepSearching;
+                do
+                {
+                    bKeepSearching = false;
+                    try
+                    {
+                        NextLookahead ();
+                    }
+                    catch ( Exception& e )
+                    {
+                        bKeepSearching = true;
+                    }
+                } while ( bKeepSearching == true );
+
+                // Comprobamos si coinciden.
+                if ( m_lookahead.eType == eType )
+                {
+                    if ( requiredValue == "" || requiredValue == m_lookahead.value )
+                    {
+                        bFound = true;
+                    }
+                }
+            } while ( bFound == false && EOFReached() == false );
+
+            if ( bFound == true )
+                return PANIC_RECOVER;
+            else
+                return DEADLY_PANIC;
+        }
+            
+        case PANIC_STRATEGY_FINDNEXT:
+        {
+            // En modo de pánico de búsqueda del siguiente.
+            bool bNextFound;
+            do
+            {
+                // Obtenemos el siguiente token, ignorando cualquier error que pudiera
+                // obtenerse por encontrar tokens inválidos.
+                bool bKeepSearching;
+                do
+                {
+                    bKeepSearching = false;
+                    try
+                    {
+                        NextLookahead ();
+                    }
+                    catch ( Exception& e )
+                    {
+                        bKeepSearching = true;
+                    }
+                } while ( bKeepSearching == true );
+
+                // Comprobamos si el token leído coincide con alguno de los siguientes.
+                bNextFound = false;
+                for ( unsigned int i = 0; pNextToken[i].eType != CTokenizer::UNKNOWN; ++i )
+                {
+                    if ( pNextToken[i].eType == m_lookahead.eType )
+                    {
+                        if ( pNextToken[i].value[0] != '\0' &&
+                             strcmp(pNextToken[i].value, m_lookahead.value) == 0 )
+                        {
+                            bNextFound = true;
+                        }
+                    }
+                }
+
+                // Si llegamos al final del fichero y este no era ninguno de los
+                // siguientes, no podemos recuperarnos del error.
+                if ( bNextFound == false && EOFReached() == true )
+                    break;
+            } while ( bNextFound == false );
+
+            SetInPanic ( bNextFound );
+
+            if ( bNextFound == true )
+                return PANIC_RECOVER;
+            else
+                return DEADLY_PANIC;
+        }
     }
 }
+
 
 CTokenizer::SToken CTranslator::Match ( CTokenizer::ETokenType eType,
                                         const CString& requiredValue,
@@ -84,38 +212,82 @@ CTokenizer::SToken CTranslator::Match ( CTokenizer::ETokenType eType,
 {
     char debuggingPrefix [ 64 ];
     CTokenizer::SToken ret;
+    bool bDeadlyPanic = false;
 
+    // Configuramos el modo de pánico.
+    SetInPanic ( false );
+    switch ( eType )
+    {
+        case CTokenizer::RESERVED:
+            SetPanicStrategy ( PANIC_STRATEGY_IGNORE );
+            break;
+        case CTokenizer::SEPARATOR:
+            SetPanicStrategy ( PANIC_STRATEGY_TRYAGAIN );
+            break;
+        default:
+            SetPanicStrategy ( PANIC_STRATEGY_FINDNEXT );
+            break;
+    }
+
+    // Generamos un string para información de debug, el cual contiene el
+    // nombre del fichero y la linea de este en la que se ha ejecutado este match.
     snprintf ( debuggingPrefix, NUMELEMS(debuggingPrefix), "[%s:%d] ", szFile, uiLine );
 
+    // Si habíamos alcanzado el fin de fichero, no deberíamos recibir más match.
     if ( EOFReached () == true )
-        throw Exception ( 0, 0, Format( "%sUnexpected end of file", debuggingPrefix ) );
+        throw Exception ( 0, 0, Format( "%sUnexpected end of file.", debuggingPrefix ) );
 
-    if ( m_lookahead.eType != eType )
+    try
     {
-        throw Exception ( m_lookahead.uiLine + 1, m_lookahead.uiCol + 1,
-                          Format("%sExpected token of type '%s', but got a token of type '%s': %s",
-                                 debuggingPrefix,
-                                 m_tokenizer.NameThisToken(eType),
-                                 m_tokenizer.NameThisToken(m_lookahead.eType),
-                                 m_lookahead.value
-                                )
-                        );
+        // Comprobamos que el valor del token sea el requerido.
+        if ( requiredValue != "" && strcasecmp ( requiredValue, m_lookahead.value ) != 0 )
+        {
+            throw Exception ( m_lookahead.uiLine + 1, m_lookahead.uiCol + 1,
+                              Format("%sExpected '%s', but got '%s'",
+                                     debuggingPrefix,
+                                     *requiredValue,
+                                     m_lookahead.value
+                                    )
+                            );
+        }
+
+        // Comprobamos que el tipo de token sea el requerido.
+        if ( m_lookahead.eType != eType )
+        {
+            throw Exception ( m_lookahead.uiLine + 1, m_lookahead.uiCol + 1,
+                              Format("%sExpected token of type '%s', but got a token of type '%s': %s",
+                                     debuggingPrefix,
+                                     m_tokenizer.NameThisToken(eType),
+                                     m_tokenizer.NameThisToken(m_lookahead.eType),
+                                     m_lookahead.value
+                                    )
+                            );
+        }
+    }
+    catch ( Exception& e )
+    {
+        // Si llegamos aquí, significa que el match ha fallado. Ejecutamos el
+        // modo de pánico.
+        fprintf ( stderr, "Error [%u:%u]: %s.\n",
+                  e.GetLine(), e.GetColumn(), *(e.GetReason()) );
+        bDeadlyPanic = PanicMode ( eType, requiredValue, pNextToken );
     }
 
-    if ( requiredValue != "" && strcasecmp ( requiredValue, m_lookahead.value ) != 0 )
+    // Comprobamos si se ha entrado en modo de pánico y el error no ha sido
+    // recuperable.
+    if ( bDeadlyPanic == true )
     {
-        throw Exception ( m_lookahead.uiLine + 1, m_lookahead.uiCol + 1,
-                          Format("%sExpected token '%s', but got '%s'",
-                                 debuggingPrefix,
-                                 *requiredValue,
-                                 m_lookahead.value
-                                )
-                        );
+        if ( m_ePanicStrategy == PANIC_STRATEGY_FAIL )
+            throw Exception ( 0, 0, "Compilation aborted." );
+        else
+            throw Exception ( 0, 0, "Unable to recover from error. Compilation aborted." );
     }
 
+    // Obtenemos el siguiente token.
     ret = m_lookahead;
     NextLookahead ();
-    
+
+    // Retornamos el token emparejado.
     return ret;
 }
 
