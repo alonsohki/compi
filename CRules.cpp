@@ -439,8 +439,8 @@ DEFINE_RULE(sentencia,
         MATCH ( RESERVED, "hacer" );
         RULE  ( M )();
         RULE  ( lista_de_sentencias, ls );
-        /* ls.hinloop = true;
-           ls(); */
+        ls.hinloop = true;
+        ls();
         MATCH ( RESERVED, "mientras" );
         RULE  ( expresion )();
         MATCH ( RESERVED, "fin" );
@@ -526,6 +526,7 @@ DEFINE_RULE(acceso_a_array,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -552,6 +553,7 @@ DEFINE_RULE(parametros_llamadas,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -580,6 +582,7 @@ DEFINE_RULE(expresion,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -603,6 +606,7 @@ DEFINE_RULE(disyuncion,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -621,6 +625,7 @@ DEFINE_RULE(disyuncion_prima,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -651,6 +656,7 @@ DEFINE_RULE(conjuncion,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -670,6 +676,7 @@ DEFINE_RULE(conjuncion_prima,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -701,6 +708,7 @@ DEFINE_RULE(relacional,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -721,6 +729,7 @@ DEFINE_RULE(relacional_prima,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -753,6 +762,7 @@ DEFINE_RULE(aritmetica,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -774,6 +784,7 @@ DEFINE_RULE(aritmetica_prima,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -807,6 +818,7 @@ DEFINE_RULE(termino,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -829,6 +841,7 @@ DEFINE_RULE(termino_prima,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -864,6 +877,7 @@ DEFINE_RULE(negacion,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -903,6 +917,7 @@ DEFINE_RULE(factor,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -940,6 +955,7 @@ DEFINE_RULE(factor_prima,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -988,6 +1004,7 @@ DEFINE_RULE(array_o_llamada,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -1115,6 +1132,7 @@ DEFINE_RULE(booleano,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
 )
@@ -1172,7 +1190,8 @@ DEFINE_RULE(lista_de_expr,
 
 DEFINE_RULE(resto_lista_expr,
             FIRST(
-                    ( SEPARATOR, "," )
+                    ( SEPARATOR, "," ),
+                    ( EMPTY )
                  ),
             NEXT(
                     ( SEPARATOR, "]" ),
@@ -1180,7 +1199,14 @@ DEFINE_RULE(resto_lista_expr,
                 )
 )
 {
-    MATCH ( SEPARATOR, ",");
-    RULE  ( expresion )();
-    RULE  ( resto_lista_expr )();
+    if ( IS_FIRST ( SEPARATOR, "," ) )
+    {
+        MATCH ( SEPARATOR, "," );
+        RULE  ( expresion )();
+        RULE  ( resto_lista_expr )();
+    }
+    else
+    {
+        // Vacío.
+    }
 }
