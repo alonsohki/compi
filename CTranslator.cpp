@@ -10,7 +10,6 @@ CTranslator::CTranslator(std::istream& ifsOrig,
 : m_isOrig ( ifsOrig )
 , m_osDest ( ofsDest )
 , m_tokenizer ( ifsOrig )
-, m_bEOFReached ( false )
 , m_uiLastIdent ( 0 )
 {
 }
@@ -42,7 +41,7 @@ bool CTranslator::Translate ()
     }
 
     // No debería quedar nada que leer (aparte de los blancos).
-    if ( m_bEOFReached == false )
+    if ( EOFReached () == false )
     {
         fprintf ( stderr, "Error [%u:%u]: Unexpected token: %s.\n",
                   m_lookahead.uiLine + 1, m_lookahead.uiCol + 1,
@@ -64,8 +63,11 @@ bool CTranslator::Translate ()
 
 void CTranslator::NextLookahead ()
 {
-    m_bEOFReached = ( m_tokenizer.NextToken ( &m_lookahead, true ) == false );
-    if ( m_bEOFReached == false && m_lookahead.eType == CTokenizer::UNKNOWN )
+    if ( m_tokenizer.NextToken ( &m_lookahead, true ) == false )
+    {
+        m_lookahead = CTokenizer::SToken ( CTokenizer::END_OF_FILE, "" );
+    }
+    else if ( m_lookahead.eType == CTokenizer::UNKNOWN )
     {
         const char* szError = m_tokenizer.GetErrorForToken ( m_lookahead );
         if ( szError == 0 )
@@ -73,7 +75,6 @@ void CTranslator::NextLookahead ()
         else
             throw Exception ( m_lookahead.uiLine + 1, m_lookahead.uiCol + 1, szError );
     }
-        
 }
 
 CTokenizer::SToken CTranslator::Match ( CTokenizer::ETokenType eType,
@@ -86,7 +87,7 @@ CTokenizer::SToken CTranslator::Match ( CTokenizer::ETokenType eType,
 
     snprintf ( debuggingPrefix, NUMELEMS(debuggingPrefix), "[%s:%d] ", szFile, uiLine );
 
-    if ( m_bEOFReached == true )
+    if ( EOFReached () == true )
         throw Exception ( 0, 0, Format( "%sUnexpected end of file", debuggingPrefix ) );
 
     if ( m_lookahead.eType != eType )
@@ -121,7 +122,7 @@ CTokenizer::SToken CTranslator::Match ( CTokenizer::ETokenType eType,
 bool CTranslator::Check ( CTokenizer::ETokenType eType,
                           const CString& requiredValue )
 {
-    if ( m_bEOFReached == true )
+    if ( EOFReached () == true )
         return false;
     if ( m_lookahead.eType != eType )
         return false;

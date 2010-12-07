@@ -61,6 +61,7 @@ public:
 
 private:
     void        NextLookahead   ();
+    bool        EOFReached      () const { return m_lookahead.eType == CTokenizer::END_OF_FILE; }
 
 private:
     std::istream&           m_isOrig;
@@ -68,7 +69,6 @@ private:
     CTokenizer              m_tokenizer;
     CTokenizer::SToken      m_lookahead;
     std::vector<CString>    m_vecInstructions;
-    bool                    m_bEOFReached;
     CSymbolTable            m_symbolTable;
     unsigned int            m_uiLastIdent;
 };

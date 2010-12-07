@@ -19,8 +19,13 @@ public:
         SPACE,
         NEWLINE,
         SEPARATOR,
+
         UNKNOWN,
+
+        // Para uso interno del traductor.
         EMPTY,
+        END_OF_FILE,
+        
         MAX_TOKEN_TYPE
     };
 
