@@ -569,12 +569,9 @@ DEFINE_RULE(acceso_a_array,
                 )
 )
 {
-    if (IS_FIRST( SEPARATOR, "[" ))
-    {
-        MATCH ( SEPARATOR, "[" );
-        RULE  ( lista_de_expr )();
-        MATCH ( SEPARATOR, "]" );
-    }
+    MATCH ( SEPARATOR, "[" );
+    RULE  ( lista_de_expr )();
+    MATCH ( SEPARATOR, "]" );
 }
 
 DEFINE_RULE(parametros_llamadas,
@@ -596,12 +593,9 @@ DEFINE_RULE(parametros_llamadas,
                 )
 )
 {
-    if (IS_FIRST( SEPARATOR, "(" ))
-    {
-        MATCH ( SEPARATOR, "(" );
-        RULE  ( lista_de_expr )();
-        MATCH ( SEPARATOR, ")" );
-    }
+    MATCH ( SEPARATOR, "(" );
+    RULE  ( lista_de_expr )();
+    MATCH ( SEPARATOR, ")" );
 }
 
 DEFINE_RULE(expresion,
