@@ -1217,7 +1217,7 @@ DEFINE_RULE(lista_de_expr,
 )
 {
     RULE ( expresion )();
-    RULE ( resto_lista_expr)();
+    RULE ( resto_lista_expr )();
 }
 
 DEFINE_RULE(resto_lista_expr,
