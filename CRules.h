@@ -26,6 +26,7 @@ DECLARE_RULE(clase_param_prima, clase);
 DECLARE_RULE(lista_de_sentencias_prima);
 DECLARE_RULE(lista_de_sentencias, salir_si, hinloop);
 DECLARE_RULE(sentencia);
+DECLARE_RULE(id_o_array);
 DECLARE_RULE(expresiones);
 DECLARE_RULE(acceso_a_array);
 DECLARE_RULE(parametros_llamadas);

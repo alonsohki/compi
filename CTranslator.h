@@ -64,6 +64,7 @@ private:
     bool        EOFReached      () const { return m_lookahead.eType == CTokenizer::END_OF_FILE; }
 
     // Modo pánico.
+private:
     enum EPanicStrategy
     {
         PANIC_STRATEGY_FAIL,        // La compilación se aborta.
@@ -78,6 +79,9 @@ private:
     void        SetInPanic      ( bool bInPanic ) { m_bInPanic = bInPanic; }
     bool        IsInPanic       ( ) const { return m_bInPanic; }
     void        SetPanicStrategy( EPanicStrategy eStrategy ) { m_ePanicStrategy = eStrategy; }
+public:
+    // Función para entrar en modo pánico desde las reglas (cuando el branching falla).
+    void        Panic           ( const CTokenizer::SToken* pNextToken );
 
 private:
     std::istream&           m_isOrig;

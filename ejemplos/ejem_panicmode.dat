@@ -1,8 +1,11 @@
-porograma ejemplo_panicmode
+programaaa ejemplo_panicmode
 	variables a, b : entero;
 comienzo
 	a = 5
-	get(b);
+    get(b);
 	si a > b entonces a = b; fin si;
 	si a < 0 entonces a = 0 fin si;
+	get(b);
+	a = a +;
+	b = 0;
 fin ;

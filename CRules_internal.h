@@ -20,6 +20,10 @@ protected:
     {
         return m_pTranslator->IsInPanic ();
     }
+    void                panic           ( const CTokenizer::SToken* pNextToken )
+    {
+        m_pTranslator->Panic ( pNextToken );
+    }
     CTokenizer::SToken  match           ( CTokenizer::ETokenType eType,
                                           const CString& requiredValue,
                                           const CTokenizer::SToken* pNextToken,
@@ -206,6 +210,7 @@ public: \
 #define ST_POP symbol_table_pop
 #define IS_FIRST(x, ...) is_first ( CTokenizer:: x, ## __VA_ARGS__ )
 #define IS_RULE_FIRST(x) is_rule_first ( BUILD_RULE_CLASS_NAME(x) :: ms_firstToken , BUILD_RULE_CLASS_NAME(x) :: ms_nextToken )
+#define PANIC() panic(ms_nextToken)
 
 #endif	/* CRULES_INTERNAL_H */
 

@@ -204,6 +204,19 @@ bool CTranslator::PanicMode ( CTokenizer::ETokenType eType,
     }
 }
 
+void CTranslator::Panic ( const CTokenizer::SToken* pNextToken )
+{
+    SetPanicStrategy ( PANIC_STRATEGY_FINDNEXT );
+    fprintf ( stderr, "Error [%u:%u]: Unexpected token '%s'.\n",
+                  m_lookahead.uiLine + 1, m_lookahead.uiCol + 1,
+                  m_lookahead.value );
+    bool bDeadlyPanic = PanicMode ( CTokenizer::UNKNOWN, "", pNextToken );
+    if ( bDeadlyPanic == true )
+    {
+        throw Exception ( 0, 0, "Unable to recover from error. Compilation aborted." );
+    }
+}
+
 
 CTokenizer::SToken CTranslator::Match ( CTokenizer::ETokenType eType,
                                         const CString& requiredValue,

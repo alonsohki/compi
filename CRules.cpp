@@ -127,10 +127,7 @@ DEFINE_RULE(tipo,
         MATCH ( RESERVED, "de" );
         RULE  ( tipo )();
     }
-    else
-    {
-        // Error.
-    }
+    else PANIC();
 }
 
 DEFINE_RULE(lista_de_enteros,
@@ -328,6 +325,7 @@ DEFINE_RULE(resto_lis_de_param,
     }
     else
     {
+        // Vacío
     }
 }
 
@@ -353,10 +351,7 @@ DEFINE_RULE(clase_param,
     {
         MATCH ( RESERVED, "salida" );
     }
-    else
-    {
-        // FAIL SIGNIFICA ERROR
-    }
+    else PANIC();
 }
 
 DEFINE_RULE(clase_param_prima,
@@ -378,7 +373,7 @@ DEFINE_RULE(clase_param_prima,
     }
     else
     {
-        // Else asumir clase_param_prima -> epsilon
+        // Vacío
     }
 }
 
@@ -499,9 +494,9 @@ DEFINE_RULE(sentencia,
         MATCH ( RESERVED, "get" );
         MATCH ( SEPARATOR, "(" );
         MATCH ( IDENTIFIER );
-        RULE  ( expresiones )();
-        MATCH ( SEPARATOR, ")");
-        MATCH ( SEPARATOR, ";");
+        RULE  ( id_o_array )();
+        MATCH ( SEPARATOR, ")" );
+        MATCH ( SEPARATOR, ";" );
     }
     else if (IS_FIRST ( RESERVED, "put_line"))
     {
@@ -511,10 +506,27 @@ DEFINE_RULE(sentencia,
         MATCH ( SEPARATOR, ")");
         MATCH ( SEPARATOR, ";");
     }
-    else {
-        // error
-    }
+    else PANIC();
+}
 
+DEFINE_RULE(id_o_array,
+            FIRST(
+                    ( SEPARATOR, "[" ),
+                    ( EMPTY )
+                 ),
+            NEXT(
+                    ( SEPARATOR, ")" )
+                )
+)
+{
+    if ( IS_RULE_FIRST ( acceso_a_array ) )
+    {
+        RULE ( acceso_a_array ) ();
+    }
+    else
+    {
+        // Vacío.
+    }
 }
 
 DEFINE_RULE(expresiones,
@@ -544,9 +556,7 @@ DEFINE_RULE(expresiones,
     {
         RULE  ( parametros_llamadas )();
     }
-    else {
-        // error
-    }
+    else PANIC();
 }
 
 DEFINE_RULE(acceso_a_array,
@@ -923,10 +933,7 @@ DEFINE_RULE(negacion,
     {
         RULE  ( factor )();
     }
-    else
-    {
-        // error
-    }
+    else PANIC();
 }
 
 DEFINE_RULE(factor,
@@ -962,10 +969,7 @@ DEFINE_RULE(factor,
     {
         RULE ( factor_prima )();
     }
-    else
-    {
-        // error
-    }
+    else PANIC();
 }
 
 DEFINE_RULE(factor_prima,
@@ -1014,10 +1018,7 @@ DEFINE_RULE(factor_prima,
         RULE  ( expresion )();
         MATCH ( SEPARATOR, ")" );
     }
-    else
-    {
-        // error
-    }
+    else PANIC();
 }
 
 DEFINE_RULE(array_o_llamada,
@@ -1049,7 +1050,7 @@ DEFINE_RULE(array_o_llamada,
     }
     else
     {
-        // vacioooooo
+        // vacío
     }
 }
 
@@ -1075,10 +1076,7 @@ DEFINE_RULE(opl1,
     else if (IS_FIRST ( OPERATOR, "/" )) {
         MATCH ( OPERATOR, "/" );
     }
-    else
-    {
-        // error
-    }
+    else PANIC();
 }
 
 DEFINE_RULE(opl2,
@@ -1103,10 +1101,7 @@ DEFINE_RULE(opl2,
     else if (IS_FIRST ( OPERATOR, "+" )) {
         MATCH ( OPERATOR, "+" );
     }
-    else
-    {
-        // error
-    }
+    else PANIC();
 }
 
 DEFINE_RULE(oprel,
@@ -1143,10 +1138,7 @@ DEFINE_RULE(oprel,
     else if (IS_FIRST ( OPERATOR, "/=" )) {
         MATCH ( OPERATOR, "/=" );
     }
-    else
-    {
-        // fail
-    }
+    else PANIC();
 }
 
 DEFINE_RULE(booleano,
@@ -1175,10 +1167,7 @@ DEFINE_RULE(booleano,
     else if (IS_FIRST ( RESERVED, "false" )) {
         MATCH ( RESERVED, "false" );
     }
-    else
-    {
-        // error
-    }
+    else PANIC();
 }
 
 DEFINE_RULE(M,
