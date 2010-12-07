@@ -1,11 +1,20 @@
 #include "CRules.h"
 
+// Las siguientes tuplas son demasiado repetitivas a lo largo del código, en
+// las definiciones de primero y siguiente, así que nos creamos unas constantes
+// que las definen para claridad del código.
+#define OPREL_TUPLES    ( OPERATOR, "<" ),  ( OPERATOR, ">" ), \
+                        ( OPERATOR, "<=" ), ( OPERATOR, ">=" ), \
+                        ( OPERATOR, "==" ), ( OPERATOR, "/=" )
+#define OPL1_TUPLES     ( OPERATOR, "*" ),  ( OPERATOR, "/" )
+#define OPL2_TUPLES     ( OPERATOR, "+" ),  ( OPERATOR, "-" )
+
 DEFINE_RULE (programa,
             FIRST(
                     ( RESERVED, "programa" )
                  ),
             NEXT(
-                    // Final de fichero
+                    ( END_OF_FILE )
                 )
 )
 {
@@ -124,7 +133,8 @@ DEFINE_RULE(tipo,
 DEFINE_RULE(decl_de_subprogs,
             FIRST(
                    ( RESERVED, "procedimiento" ),
-                   ( RESERVED, "funcion" )
+                   ( RESERVED, "funcion" ),
+                   ( EMPTY )
                  ),
             NEXT(
                    ( RESERVED, "comienzo" )
@@ -503,11 +513,20 @@ DEFINE_RULE(expresiones,
 
 DEFINE_RULE(acceso_a_array,
             FIRST(
-                    ( OPERATOR, "[" )
+                    ( SEPARATOR, "[" )
                  ),
             NEXT(
-                    ( OPERATOR, "=" )
-                    // Falta...
+                    ( OPERATOR, "=" ),
+                    OPL1_TUPLES,
+                    OPL2_TUPLES,
+                    OPREL_TUPLES,
+                    ( RESERVED, "and" ),
+                    ( RESERVED, "or" ),
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
@@ -521,11 +540,19 @@ DEFINE_RULE(acceso_a_array,
 
 DEFINE_RULE(parametros_llamadas,
             FIRST(
-                    ( OPERATOR, "(" )
+                    ( SEPARATOR, "(" )
                  ),
             NEXT(
+                    OPL1_TUPLES,
+                    OPL2_TUPLES,
+                    OPREL_TUPLES,
+                    ( RESERVED, "and" ),
+                    ( RESERVED, "or" ),
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
-                    ( SEPARATOR, ")" )
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
@@ -539,8 +566,9 @@ DEFINE_RULE(parametros_llamadas,
 
 DEFINE_RULE(expresion,
             FIRST(
-                    ( IDENTIFIER ),
                     ( RESERVED, "not" ),
+                    ( OPERATOR, "-" ),
+                    ( IDENTIFIER ),
                     ( INTEGER ),
                     ( REAL ),
                     ( RESERVED, "true" ),
@@ -561,8 +589,9 @@ DEFINE_RULE(expresion,
 
 DEFINE_RULE(disyuncion,
             FIRST(
-                    ( IDENTIFIER ),
                     ( RESERVED, "not" ),
+                    ( OPERATOR, "-" ),
+                    ( IDENTIFIER ),
                     ( INTEGER ),
                     ( REAL ),
                     ( RESERVED, "true" ),
@@ -584,6 +613,8 @@ DEFINE_RULE(disyuncion,
 
 DEFINE_RULE(disyuncion_prima,
             FIRST(
+                    ( RESERVED, "or" ),
+                    ( EMPTY )
                  ),
             NEXT(
                     ( RESERVED, "entonces" ),
@@ -605,8 +636,9 @@ DEFINE_RULE(disyuncion_prima,
 
 DEFINE_RULE(conjuncion,
             FIRST(
-                    ( IDENTIFIER ),
                     ( RESERVED, "not" ),
+                    ( OPERATOR, "-" ),
+                    ( IDENTIFIER ),
                     ( INTEGER ),
                     ( REAL ),
                     ( RESERVED, "true" ),
@@ -614,6 +646,12 @@ DEFINE_RULE(conjuncion,
                     ( SEPARATOR, "(" )
                  ),
             NEXT(
+                    ( RESERVED, "or" ),
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
@@ -623,8 +661,16 @@ DEFINE_RULE(conjuncion,
 
 DEFINE_RULE(conjuncion_prima,
             FIRST(
+                    ( RESERVED, "and" ),
+                    ( EMPTY )
                  ),
             NEXT(
+                    ( RESERVED, "or" ),
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
@@ -639,8 +685,9 @@ DEFINE_RULE(conjuncion_prima,
 
 DEFINE_RULE(relacional,
             FIRST(
-                    ( IDENTIFIER ),
                     ( RESERVED, "not" ),
+                    ( OPERATOR, "-" ),
+                    ( IDENTIFIER ),
                     ( INTEGER ),
                     ( REAL ),
                     ( RESERVED, "true" ),
@@ -648,6 +695,13 @@ DEFINE_RULE(relacional,
                     ( SEPARATOR, "(" )
                  ),
             NEXT(
+                    ( RESERVED, "and" ),
+                    ( RESERVED, "or" ),
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
@@ -657,8 +711,17 @@ DEFINE_RULE(relacional,
 
 DEFINE_RULE(relacional_prima,
             FIRST(
+                    OPREL_TUPLES,
+                    ( EMPTY )
                  ),
             NEXT(
+                    ( RESERVED, "and" ),
+                    ( RESERVED, "or" ),
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
@@ -673,8 +736,9 @@ DEFINE_RULE(relacional_prima,
 
 DEFINE_RULE(aritmetica,
             FIRST(
-                    ( IDENTIFIER ),
                     ( RESERVED, "not" ),
+                    ( OPERATOR, "-" ),
+                    ( IDENTIFIER ),
                     ( INTEGER ),
                     ( REAL ),
                     ( RESERVED, "true" ),
@@ -682,14 +746,7 @@ DEFINE_RULE(aritmetica,
                     ( SEPARATOR, "(" )
                  ),
             NEXT(
-                    // Operaciones relacionales (oprel)
-                    ( OPERATOR, "<"),
-                    ( OPERATOR, ">"),
-                    ( OPERATOR, "<="),
-                    ( OPERATOR, ">="),
-                    ( OPERATOR, "=="),
-                    ( OPERATOR, "/="),
-                    // Fin operadores relacionales
+                    OPREL_TUPLES,
                     ( RESERVED, "and" ),
                     ( RESERVED, "or" ),
                     ( RESERVED, "entonces" ),
@@ -706,8 +763,18 @@ DEFINE_RULE(aritmetica,
 
 DEFINE_RULE(aritmetica_prima,
             FIRST(
+                    OPL2_TUPLES,
+                    ( EMPTY )
                  ),
             NEXT(
+                    OPREL_TUPLES,
+                    ( RESERVED, "and" ),
+                    ( RESERVED, "or" ),
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
@@ -722,8 +789,25 @@ DEFINE_RULE(aritmetica_prima,
 
 DEFINE_RULE(termino,
             FIRST(
+                    ( RESERVED, "not" ),
+                    ( OPERATOR, "-" ),
+                    ( IDENTIFIER ),
+                    ( INTEGER ),
+                    ( REAL ),
+                    ( RESERVED, "true" ),
+                    ( RESERVED, "false" ),
+                    ( SEPARATOR, "(" )
                  ),
             NEXT(
+                    OPL2_TUPLES,
+                    OPREL_TUPLES,
+                    ( RESERVED, "and" ),
+                    ( RESERVED, "or" ),
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
@@ -733,8 +817,19 @@ DEFINE_RULE(termino,
 
 DEFINE_RULE(termino_prima,
             FIRST(
+                    OPL1_TUPLES,
+                    ( EMPTY )
                  ),
             NEXT(
+                    OPL2_TUPLES,
+                    OPREL_TUPLES,
+                    ( RESERVED, "and" ),
+                    ( RESERVED, "or" ),
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
@@ -750,8 +845,26 @@ DEFINE_RULE(termino_prima,
 
 DEFINE_RULE(negacion,
             FIRST(
+                    ( RESERVED, "not" ),
+                    ( OPERATOR, "-" ),
+                    ( IDENTIFIER ),
+                    ( INTEGER ),
+                    ( REAL ),
+                    ( RESERVED, "true" ),
+                    ( RESERVED, "false" ),
+                    ( SEPARATOR, "(" )
                  ),
             NEXT(
+                    OPL1_TUPLES,
+                    OPL2_TUPLES,
+                    OPREL_TUPLES,
+                    ( RESERVED, "and" ),
+                    ( RESERVED, "or" ),
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
@@ -772,8 +885,25 @@ DEFINE_RULE(negacion,
 
 DEFINE_RULE(factor,
             FIRST(
+                    ( OPERATOR, "-" ),
+                    ( IDENTIFIER ),
+                    ( INTEGER ),
+                    ( REAL ),
+                    ( RESERVED, "true" ),
+                    ( RESERVED, "false" ),
+                    ( SEPARATOR, "(" )
                  ),
             NEXT(
+                    OPL1_TUPLES,
+                    OPL2_TUPLES,
+                    OPREL_TUPLES,
+                    ( RESERVED, "and" ),
+                    ( RESERVED, "or" ),
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
@@ -793,8 +923,24 @@ DEFINE_RULE(factor,
 
 DEFINE_RULE(factor_prima,
             FIRST(
+                    ( IDENTIFIER ),
+                    ( INTEGER ),
+                    ( REAL ),
+                    ( RESERVED, "true" ),
+                    ( RESERVED, "false" ),
+                    ( SEPARATOR, "(" )
                  ),
             NEXT(
+                    OPL1_TUPLES,
+                    OPL2_TUPLES,
+                    OPREL_TUPLES,
+                    ( RESERVED, "and" ),
+                    ( RESERVED, "or" ),
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
@@ -828,8 +974,21 @@ DEFINE_RULE(factor_prima,
 
 DEFINE_RULE(array_o_llamada,
             FIRST(
+                    ( SEPARATOR, "(" ),
+                    ( SEPARATOR, "[" ),
+                    ( EMPTY )
                  ),
             NEXT(
+                    OPL1_TUPLES,
+                    OPL2_TUPLES,
+                    OPREL_TUPLES,
+                    ( RESERVED, "and" ),
+                    ( RESERVED, "or" ),
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
@@ -847,9 +1006,18 @@ DEFINE_RULE(array_o_llamada,
 
 DEFINE_RULE(opl1,
             FIRST(
+                    OPL1_TUPLES
                  ),
             NEXT(
-                )
+                    ( RESERVED, "not" ),
+                    ( OPERATOR, "-" ),
+                    ( IDENTIFIER ),
+                    ( INTEGER ),
+                    ( REAL ),
+                    ( RESERVED, "true" ),
+                    ( RESERVED, "false" ),
+                    ( SEPARATOR, "(" )
+                 )
 )
 {
     if (IS_FIRST ( OPERATOR, "*" )) {
@@ -866,9 +1034,18 @@ DEFINE_RULE(opl1,
 
 DEFINE_RULE(opl2,
             FIRST(
+                    OPL2_TUPLES
                  ),
             NEXT(
-                )
+                    ( RESERVED, "not" ),
+                    ( OPERATOR, "-" ),
+                    ( IDENTIFIER ),
+                    ( INTEGER ),
+                    ( REAL ),
+                    ( RESERVED, "true" ),
+                    ( RESERVED, "false" ),
+                    ( SEPARATOR, "(" )
+                 )
 )
 {
     if (IS_FIRST ( OPERATOR, "-" )) {
@@ -885,9 +1062,18 @@ DEFINE_RULE(opl2,
 
 DEFINE_RULE(oprel,
             FIRST(
+                    OPREL_TUPLES
                  ),
             NEXT(
-                )
+                    ( RESERVED, "not" ),
+                    ( OPERATOR, "-" ),
+                    ( IDENTIFIER ),
+                    ( INTEGER ),
+                    ( REAL ),
+                    ( RESERVED, "true" ),
+                    ( RESERVED, "false" ),
+                    ( SEPARATOR, "(" )
+                 )
 )
 {
     if (IS_FIRST ( OPERATOR, "<" )) {
@@ -916,8 +1102,20 @@ DEFINE_RULE(oprel,
 
 DEFINE_RULE(booleano,
             FIRST(
+                    ( RESERVED, "true" ),
+                    ( RESERVED, "false" )
                  ),
             NEXT(
+                    OPL1_TUPLES,
+                    OPL2_TUPLES,
+                    OPREL_TUPLES,
+                    ( RESERVED, "and" ),
+                    ( RESERVED, "or" ),
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "," )
                 )
 )
 {
@@ -935,8 +1133,17 @@ DEFINE_RULE(booleano,
 
 DEFINE_RULE(M,
             FIRST(
+                    ( EMPTY )
                  ),
             NEXT(
+                    ( IDENTIFIER ),
+                    ( RESERVED, "si" ),
+                    ( RESERVED, "hacer" ),
+                    ( RESERVED, "salir" ),
+                    ( RESERVED, "get" ),
+                    ( RESERVED, "put_line" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" )
                 )
 )
 {
@@ -944,8 +1151,18 @@ DEFINE_RULE(M,
 
 DEFINE_RULE(lista_de_expr,
             FIRST(
+                    ( RESERVED, "not" ),
+                    ( OPERATOR, "-" ),
+                    ( IDENTIFIER ),
+                    ( INTEGER ),
+                    ( REAL ),
+                    ( RESERVED, "true" ),
+                    ( RESERVED, "false" ),
+                    ( SEPARATOR, "(" )
                  ),
             NEXT(
+                    ( SEPARATOR, "]" ),
+                    ( SEPARATOR, ")" )
                 )
 )
 {
@@ -955,8 +1172,11 @@ DEFINE_RULE(lista_de_expr,
 
 DEFINE_RULE(resto_lista_expr,
             FIRST(
+                    ( SEPARATOR, "," )
                  ),
             NEXT(
+                    ( SEPARATOR, "]" ),
+                    ( SEPARATOR, ")" )
                 )
 )
 {
