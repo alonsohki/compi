@@ -212,5 +212,27 @@ public: \
 #define IS_RULE_FIRST(x) is_rule_first ( BUILD_RULE_CLASS_NAME(x) :: ms_firstToken , BUILD_RULE_CLASS_NAME(x) :: ms_nextToken )
 #define PANIC() panic(ms_nextToken)
 
+// Foreach
+struct __ETDS__Foreach_Iterator
+{
+    __ETDS__Foreach_Iterator ( const CString& ls )
+    {
+        CListInString::GetListElements( ls, m_vec );
+        iter = m_vec.begin ();
+    }
+    bool end () const { return iter == m_vec.end(); }
+    __ETDS__Foreach_Iterator& operator++() { ++iter; return *this; }
+    operator const CString&() const { return *iter; }
+    operator const char*() const { return *(*iter); }
+
+    std::vector<CString> m_vec;
+    std::vector<CString>::iterator iter;
+};
+#define FOREACH_GET_FIRST(a,b) a
+#define FOREACH_GET_SECOND(a,b) b
+#define FOREACH(ls_iter) FOREACH_I(FOREACH_GET_FIRST(ls_iter), FOREACH_GET_SECOND(ls_iter))
+#define FOREACH_I(ls, iter) for ( __ETDS__Foreach_Iterator iter (ls); (iter).end() == false; ++iter )
+#define AS ,
+
 #endif	/* CRULES_INTERNAL_H */
 
