@@ -66,7 +66,7 @@
           <incDir>
             <pElem>.</pElem>
           </incDir>
-          <commandLine>-Wall</commandLine>
+          <commandLine>-Wall -Wno-unused-value</commandLine>
         </ccTool>
         <fortranCompilerTool>
           <commandlineTool>g77</commandlineTool>
@@ -100,6 +100,7 @@
           <incDir>
             <pElem>.</pElem>
           </incDir>
+          <commandLine>-Wall -Wno-unused-value</commandLine>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>

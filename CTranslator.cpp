@@ -14,6 +14,8 @@ CTranslator::CTranslator(std::istream& ifsOrig,
 , m_bInPanic ( false )
 , m_ePanicStrategy ( PANIC_STRATEGY_FAIL )
 , m_bKeepCurrentLookahead ( false )
+, m_numErrors ( 0 )
+, m_numWarnings ( 0 )
 {
 }
 
@@ -39,36 +41,31 @@ bool CTranslator::Translate ()
     catch ( Exception& e )
     {
         // Comprobamos si debemos mostrar fila y columna.
-        if ( e.GetLine () == 0 && e.GetColumn() == 0 )
-        {
-            fprintf ( stderr, "Error: %s\n", *(e.GetReason()) );
-        }
-        else
-        {
-            fprintf ( stderr, "Error [%u:%u]: %s\n",
-                      e.GetLine(), e.GetColumn(), *(e.GetReason()) );
-        }
-        return false;
+        bool bShowLineAndCol = e.GetLine () != 0 || e.GetColumn () != 0;
+        Error ( e.GetReason(), e.GetLine(), e.GetColumn(), bShowLineAndCol );
     }
 
     // No debería quedar nada que leer (aparte de los blancos).
-    if ( EOFReached () == false )
+    if ( m_numErrors == 0 && EOFReached () == false )
     {
-        fprintf ( stderr, "Error [%u:%u]: Unexpected token: %s.\n",
-                  m_lookahead.uiLine + 1, m_lookahead.uiCol + 1,
-                  m_lookahead.value );
-        return false;
+        Error ( Format ( "Unexpected token: %s", m_lookahead.value ) );
     }
 
-    // Escribimos el resultado en la salida.
-    unsigned int i = 0;
-    for ( std::vector<CString>::const_iterator it = m_vecInstructions.begin ();
-          it != m_vecInstructions.end();
-          ++it )
+    // Generamos el código si no ha habido errores.
+    if ( m_numErrors == 0 )
     {
-        m_osDest << i << ": " << *(*it) << ";" << std::endl;
+        unsigned int i = 0;
+        for ( std::vector<CString>::const_iterator it = m_vecInstructions.begin ();
+              it != m_vecInstructions.end();
+              ++it )
+        {
+            m_osDest << i << ": " << *(*it) << ";" << std::endl;
+        }
     }
 
+    // Resultado de la compilación.
+    fprintf ( stderr, "Compilation finished. %u errors, %u warnings\n",
+              m_numErrors, m_numWarnings );
     return true;
 }
 
@@ -92,6 +89,47 @@ void CTranslator::NextLookahead ()
     m_bKeepCurrentLookahead = false;
 }
 
+void CTranslator::Error ( const CString& msg,
+                          unsigned int uiLine, unsigned int uiCol,
+                          bool bShowLineAndCol )
+{
+    char szPrefix [ 32 ] = "";
+    if ( bShowLineAndCol == true )
+    {
+        if ( uiLine == 0 && uiCol == 0 )
+        {
+            snprintf ( szPrefix, NUMELEMS(szPrefix), "[%u:%u] ",
+                       m_lookahead.uiLine + 1, m_lookahead.uiCol + 1 );
+        }
+        else
+        {
+            snprintf ( szPrefix, NUMELEMS(szPrefix), "[%u:%u] ", uiLine, uiCol );
+        }
+    }
+    fprintf ( stderr, "%sError: %s\n", szPrefix, *msg );
+    ++m_numErrors;
+}
+
+void CTranslator::Warning ( const CString& msg,
+                            unsigned int uiLine, unsigned int uiCol,
+                            bool bShowLineAndCol )
+{
+    char szPrefix [ 32 ] = "";
+    if ( bShowLineAndCol == true )
+    {
+        if ( uiLine == 0 && uiCol == 0 )
+        {
+            snprintf ( szPrefix, NUMELEMS(szPrefix), "[%u:%u] ",
+                       m_lookahead.uiLine + 1, m_lookahead.uiCol + 1 );
+        }
+        else
+        {
+            snprintf ( szPrefix, NUMELEMS(szPrefix), "[%u:%u] ", uiLine, uiCol );
+        }
+    }
+    fprintf ( stderr, "%sWarning: %s\n", szPrefix, *msg );
+    ++m_numWarnings;
+}
 
 bool CTranslator::PanicMode ( CTokenizer::ETokenType eType,
                               const CString& requiredValue,
@@ -207,9 +245,7 @@ bool CTranslator::PanicMode ( CTokenizer::ETokenType eType,
 void CTranslator::Panic ( const CTokenizer::SToken* pNextToken )
 {
     SetPanicStrategy ( PANIC_STRATEGY_FINDNEXT );
-    fprintf ( stderr, "Error [%u:%u]: Unexpected token '%s'.\n",
-                  m_lookahead.uiLine + 1, m_lookahead.uiCol + 1,
-                  m_lookahead.value );
+    Error ( Format ( "Unexpected token '%s'", m_lookahead.value ) );
     bool bDeadlyPanic = PanicMode ( CTokenizer::UNKNOWN, "", pNextToken );
     if ( bDeadlyPanic == true )
     {
@@ -281,8 +317,8 @@ CTokenizer::SToken CTranslator::Match ( CTokenizer::ETokenType eType,
     {
         // Si llegamos aquí, significa que el match ha fallado. Ejecutamos el
         // modo de pánico.
-        fprintf ( stderr, "Error [%u:%u]: %s.\n",
-                  e.GetLine(), e.GetColumn(), *(e.GetReason()) );
+        bool bShowLineAndCol = e.GetLine() != 0 || e.GetColumn() != 0;
+        Error ( e.GetReason(), e.GetLine(), e.GetColumn(), bShowLineAndCol );
         bDeadlyPanic = PanicMode ( eType, requiredValue, pNextToken );
     }
 

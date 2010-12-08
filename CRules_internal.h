@@ -24,6 +24,14 @@ protected:
     {
         m_pTranslator->Panic ( pNextToken );
     }
+    void                warning         ( const CString& msg )
+    {
+        m_pTranslator->Warning ( msg );
+    }
+    void                error           ( const CString& msg )
+    {
+        m_pTranslator->Error ( msg );
+    }
     CTokenizer::SToken  match           ( CTokenizer::ETokenType eType,
                                           const CString& requiredValue,
                                           const CTokenizer::SToken* pNextToken,
@@ -107,6 +115,34 @@ protected:
     {
         m_pTranslator->ST_Pop();
     }
+    CString         type_of             ( const CString& typeInfo )
+    {
+        CTypeInfo info ( typeInfo );
+        switch ( info.GetType() )
+        {
+            case CTypeInfo::INTEGER: return "int";
+            case CTypeInfo::REAL: return "real";
+            case CTypeInfo::BOOLEAN: return "bool";
+            case CTypeInfo::ARRAY: return "array";
+            case CTypeInfo::PROCEDURE: return "procedure";
+            case CTypeInfo::FUNCTION: return "function";
+            default: return "";
+        }
+    }
+    CString     new_array_type          ( const CString& integerList,
+                                          const CString& arrayContent )
+    {
+        std::vector < CString > vecIntegers;
+        CListInString::GetListElements( integerList, vecIntegers );
+        std::vector < unsigned int > vecDimensions;
+        for ( std::vector<CString>::const_iterator iter = vecIntegers.begin ();
+              iter != vecIntegers.end();
+              ++iter )
+        {
+            vecDimensions.push_back ( atoi(*iter) );
+        }
+        return CTypeInfo ( vecDimensions, CTypeInfo ( arrayContent ) ).toString ();
+    }
 
 private:
     CTranslator*   m_pTranslator;
@@ -187,7 +223,7 @@ public: \
 #define RULE(T, ...) RULE_I(T, NUMARGS(__VA_ARGS__), __VA_ARGS__)
 #define RULE_I(T, n, ...) CAT(RULE_I_, n)(T, ## __VA_ARGS__)
 #define RULE_I_0(T, varName) BUILD_RULE_CLASS_NAME(T) ( this->GetTranslator() )
-#define RULE_I_1(T, varName) BUILD_RULE_CLASS_NAME(T) (varName) ( this->GetTranslator() )
+#define RULE_I_1(T, varName) BUILD_RULE_CLASS_NAME(T) (varName) ( this->GetTranslator() ); (varName)
 
 #define EXECUTE_FIRST_RULE(T) __CRuleFirst__ ( this ) ()
 
@@ -211,6 +247,8 @@ public: \
 #define IS_FIRST(x, ...) is_first ( CTokenizer:: x, ## __VA_ARGS__ )
 #define IS_RULE_FIRST(x) is_rule_first ( BUILD_RULE_CLASS_NAME(x) :: ms_firstToken , BUILD_RULE_CLASS_NAME(x) :: ms_nextToken )
 #define PANIC() panic(ms_nextToken)
+#define WARNING(msg) warning(CString() || msg )
+#define ERROR(msg) error(CString() || msg )
 
 // Foreach
 struct __ETDS__Foreach_Iterator
@@ -222,7 +260,6 @@ struct __ETDS__Foreach_Iterator
     }
     bool end () const { return iter == m_vec.end(); }
     __ETDS__Foreach_Iterator& operator++() { ++iter; return *this; }
-    operator const CString&() const { return *iter; }
     operator const char*() const { return *(*iter); }
 
     std::vector<CString> m_vec;
@@ -233,6 +270,19 @@ struct __ETDS__Foreach_Iterator
 #define FOREACH(ls_iter) FOREACH_I(FOREACH_GET_FIRST(ls_iter), FOREACH_GET_SECOND(ls_iter))
 #define FOREACH_I(ls, iter) for ( __ETDS__Foreach_Iterator iter (ls); (iter).end() == false; ++iter )
 #define AS ,
+
+// Tipos
+#define IS_INTEGER(x)   ( CTypeInfo(x).GetType() == CTypeInfo::INTEGER )
+#define IS_REAL(x)      ( CTypeInfo(x).GetType() == CTypeInfo::REAL )
+#define IS_BOOLEAN(x)   ( CTypeInfo(x).GetType() == CTypeInfo::BOOLEAN )
+#define IS_ARRAY(x)     ( CTypeInfo(x).GetType() == CTypeInfo::ARRAY )
+#define IS_PROCEDURE(x) ( CTypeInfo(x).GetType() == CTypeInfo::PROCEDURE )
+#define IS_FUNCTION(x)  ( CTypeInfo(x).GetType() == CTypeInfo::FUNCTION )
+#define TYPE_OF(x)      type_of(x)
+#define NEW_BASIC_TYPE(x)   ( CTypeInfo(CTypeInfo:: x ).toString() )
+#define NEW_ARRAY_TYPE(d,t) new_array_type(d,t)
+#define ARRAY_CONTENT(x)    ( CTypeInfo(x).GetArrayContent()->toString() )
+#define ARRAY_SIZE(x)       CString( CTypeInfo(x).GetArraySize() )
 
 #endif	/* CRULES_INTERNAL_H */
 

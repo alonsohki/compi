@@ -19,13 +19,15 @@ DEFINE_RULE (programa,
 )
 {
     MATCH ( RESERVED,  "programa" );
-    MATCH ( IDENTIFIER );
+    TOKEN ID = MATCH ( IDENTIFIER );
+    { ADD_INST ( "prog " || ID.value ); }
     RULE  ( declaraciones )();
     RULE  ( decl_de_subprogs )();
     MATCH ( RESERVED, "comienzo" );
     RULE  ( lista_de_sentencias_prima )();
     MATCH ( RESERVED, "fin" );
     MATCH ( SEPARATOR, ";" );
+    { ADD_INST ( "halt" ); }
 }
 
 DEFINE_RULE(declaraciones,
@@ -43,16 +45,32 @@ DEFINE_RULE(declaraciones,
     if ( IS_FIRST ( RESERVED, "variables" ) )
     {
         MATCH ( RESERVED, "variables" );
-        RULE  ( lista_de_ident )();
+        RULE  ( lista_de_ident, ls_ident )();
         MATCH ( SEPARATOR, ":" );
-        RULE  ( tipo )();
+        RULE  ( tipo, t ) ();
         MATCH ( SEPARATOR, ";" );
-        /* Falta semántica */
+        {
+            if ( IS_INTEGER(t.tipo) || IS_REAL(t.tipo) || IS_BOOLEAN(t.tipo) )
+            {
+                FOREACH ( ls_ident.ids AS ident )
+                {
+                    ADD_INST(TYPE_OF(t.tipo) || " " || ident );
+                }
+            }
+            else if ( IS_ARRAY(t.tipo) )
+            {
+                FOREACH ( ls_ident.ids AS ident )
+                {
+                    ADD_INST("array_" || TYPE_OF(ARRAY_CONTENT(t.tipo))
+                             || " " || ident || "," || ARRAY_SIZE(t.tipo) );
+                }
+            }
+        }
         RULE  ( declaraciones )();
     }
     else
     {
-        // Esto ES vacio
+        // Vacío
     }
 }
 
@@ -65,8 +83,9 @@ DEFINE_RULE(lista_de_ident,
                 )
 )
 {
-    MATCH ( IDENTIFIER );
-    RULE  ( resto_lista_ident )();
+    TOKEN ID = MATCH ( IDENTIFIER );
+    RULE  ( resto_lista_ident, resto )();
+    { THIS.ids = JOIN(INIT_LIST(ID.value), resto.ids); }
 }
 
 DEFINE_RULE(resto_lista_ident,
@@ -82,12 +101,13 @@ DEFINE_RULE(resto_lista_ident,
     if ( IS_FIRST ( SEPARATOR, "," ) )
     {
         MATCH ( SEPARATOR, "," );
-        MATCH ( IDENTIFIER );
-        RULE  ( resto_lista_ident )();
+        TOKEN ID = MATCH ( IDENTIFIER );
+        RULE  ( resto_lista_ident, resto )();
+        { THIS.ids = JOIN(INIT_LIST(ID.value), resto.ids); }
     }
     else
     {
-        // vacio
+        { THIS.ids = EMPTY_LIST(); }
     }
 }
 
@@ -109,23 +129,27 @@ DEFINE_RULE(tipo,
     if ( IS_FIRST ( RESERVED, "entero" ) )
     {
         MATCH ( RESERVED, "entero" );
+        { THIS.tipo = NEW_BASIC_TYPE(INTEGER); }
     }
     else if ( IS_FIRST ( RESERVED, "real" ) )
     {
         MATCH ( RESERVED, "real" );
+        { THIS.tipo = NEW_BASIC_TYPE(REAL); }
     }
     else if ( IS_FIRST ( RESERVED, "booleano" ) )
     {
         MATCH ( RESERVED, "booleano" );
+        { THIS.tipo = NEW_BASIC_TYPE(BOOLEAN); }
     }
     else if ( IS_FIRST ( RESERVED, "array" ) )
     {
         MATCH ( RESERVED, "array" );
         MATCH ( SEPARATOR, "[" );
-        RULE  ( lista_de_enteros )();
+        RULE  ( lista_de_enteros, ls )();
         MATCH ( SEPARATOR, "]" );
         MATCH ( RESERVED, "de" );
-        RULE  ( tipo )();
+        RULE  ( tipo, t )();
+        { THIS.tipo = NEW_ARRAY_TYPE(ls.ints, t.tipo); }
     }
     else PANIC();
 }
@@ -139,8 +163,9 @@ DEFINE_RULE(lista_de_enteros,
             )
 )
 {
-    MATCH ( INTEGER );
-    RULE ( resto_lista_enteros )();
+    TOKEN INT = MATCH ( INTEGER );
+    RULE ( resto_lista_enteros, resto )();
+    { THIS.ints = JOIN(INIT_LIST(INT.value), resto.ints); }
 }
 
 DEFINE_RULE(resto_lista_enteros,
@@ -156,12 +181,14 @@ DEFINE_RULE(resto_lista_enteros,
     if ( IS_FIRST ( SEPARATOR, "," ) )
     {
         MATCH ( SEPARATOR, "," );
-        MATCH ( INTEGER );
-        RULE ( resto_lista_enteros )();
+        TOKEN INT = MATCH ( INTEGER );
+        RULE ( resto_lista_enteros, resto )();
+        { THIS.ints = JOIN(INIT_LIST(INT.value), resto.ints); }
     }
     else
     {
         // Vacío.
+        { THIS.ints = EMPTY_LIST(); }
     }
 }
 

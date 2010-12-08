@@ -18,6 +18,8 @@ public:
     CString ( const std::string& str ) : m_str ( str ) {}
     CString ( const CString& Right ) : m_str ( Right.m_str ) {}
     CString ( bool bValue ) : m_str ( bValue ? "true" : "false" ) {}
+    CString ( unsigned int uiValue ) { operator=(uiValue); }
+    CString ( int iValue ) { operator=(iValue); }
 
     CString& operator= ( const CString& Right )
     {
@@ -43,6 +45,13 @@ public:
     {
         char temp [ 16 ];
         snprintf ( temp, NUMELEMS(temp), "%d", iValue );
+        m_str.assign ( temp );
+        return *this;
+    }
+    CString& operator= ( unsigned int uiValue )
+    {
+        char temp [ 16 ];
+        snprintf ( temp, NUMELEMS(temp), "%u", uiValue );
         m_str.assign ( temp );
         return *this;
     }

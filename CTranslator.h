@@ -83,6 +83,19 @@ public:
     // Función para entrar en modo pánico desde las reglas (cuando el branching falla).
     void        Panic           ( const CTokenizer::SToken* pNextToken );
 
+    
+    // Funciones de mensajería.
+public:
+    void        Error           ( const CString& msg,
+                                  unsigned int uiLine = 0,
+                                  unsigned int uiCol = 0,
+                                  bool bShowLineAndCol = true );
+    void        Warning         ( const CString& msg,
+                                  unsigned int uiLine = 0,
+                                  unsigned int uiCol = 0,
+                                  bool bShowLineAndCol = true );
+    
+
 private:
     std::istream&           m_isOrig;
     std::ostream&           m_osDest;
@@ -94,6 +107,8 @@ private:
     bool                    m_bInPanic;
     EPanicStrategy          m_ePanicStrategy;
     bool                    m_bKeepCurrentLookahead;
+    unsigned int            m_numErrors;
+    unsigned int            m_numWarnings;
 };
 
 #endif	/* CTRANSLATOR_H */

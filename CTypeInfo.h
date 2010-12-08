@@ -27,10 +27,10 @@ public:
         ARRAY,
         PROCEDURE,
         FUNCTION,
-        VOID,
 
         UNKNOWN
     };
+
 
     // Clases de parámetros.
     enum EParamClass
@@ -216,11 +216,6 @@ private:
             m_eType = BOOLEAN;
             return 8;
         }
-        else if ( str.compare ( 0, 5, "void#" ) == 0 )
-        {
-            m_eType = VOID;
-            return 5;
-        }
         else if ( str.compare ( 0, 6, "array$" ) == 0 )
         {
             size_t pos = str.find ( '$', 6 );
@@ -321,9 +316,6 @@ public:
             case BOOLEAN:
                 ret = "boolean#";
                 break;
-            case VOID:
-                ret = "void#";
-                break;
             case ARRAY:
                 ret = "array$";
                 for ( unsigned int i = 0; i < m_array.numDimensions; ++i )
@@ -364,6 +356,12 @@ public:
         }
 
         return ret;
+    }
+
+public:
+    operator CString() const
+    {
+        return toString ();
     }
 
 private:
@@ -454,6 +452,13 @@ public:
     const CTypeInfo*    GetArrayContent     () const { return m_array.contentType; }
     const unsigned int* GetArrayDimensions  () const { return m_array.dimensionsLength; }
     unsigned int        GetArrayDepth       () const { return m_array.numDimensions; }
+    unsigned int        GetArraySize        () const
+    {
+        unsigned int uiSize = m_array.dimensionsLength[0];;
+        for ( unsigned int i = 1; i < m_array.numDimensions; ++i )
+            uiSize *= m_array.dimensionsLength[i];
+        return uiSize;
+    }
 
     const CTypeInfo*    GetFunctionRetType  () const { return m_params.returns; }
     const CTypeInfo* const*
@@ -482,7 +487,6 @@ public:
                     uiSize *= m_array.dimensionsLength [ i ];
                 }
                 break;
-            case VOID:
             case UNKNOWN:
                 uiSize = 0;
                 break;

@@ -1,0 +1,8 @@
+programa ejemplo
+    variables a,b,c : entero;
+    variables d,e : real;
+	variables f : booleano;
+	variables g,h : array [ 2, 5, 6 ] de entero;
+	variables i,j : array [ 2, 2 ] de array [ 2, 2 ] de real;
+comienzo
+fin ;

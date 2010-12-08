@@ -45,8 +45,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=
-CXXFLAGS=
+CCFLAGS=-Wall -Wno-unused-value
+CXXFLAGS=-Wall -Wno-unused-value
 
 # Fortran Compiler Flags
 FFLAGS=
