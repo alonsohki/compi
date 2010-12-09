@@ -90,6 +90,18 @@ public:
     {
         return m_str == Right.m_str;
     }
+    bool operator== ( unsigned int uiRight ) const
+    {
+        return operator== ( CString ( uiRight ) );
+    }
+    bool operator== ( int iRight ) const
+    {
+        return operator== ( CString ( iRight ) );
+    }
+    bool operator== ( bool bRight ) const
+    {
+        return operator== ( CString ( bRight ) );
+    }
     bool operator!= ( const char* Right ) const
     {
         return !operator==(Right);
@@ -97,6 +109,18 @@ public:
     bool operator!= ( const CString& Right ) const
     {
         return !operator==(Right);
+    }
+    bool operator!= ( unsigned int uiRight ) const
+    {
+        return !operator==(uiRight);
+    }
+    bool operator!= ( int iRight ) const
+    {
+        return !operator==(iRight);
+    }
+    bool operator!= ( bool bRight ) const
+    {
+        return !operator==(bRight);
     }
 
     bool operator< ( const CString& Right ) const

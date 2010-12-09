@@ -454,7 +454,7 @@ DEFINE_RULE(lista_de_sentencias_prima,
 )
 {
     RULE  ( lista_de_sentencias, ls );
-    { ls.hinloop = "false"; }
+    { ls.hinloop = false; }
     ls();
 }
 
