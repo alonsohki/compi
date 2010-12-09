@@ -187,7 +187,6 @@ DEFINE_RULE(resto_lista_enteros,
     }
     else
     {
-        // Vacío.
         { THIS.ints = EMPTY_LIST(); }
     }
 }
@@ -230,12 +229,15 @@ DEFINE_RULE(decl_de_procedimiento,
                 )
 )
 {
+	{ ST_PUSH(); }
     RULE  ( cabecera_procedimiento )();
     RULE  ( declaraciones )();
     MATCH ( RESERVED, "comienzo" );
     RULE  ( lista_de_sentencias_prima )();
     MATCH ( RESERVED, "fin" );
+    { ADD_INST ( "finproc "); }
     MATCH ( SEPARATOR, ";" );
+    { ST_POP(); }
 }
 
 DEFINE_RULE(decl_de_funcion,
@@ -249,14 +251,28 @@ DEFINE_RULE(decl_de_funcion,
                 )
 )
 {
-    RULE  ( cabecera_funcion )();
+	{ ST_PUSH(); }
+    RULE  ( cabecera_funcion , c )();
     RULE  ( declaraciones )();
     MATCH ( RESERVED, "comienzo" );
     RULE  ( lista_de_sentencias_prima )();
     MATCH ( RESERVED, "retornar" );
-    RULE  ( expresion )();
+    RULE  ( expresion , e )();
+    {
+    	// FIXME macro comprobar compatibilidad de tipos
+        if ( e.tipo == c.tipo )
+        {
+        	ADD_INST ( "ret " || e.nombre );
+            ADD_INST ( "finfunc ");
+        }
+        else
+        {
+            ERROR("Function return type mismatch");
+        }
+    }
     MATCH ( RESERVED, "fin" );
     MATCH ( SEPARATOR, ";" );
+    { ST_POP(); }
 }
 
 DEFINE_RULE(cabecera_procedimiento,
@@ -270,7 +286,8 @@ DEFINE_RULE(cabecera_procedimiento,
 )
 {
     MATCH ( RESERVED, "procedimiento" );
-    MATCH ( IDENTIFIER );
+    TOKEN ID = MATCH ( IDENTIFIER );
+    { ADD_INST ( "proc " || ID.value ); }
     RULE  ( argumentos )();
 }
 
@@ -285,10 +302,12 @@ DEFINE_RULE(cabecera_funcion,
 )
 {
     MATCH ( RESERVED, "funcion" );
-    MATCH ( IDENTIFIER );
+    TOKEN ID = MATCH ( IDENTIFIER );
+    { ADD_INST ( "func " || ID.value ); }
     RULE  ( argumentos )();
     MATCH ( RESERVED, "retorna" );
-    RULE  ( tipo )();
+    RULE  ( tipo , t)();
+    { THIS.tipo = t.tipo; }
 }
 
 DEFINE_RULE(argumentos,
@@ -324,11 +343,17 @@ DEFINE_RULE(lista_de_param,
                 )
 )
 {
-    RULE  ( lista_de_ident )();
+    RULE  ( lista_de_ident , ls_ident )();
     MATCH ( SEPARATOR, ":" );
-    RULE  ( clase_param )();
-    RULE  ( tipo )();
+    RULE  ( clase_param , clase )();
+    RULE  ( tipo , t )();
+    { FOREACH ( ls_ident.ids AS id )
+        {
+            ADD_INST( clase.clase || "_" || TYPE_OF(t.tipo) || " " || id );
+        }
+    }
     RULE  ( resto_lis_de_param )();
+
 }
 
 DEFINE_RULE(resto_lis_de_param,
@@ -344,10 +369,15 @@ DEFINE_RULE(resto_lis_de_param,
     if ( IS_FIRST ( SEPARATOR, ";" ) )
     {
         MATCH ( SEPARATOR, ";" );
-        RULE  ( lista_de_ident )();
+        RULE  ( lista_de_ident, ls_ident )();
         MATCH ( SEPARATOR, ":" );
-        RULE  ( clase_param )();
-        RULE  ( tipo )();
+        RULE  ( clase_param, clase )();
+        RULE  ( tipo , t )();
+        { FOREACH ( ls_ident.ids AS id )
+            {
+                ADD_INST( clase.clase || "_" || TYPE_OF(t.tipo) || " " || id );
+            }
+        }
         RULE  ( resto_lis_de_param )();
     }
     else
@@ -372,11 +402,13 @@ DEFINE_RULE(clase_param,
     if ( IS_FIRST( RESERVED, "entrada" ) )
     {
         MATCH ( RESERVED, "entrada" );
-        RULE  ( clase_param_prima )();
+        RULE  ( clase_param_prima , c_p )();
+        { THIS.clase = c_p.clase; }
     }
     else if ( IS_FIRST( RESERVED, "salida" ) )
     {
         MATCH ( RESERVED, "salida" );
+        { THIS.clase = "ref"; }
     }
     else PANIC();
 }
@@ -397,10 +429,11 @@ DEFINE_RULE(clase_param_prima,
     if ( IS_FIRST( RESERVED, "salida" ) )
     {
             MATCH ( RESERVED, "salida" );
+            { THIS.clase = "ref"; }
     }
     else
     {
-        // Vacío
+            { THIS.clase = "val"; }
     }
 }
 
@@ -420,10 +453,9 @@ DEFINE_RULE(lista_de_sentencias_prima,
                 )
 )
 {
-    /* RULE  ( lista_de_sentencias, ls )();
-    ls.hinloop = FALSE;
-    ls(); */
-    RULE  ( lista_de_sentencias )();
+    RULE  ( lista_de_sentencias, ls );
+    { ls.hinloop = "false"; }
+    ls();
 }
 
 DEFINE_RULE(lista_de_sentencias,
@@ -445,12 +477,17 @@ DEFINE_RULE(lista_de_sentencias,
 {
     if ( IS_RULE_FIRST(sentencia) )
     {
-        RULE  ( sentencia )();
-        RULE  ( lista_de_sentencias )();
+        RULE  ( sentencia, s );
+        { s.hinloop = THIS.hinloop; }
+        s();
+        RULE  ( lista_de_sentencias, ls );
+        { ls.hinloop = s.hinloop; }
+        ls();
+        { THIS.salir_si = JOIN ( s.salir_si , ls.salir_si ); }
     }
     else
     {
-        // Vacio
+    	{ THIS.salir_si = EMPTY_LIST(); }
     }
 }
 
@@ -478,42 +515,59 @@ DEFINE_RULE(sentencia,
 {
     if (IS_FIRST ( IDENTIFIER ) )
     {
-        MATCH ( IDENTIFIER );
-        RULE  ( expresiones )();
+        TOKEN id = MATCH ( IDENTIFIER );
+        RULE  ( expresiones , e );
+        { e.hident = id.value; }
         MATCH ( SEPARATOR, ";" );
+        { THIS.salir_si = EMPTY_LIST(); }
     }
     else if (IS_FIRST ( RESERVED, "si" ) )
     {
         MATCH ( RESERVED, "si" );
-        RULE  ( expresion )();
+        RULE  ( expresion , e )();
         MATCH ( RESERVED, "entonces" );
-        RULE  ( M )();
-        RULE  ( lista_de_sentencias )();
+        RULE  ( M , m1 )();
+        RULE  ( lista_de_sentencias , ls )();
         MATCH ( RESERVED, "fin");
         MATCH ( RESERVED, "si");
-        RULE  ( M )();
+        RULE  ( M , m2 )();
         MATCH ( SEPARATOR, ";");
+        {
+            COMPLETE( e.gtrue , m1.ref );
+            COMPLETE( e.gfalse, m2.ref );
+            THIS.salir_si = ls.salir_si;
+        }
     }
     else if (IS_FIRST ( RESERVED, "hacer" ) )
     {
         MATCH ( RESERVED, "hacer" );
-        RULE  ( M )();
+        RULE  ( M , m1 )();
         RULE  ( lista_de_sentencias, ls );
         ls.hinloop = true;
         ls();
         MATCH ( RESERVED, "mientras" );
-        RULE  ( expresion )();
+        RULE  ( expresion , e )();
         MATCH ( RESERVED, "fin" );
         MATCH ( RESERVED, "hacer" );
-        RULE  ( M )();
+        RULE  ( M , m2 )();
         MATCH ( SEPARATOR, ";");
+        {
+            COMPLETE( e.gtrue , m1.ref );
+            COMPLETE( e.gfalse, m2.ref );
+            COMPLETE( ls.salir_si, m2.ref );
+            THIS.salir_si = EMPTY_LIST();
+        }
     }
     else if (IS_FIRST ( RESERVED, "salir"))
     {
         MATCH ( RESERVED, "salir" );
         MATCH ( RESERVED, "si" );
-        RULE  ( expresion )();
-        RULE  ( M )();
+        RULE  ( expresion , e )();
+        RULE  ( M , m )();
+        {
+            COMPLETE( e.gfalse, m.ref );
+            THIS.salir_si = e.gtrue;
+        }
         MATCH ( SEPARATOR, ";");
     }
     else if (IS_FIRST ( RESERVED, "get"))
@@ -571,17 +625,40 @@ DEFINE_RULE(expresiones,
     if (IS_FIRST( OPERATOR, "=" ))
     {
         MATCH ( OPERATOR, "=" );
-        RULE  ( expresion )();
+        RULE  ( expresion , e )();
+        {
+        	// FIXME Comprobar que los tipos son compatibles
+        	if (true)
+        	    ADD_INST( THIS.hident || ":=" || e.nombre );
+        	else
+        	    ERROR("Type mismatch");
+        }
     }
     else if (IS_RULE_FIRST( acceso_a_array ))
     {
         RULE  ( acceso_a_array )();
         MATCH ( OPERATOR, "=" );
-        RULE  ( expresion )();
+        RULE  ( expresion , e )();
+        {
+        	// FIXME Comprobar que los tipos son compatibles
+        	if (true)
+        	    ADD_INST( THIS.hident || ":=" || e.nombre );
+        	else
+        	    ERROR("Type mismatch");
+        }
     }
     else if (IS_RULE_FIRST( parametros_llamadas ))
     {
-        RULE  ( parametros_llamadas )();
+        RULE  ( parametros_llamadas , p )();
+        {
+        	// FIXME Comprobar que la función existe en la tabla de simbolos y que los parametros coinciden
+            //{ FOREACH ( p.parametros AS par )
+            //    {
+            //        ADD_INST( "param_" || par.clase || " " || TYPE_OF(par.tipo) || " " || par.nombre );
+            //    }
+            //}
+        	//ADD_INST( "call " || THIS.hident );
+        }
     }
     else PANIC();
 }
