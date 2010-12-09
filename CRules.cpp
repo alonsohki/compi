@@ -1290,6 +1290,7 @@ DEFINE_RULE(M,
                 )
 )
 {
+    THIS.ref = GET_REF();
 }
 
 DEFINE_RULE(lista_de_expr,
