@@ -32,6 +32,10 @@ protected:
     {
         m_pTranslator->Error ( msg );
     }
+    void                die             ( const CString& msg )
+    {
+        m_pTranslator->Die ( msg );
+    }
     CTokenizer::SToken  match           ( CTokenizer::ETokenType eType,
                                           const CString& requiredValue,
                                           const CTokenizer::SToken* pNextToken,
@@ -114,6 +118,10 @@ protected:
     void            symbol_table_pop    ()
     {
         m_pTranslator->ST_Pop();
+    }
+    bool            symbol_table_add    ( const CString& symbolName, const CString& typeInfo )
+    {
+        return m_pTranslator->ST_Add( symbolName, CTypeInfo ( typeInfo ) );
     }
     CString         type_of             ( const CString& typeInfo )
     {
@@ -242,13 +250,12 @@ public: \
 #define INIT_LIST init_list
 #define JOIN join_lists
 #define COMPLETE complete
-#define ST_PUSH symbol_table_push
-#define ST_POP symbol_table_pop
 #define IS_FIRST(x, ...) is_first ( CTokenizer:: x, ## __VA_ARGS__ )
 #define IS_RULE_FIRST(x) is_rule_first ( BUILD_RULE_CLASS_NAME(x) :: ms_firstToken , BUILD_RULE_CLASS_NAME(x) :: ms_nextToken )
 #define PANIC() panic(ms_nextToken)
 #define WARNING(msg) warning(CString() || msg )
 #define ERROR(msg) error(CString() || msg )
+#define DIE(msg) die(CString() || msg )
 
 // Foreach
 struct __ETDS__Foreach_Iterator
@@ -283,6 +290,11 @@ struct __ETDS__Foreach_Iterator
 #define NEW_ARRAY_TYPE(d,t) new_array_type(d,t)
 #define ARRAY_CONTENT(x)    ( CTypeInfo(x).GetArrayContent()->toString() )
 #define ARRAY_SIZE(x)       CString( CTypeInfo(x).GetArraySize() )
+
+// Tabla de símbolos
+#define ST_PUSH symbol_table_push
+#define ST_POP symbol_table_pop
+#define ST_ADD(x,t) symbol_table_add((CString)x,(CString)t)
 
 #endif	/* CRULES_INTERNAL_H */
 

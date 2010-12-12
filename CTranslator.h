@@ -19,6 +19,14 @@ public:
         : m_uiLine ( uiLine )
         , m_uiColumn ( uiColumn )
         , m_strReason ( strReason )
+        , m_bAreLineAndColumnKnown ( true )
+        {
+        }
+        Exception ( const CString& strReason )
+        : m_uiLine ( 0 )
+        , m_uiColumn ( 0 )
+        , m_strReason ( strReason )
+        , m_bAreLineAndColumnKnown ( false )
         {
         }
 
@@ -26,10 +34,13 @@ public:
         unsigned int    GetColumn   () const { return m_uiColumn; }
         const CString&  GetReason   () const { return m_strReason; }
 
+        bool            AreLineAndColumnKnown   () const { return m_bAreLineAndColumnKnown; }
+
     private:
         unsigned int    m_uiLine;
         unsigned int    m_uiColumn;
         CString         m_strReason;
+        bool            m_bAreLineAndColumnKnown;
     };
     
 public:
@@ -48,12 +59,15 @@ private:
     bool                Check           ( CTokenizer::ETokenType eType,
                                           const CString& requiredValue = "" );
     void            PushInstruction     ( const CString& strCode );
+    void            DropInstruction     ( unsigned int uiRef );
     unsigned int    GetRef              () const;
     CString         NewIdent            ();
     void            Complete            ( const std::vector<unsigned int>& refs, unsigned int ref );
+
     // Tabla de símbolos.
     unsigned int    ST_Push             ();
     unsigned int    ST_Pop              ();
+    bool            ST_Add              ( const CString& symbolName, const CTypeInfo& info );
 
 public:
     bool        IsOk            () const;
@@ -86,6 +100,10 @@ public:
     
     // Funciones de mensajería.
 public:
+    void        Die             ( const CString& msg,
+                                  unsigned int uiLine = 0,
+                                  unsigned int uiCol = 0,
+                                  bool bShowLineAndCol = true );
     void        Error           ( const CString& msg,
                                   unsigned int uiLine = 0,
                                   unsigned int uiCol = 0,

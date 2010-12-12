@@ -40,9 +40,7 @@ bool CTranslator::Translate ()
     }
     catch ( Exception& e )
     {
-        // Comprobamos si debemos mostrar fila y columna.
-        bool bShowLineAndCol = e.GetLine () != 0 || e.GetColumn () != 0;
-        Error ( e.GetReason(), e.GetLine(), e.GetColumn(), bShowLineAndCol );
+        Error ( e.GetReason(), e.GetLine(), e.GetColumn(), e.AreLineAndColumnKnown() );
     }
 
     // No debería quedar nada que leer (aparte de los blancos).
@@ -59,7 +57,11 @@ bool CTranslator::Translate ()
               it != m_vecInstructions.end();
               ++it )
         {
-            m_osDest << i << ": " << *(*it) << ";" << std::endl;
+            if ( *it != "" )
+            {
+                m_osDest << i << ": " << *(*it) << ";" << std::endl;
+            }
+            ++i;
         }
     }
 
@@ -87,6 +89,16 @@ void CTranslator::NextLookahead ()
         }
     }
     m_bKeepCurrentLookahead = false;
+}
+
+void CTranslator::Die ( const CString& msg,
+                        unsigned int uiLine, unsigned int uiCol,
+                        bool bShowLineAndCol )
+{
+    if ( bShowLineAndCol == true )
+        throw Exception ( uiLine, uiCol, CString("Critical error: ") || msg );
+    else
+        throw Exception ( CString("Critical error: ") || msg );
 }
 
 void CTranslator::Error ( const CString& msg,
@@ -284,7 +296,7 @@ CTokenizer::SToken CTranslator::Match ( CTokenizer::ETokenType eType,
 
     // Si habíamos alcanzado el fin de fichero, no deberíamos recibir más match.
     if ( EOFReached () == true )
-        throw Exception ( 0, 0, Format( "%sUnexpected end of file.", debuggingPrefix ) );
+        throw Exception ( Format( "%sUnexpected end of file.", debuggingPrefix ) );
 
     try
     {
@@ -327,9 +339,9 @@ CTokenizer::SToken CTranslator::Match ( CTokenizer::ETokenType eType,
     if ( bDeadlyPanic == true )
     {
         if ( m_ePanicStrategy == PANIC_STRATEGY_FAIL )
-            throw Exception ( 0, 0, "Compilation aborted." );
+            throw Exception ( "Compilation aborted." );
         else
-            throw Exception ( 0, 0, "Unable to recover from error. Compilation aborted." );
+            throw Exception ( "Unable to recover from error. Compilation aborted." );
     }
 
     // Obtenemos el siguiente token.
@@ -355,6 +367,11 @@ bool CTranslator::Check ( CTokenizer::ETokenType eType,
 void CTranslator::PushInstruction ( const CString& strCode )
 {
     m_vecInstructions.push_back ( strCode );
+}
+
+void CTranslator::DropInstruction ( unsigned int uiRef )
+{
+    m_vecInstructions [uiRef] = "";
 }
 
 unsigned int CTranslator::GetRef () const
@@ -390,4 +407,33 @@ unsigned int CTranslator::ST_Push ()
 unsigned int CTranslator::ST_Pop ()
 {
     return m_symbolTable.Pop ();
+}
+
+bool CTranslator::ST_Add ( const CString& symbolName, const CTypeInfo& info )
+
+{
+    unsigned int uiOldRef;
+    unsigned int uiRef = GetRef();
+    bool bOk = m_symbolTable.MakeSymbol( symbolName, info, uiRef, &uiOldRef );
+    if ( bOk == false )
+    {
+        switch ( (CSymbolTable::EStrategy)CSymbolTable::STRATEGY )
+        {
+            case CSymbolTable::STRATEGY_FAIL:
+                // Abortamos la compilación.
+                Die(Format("Redeclaration of symbol '%s'", *symbolName));
+                break;
+            case CSymbolTable::STRATEGY_REPLACE:
+                // Eliminamos la vieja declaración.
+                DropInstruction ( uiOldRef );
+                Warning(Format("Redeclaration of symbol '%s'", *symbolName));
+                bOk = true;
+                break;
+            case CSymbolTable::STRATEGY_IGNORE:
+                // Eliminamos la nueva declaración.
+                Warning(Format("Redeclaration of symbol '%s'", *symbolName));
+                break;
+        }
+    }
+    return bOk;
 }

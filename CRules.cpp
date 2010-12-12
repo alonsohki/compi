@@ -54,15 +54,21 @@ DEFINE_RULE(declaraciones,
             {
                 FOREACH ( ls_ident.ids AS ident )
                 {
-                    ADD_INST(TYPE_OF(t.tipo) || " " || ident );
+                    if ( ST_ADD(ident, t.tipo) )
+                    {
+                        ADD_INST(TYPE_OF(t.tipo) || " " || ident );
+                    }
                 }
             }
             else if ( IS_ARRAY(t.tipo) )
             {
                 FOREACH ( ls_ident.ids AS ident )
                 {
-                    ADD_INST("array_" || TYPE_OF(ARRAY_CONTENT(t.tipo))
-                             || " " || ident || "," || ARRAY_SIZE(t.tipo) );
+                    if ( ST_ADD(ident, t.tipo) )
+                    {
+                        ADD_INST("array_" || TYPE_OF(ARRAY_CONTENT(t.tipo))
+                                 || " " || ident || "," || ARRAY_SIZE(t.tipo) );
+                    }
                 }
             }
         }

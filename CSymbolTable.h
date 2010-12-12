@@ -7,9 +7,19 @@
 
 class CSymbolTable
 {
+public:
+    // Estrategias a seguir cuando se intenta agregar un símbolo ya existente.
+    enum EStrategy
+    {
+        STRATEGY_FAIL,
+        STRATEGY_REPLACE,
+        STRATEGY_IGNORE
+    };
+
     enum
     {
-        MAX_DEPTH = 512
+        MAX_DEPTH = 512,
+        STRATEGY = STRATEGY_REPLACE
     };
 
 public:
@@ -21,15 +31,24 @@ public:
 
     bool                MakeSymbol      ( const CString& strName,
                                           const CTypeInfo& type,
-                                          bool bAllowRedeclare = false );
+                                          unsigned int uiRef,
+                                          unsigned int* puiOldRef = 0 );
     bool                GetSymbol       ( const CString& strName,
-                                          CTypeInfo* pInfo = 0 ) const;
+                                          CTypeInfo* pInfo = 0,
+                                          unsigned int* puiRef = 0 ) const;
 
     bool                MatchSymbolType ( const CString& strName,
-                                          const CTypeInfo& type) const;
+                                          const CTypeInfo& type ) const;
 
 private:
-    typedef std::map < CString, CTypeInfo > mapType;
+    struct SSymbolData
+    {
+        SSymbolData ( const CTypeInfo& t, unsigned int r )
+        : type ( t ), uiRef ( r ) {}
+        CTypeInfo type;
+        unsigned int uiRef;
+    };
+    typedef std::map < CString, SSymbolData > mapType;
 
     mapType         m_symbols [ MAX_DEPTH ];
     unsigned int    m_uiCurrentDepth;

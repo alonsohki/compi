@@ -29,27 +29,33 @@ unsigned int CSymbolTable::Pop ()
 
 bool CSymbolTable::MakeSymbol ( const CString& strName,
                                 const CTypeInfo& type,
-                                bool bAllowRedeclare )
+                                unsigned int uiRef,
+                                unsigned int* puiOldRef
+                              )
 {
     bool bOk = true;
     mapType& curMap = m_symbols [ m_uiCurrentDepth ];
     mapType::iterator it = curMap.find ( strName );
     if ( it != curMap.end () )
     {
-        if ( bAllowRedeclare == true )
-            it->second = type;
-        else
-            bOk = false;
+        if ( puiOldRef != 0 )
+            *puiOldRef = it->second.uiRef;
+        if ( (EStrategy)STRATEGY == STRATEGY_REPLACE )
+        {
+            it->second.type = type;
+            it->second.uiRef = uiRef;
+        }
+        bOk = false;
     }
     else
     {
-        curMap.insert( mapType::value_type(strName, type) );
+        curMap.insert( mapType::value_type(strName, SSymbolData(type, uiRef)) );
     }
 
     return bOk;
 }
 
-bool CSymbolTable::GetSymbol ( const CString& strName, CTypeInfo* pInfo ) const
+bool CSymbolTable::GetSymbol ( const CString& strName, CTypeInfo* pInfo, unsigned int* puiRef ) const
 {
     bool bFound = false;
     mapType::const_iterator it;
@@ -63,7 +69,9 @@ bool CSymbolTable::GetSymbol ( const CString& strName, CTypeInfo* pInfo ) const
         {
             bFound = true;
             if ( pInfo != 0 )
-                *pInfo = it->second;
+                *pInfo = it->second.type;
+            if ( puiRef != 0 )
+                *puiRef = it->second.uiRef;
             break;
         }
     }
@@ -75,7 +83,7 @@ bool CSymbolTable::MatchSymbolType ( const CString& strName,
                                      const CTypeInfo& type ) const
 {
     CTypeInfo info;
-    bool bFound = GetSymbol ( strName, &info );
+    bool bFound = GetSymbol ( strName, &info, 0 );
     if ( bFound )
         return info == type;
     return false;
