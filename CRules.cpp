@@ -522,8 +522,8 @@ DEFINE_RULE(sentencia,
     if (IS_FIRST ( IDENTIFIER ) )
     {
         TOKEN id = MATCH ( IDENTIFIER );
-        RULE  ( expresiones , e );
-        { e.hident = id.value; }
+        RULE  ( asignacion_o_llamada , a );
+        { a.hident = id.value; }
         MATCH ( SEPARATOR, ";" );
         { THIS.salir_si = EMPTY_LIST(); }
     }
@@ -616,7 +616,7 @@ DEFINE_RULE(id_o_array,
     }
 }
 
-DEFINE_RULE(expresiones,
+DEFINE_RULE(asignacion_o_llamada,
             FIRST(
                     ( OPERATOR, "=" ),
                     ( OPERATOR, "[" ),
@@ -1164,6 +1164,50 @@ DEFINE_RULE(array_o_llamada,
     }
 }
 
+DEFINE_RULE(lista_de_expr,
+            FIRST(
+                    ( RESERVED, "not" ),
+                    ( OPERATOR, "-" ),
+                    ( IDENTIFIER ),
+                    ( INTEGER ),
+                    ( REAL ),
+                    ( RESERVED, "true" ),
+                    ( RESERVED, "false" ),
+                    ( SEPARATOR, "(" )
+                 ),
+            NEXT(
+                    ( SEPARATOR, "]" ),
+                    ( SEPARATOR, ")" )
+                )
+)
+{
+    RULE ( expresion )();
+    RULE ( resto_lista_expr )();
+}
+
+DEFINE_RULE(resto_lista_expr,
+            FIRST(
+                    ( SEPARATOR, "," ),
+                    ( EMPTY )
+                 ),
+            NEXT(
+                    ( SEPARATOR, "]" ),
+                    ( SEPARATOR, ")" )
+                )
+)
+{
+    if ( IS_FIRST ( SEPARATOR, "," ) )
+    {
+        MATCH ( SEPARATOR, "," );
+        RULE  ( expresion )();
+        RULE  ( resto_lista_expr )();
+    }
+    else
+    {
+        // Vacío.
+    }
+}
+
 DEFINE_RULE(opl1,
             FIRST(
                     OPL1_TUPLES
@@ -1297,48 +1341,4 @@ DEFINE_RULE(M,
 )
 {
     THIS.ref = GET_REF();
-}
-
-DEFINE_RULE(lista_de_expr,
-            FIRST(
-                    ( RESERVED, "not" ),
-                    ( OPERATOR, "-" ),
-                    ( IDENTIFIER ),
-                    ( INTEGER ),
-                    ( REAL ),
-                    ( RESERVED, "true" ),
-                    ( RESERVED, "false" ),
-                    ( SEPARATOR, "(" )
-                 ),
-            NEXT(
-                    ( SEPARATOR, "]" ),
-                    ( SEPARATOR, ")" )
-                )
-)
-{
-    RULE ( expresion )();
-    RULE ( resto_lista_expr )();
-}
-
-DEFINE_RULE(resto_lista_expr,
-            FIRST(
-                    ( SEPARATOR, "," ),
-                    ( EMPTY )
-                 ),
-            NEXT(
-                    ( SEPARATOR, "]" ),
-                    ( SEPARATOR, ")" )
-                )
-)
-{
-    if ( IS_FIRST ( SEPARATOR, "," ) )
-    {
-        MATCH ( SEPARATOR, "," );
-        RULE  ( expresion )();
-        RULE  ( resto_lista_expr )();
-    }
-    else
-    {
-        // Vacío.
-    }
 }
