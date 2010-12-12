@@ -235,13 +235,13 @@ DEFINE_RULE(decl_de_procedimiento,
                 )
 )
 {
-	{ ST_PUSH(); }
+    { ST_PUSH(); }
     RULE  ( cabecera_procedimiento )();
     RULE  ( declaraciones )();
     MATCH ( RESERVED, "comienzo" );
     RULE  ( lista_de_sentencias_prima )();
     MATCH ( RESERVED, "fin" );
-    { ADD_INST ( "finproc "); }
+    { ADD_INST ( "finproc"); }
     MATCH ( SEPARATOR, ";" );
     { ST_POP(); }
 }
@@ -257,7 +257,7 @@ DEFINE_RULE(decl_de_funcion,
                 )
 )
 {
-	{ ST_PUSH(); }
+    { ST_PUSH(); }
     RULE  ( cabecera_funcion , c )();
     RULE  ( declaraciones )();
     MATCH ( RESERVED, "comienzo" );
@@ -265,11 +265,11 @@ DEFINE_RULE(decl_de_funcion,
     MATCH ( RESERVED, "retornar" );
     RULE  ( expresion , e )();
     {
-    	// FIXME macro comprobar compatibilidad de tipos
+        // FIXME macro comprobar compatibilidad de tipos
         if ( e.tipo == c.tipo )
         {
-        	ADD_INST ( "ret " || e.nombre );
-            ADD_INST ( "finfunc ");
+            ADD_INST ( "ret " || e.nombre );
+            ADD_INST ( "finfunc");
         }
         else
         {
@@ -312,7 +312,7 @@ DEFINE_RULE(cabecera_funcion,
     { ADD_INST ( "func " || ID.value ); }
     RULE  ( argumentos )();
     MATCH ( RESERVED, "retorna" );
-    RULE  ( tipo , t)();
+    RULE  ( tipo , t )();
     { THIS.tipo = t.tipo; }
 }
 
@@ -493,7 +493,7 @@ DEFINE_RULE(lista_de_sentencias,
     }
     else
     {
-    	{ THIS.salir_si = EMPTY_LIST(); }
+        { THIS.salir_si = EMPTY_LIST(); }
     }
 }
 
@@ -633,11 +633,11 @@ DEFINE_RULE(asignacion_o_llamada,
         MATCH ( OPERATOR, "=" );
         RULE  ( expresion , e )();
         {
-        	// FIXME Comprobar que los tipos son compatibles
-        	if (true)
-        	    ADD_INST( THIS.hident || ":=" || e.nombre );
-        	else
-        	    ERROR("Type mismatch");
+            // FIXME Comprobar que los tipos son compatibles
+            if (true)
+                ADD_INST( THIS.hident || ":=" || e.nombre );
+            else
+                ERROR("Type mismatch");
         }
     }
     else if (IS_RULE_FIRST( acceso_a_array ))
@@ -646,24 +646,24 @@ DEFINE_RULE(asignacion_o_llamada,
         MATCH ( OPERATOR, "=" );
         RULE  ( expresion , e )();
         {
-        	// FIXME Comprobar que los tipos son compatibles
-        	if (true)
-        	    ADD_INST( THIS.hident || ":=" || e.nombre );
-        	else
-        	    ERROR("Type mismatch");
+            // FIXME Comprobar que los tipos son compatibles
+            if (true)
+                ADD_INST( THIS.hident || ":=" || e.nombre );
+            else
+                ERROR("Type mismatch");
         }
     }
     else if (IS_RULE_FIRST( parametros_llamadas ))
     {
         RULE  ( parametros_llamadas , p )();
         {
-        	// FIXME Comprobar que la función existe en la tabla de simbolos y que los parametros coinciden
+            // FIXME Comprobar que la función existe en la tabla de simbolos y que los parametros coinciden
             //{ FOREACH ( p.parametros AS par )
             //    {
             //        ADD_INST( "param_" || par.clase || " " || TYPE_OF(par.tipo) || " " || par.nombre );
             //    }
             //}
-        	//ADD_INST( "call " || THIS.hident );
+            //ADD_INST( "call " || THIS.hident );
         }
     }
     else PANIC();
