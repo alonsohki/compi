@@ -68,6 +68,8 @@ private:
     unsigned int    ST_Push             ();
     unsigned int    ST_Pop              ();
     bool            ST_Add              ( const CString& symbolName, const CTypeInfo& info );
+    bool            ST_Get              ( const CString& strName, CTypeInfo* pInfo, unsigned int* puiRef );
+    bool            ST_Match            ( const CString& symbolName, const CTypeInfo& info );
 
 public:
     bool        IsOk            () const;

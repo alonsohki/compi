@@ -410,7 +410,6 @@ unsigned int CTranslator::ST_Pop ()
 }
 
 bool CTranslator::ST_Add ( const CString& symbolName, const CTypeInfo& info )
-
 {
     unsigned int uiOldRef;
     unsigned int uiRef = GetRef();
@@ -436,4 +435,14 @@ bool CTranslator::ST_Add ( const CString& symbolName, const CTypeInfo& info )
         }
     }
     return bOk;
+}
+
+bool CTranslator::ST_Get ( const CString& strName, CTypeInfo* pInfo, unsigned int* puiRef )
+{
+	return m_symbolTable.GetSymbol(strName, pInfo, puiRef);
+}
+
+bool CTranslator::ST_Match ( const CString& symbolName, const CTypeInfo& info )
+{
+	return m_symbolTable.MatchSymbolType( symbolName, info );
 }
