@@ -123,6 +123,21 @@ protected:
     {
         return m_pTranslator->ST_Add( symbolName, CTypeInfo ( typeInfo ) );
     }
+    bool            symbol_table_get    ( const CString& strName, CTypeInfo* pInfo, unsigned int* puiRef )
+    {
+        return m_pTranslator->ST_Get( strName, pInfo, puiRef );
+    }
+    CTypeInfo       symbol_table_type   ( const CString& strName)
+    {
+    	CTypeInfo pInfo;
+    	unsigned int puiRef;
+        m_pTranslator->ST_Get( strName, &pInfo, &puiRef );
+        return pInfo;
+    }
+    bool            symbol_table_match    ( const CString& symbolName, const CTypeInfo& info )
+    {
+    	return m_pTranslator->ST_Match( symbolName, info );
+    }
     CString         type_of             ( const CString& typeInfo )
     {
         CTypeInfo info ( typeInfo );
@@ -285,16 +300,24 @@ struct __ETDS__Foreach_Iterator
 #define IS_ARRAY(x)     ( CTypeInfo(x).GetType() == CTypeInfo::ARRAY )
 #define IS_PROCEDURE(x) ( CTypeInfo(x).GetType() == CTypeInfo::PROCEDURE )
 #define IS_FUNCTION(x)  ( CTypeInfo(x).GetType() == CTypeInfo::FUNCTION )
+#define IS_LITERAL(x)   ( x.literal == true )
+#define IS_NUMERIC(x)   ( IS_REAL(x) || IS_INTEGER(x) )
 #define TYPE_OF(x)      type_of(x)
-#define NEW_BASIC_TYPE(x)   ( CTypeInfo(CTypeInfo:: x ).toString() )
-#define NEW_ARRAY_TYPE(d,t) new_array_type(d,t)
-#define ARRAY_CONTENT(x)    ( CTypeInfo(x).GetArrayContent()->toString() )
-#define ARRAY_SIZE(x)       CString( CTypeInfo(x).GetArraySize() )
+
+#define NEW_BASIC_TYPE(x)       ( CTypeInfo(CTypeInfo:: x ).toString() )
+#define NEW_ARRAY_TYPE(d,t)     new_array_type(d,t)
+
+// Arrays
+#define ARRAY_CONTENT(x)        ( CTypeInfo(x).GetArrayContent()->toString() )
+#define ARRAY_SIZE(x)           CString( CTypeInfo(x).GetArraySize() )
+#define ARRAY_DEPTH(x)          CTypeInfo(x).GetArrayDepth()
+#define ARRAY_DIMENSION(x,y)    CTypeInfo(x).GetArrayDimensions()[y]
 
 // Tabla de símbolos
-#define ST_PUSH symbol_table_push
-#define ST_POP symbol_table_pop
-#define ST_ADD(x,t) symbol_table_add((CString)x,(CString)t)
+#define ST_PUSH                 symbol_table_push
+#define ST_POP                  symbol_table_pop
+#define ST_ADD(x,t)             symbol_table_add((CString)x,(CString)t)
+#define ST_GET_TYPE(var)        symbol_table_type((CString)var)
 
 #endif	/* CRULES_INTERNAL_H */
 
