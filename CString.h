@@ -140,6 +140,31 @@ public:
         return ( strcmp ( *this, Right ) >= 0 );
     }
 
+    unsigned int operator* ( const unsigned int Right ) const
+    {
+        return value() * Right;
+    }
+    bool operator< ( const unsigned int Right ) const
+    {
+        return value() > Right;
+    }
+    bool operator<= ( const unsigned int Right ) const
+    {
+        return value() > Right;
+    }
+    bool operator> ( const unsigned int Right ) const
+    {
+        return value() >= Right;
+    }
+    bool operator>= ( const unsigned int Right ) const
+    {
+        return value() >= Right;
+    }
+    unsigned int value () const
+    {
+        return (unsigned int) atoi(m_str.c_str());
+    }
+
     char& operator[] ( int idx )
     {
         return m_str.operator[] ( idx );
