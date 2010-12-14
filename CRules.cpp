@@ -292,9 +292,13 @@ DEFINE_RULE(cabecera_procedimiento,
 )
 {
     MATCH ( RESERVED, "procedimiento" );
-    TOKEN ID = MATCH ( IDENTIFIER );
-    { ADD_INST ( "proc " || ID.value ); }
-    RULE  ( argumentos )();
+    TOKEN id = MATCH ( IDENTIFIER );
+    { ADD_INST ( "proc " || id.value ); }
+    RULE  ( argumentos , a )();
+    {
+        CString tipo = NEW_FUNCTION_TYPE(a.listaTipos, a.listaClase,0);
+        ST_ADD(id.value,tipo);
+    }
 }
 
 DEFINE_RULE(cabecera_funcion,
@@ -308,12 +312,17 @@ DEFINE_RULE(cabecera_funcion,
 )
 {
     MATCH ( RESERVED, "funcion" );
-    TOKEN ID = MATCH ( IDENTIFIER );
-    { ADD_INST ( "func " || ID.value ); }
-    RULE  ( argumentos )();
+    TOKEN id = MATCH ( IDENTIFIER );
+    { ADD_INST ( "func " || id.value ); }
+    RULE  ( argumentos , a )();
     MATCH ( RESERVED, "retorna" );
     RULE  ( tipo , t )();
-    { THIS.tipo = t.tipo; }
+    {
+        CString tipo = NEW_FUNCTION_TYPE(a.listaTipos, a.listaClase, t.tipo);
+        ST_ADD(id.value,tipo);
+
+        THIS.tipo = t.tipo;
+    }
 }
 
 DEFINE_RULE(argumentos,
@@ -353,13 +362,26 @@ DEFINE_RULE(lista_de_param,
     MATCH ( SEPARATOR, ":" );
     RULE  ( clase_param , clase )();
     RULE  ( tipo , t )();
-    { FOREACH ( ls_ident.ids AS id )
+    RULE  ( resto_lis_de_param , p );
+    {
+    	p.hlistaTipos = EMPTY_LIST();
+    	p.hlistaClase = EMPTY_LIST();
+
+    	FOREACH ( ls_ident.ids AS id )
         {
-            ADD_INST( clase.clase || "_" || TYPE_OF(t.tipo) || " " || id );
+            if ( ST_ADD(id, t.tipo) )
+            {
+                ADD_INST( clase.clase || "_" || TYPE_OF(t.tipo) || " " || id );
+                p.hlistaTipos = JOIN(p.hlistaTipos, INIT_LIST(t.tipo));
+                p.hlistaClase = JOIN(p.hlistaClase, INIT_LIST(clase.clase));
+            }
         }
     }
-    RULE  ( resto_lis_de_param )();
-
+    p();
+    {
+    	THIS.listaTipos = p.listaTipos;
+    	THIS.listaClase = p.listaClase;
+    }
 }
 
 DEFINE_RULE(resto_lis_de_param,
@@ -379,17 +401,32 @@ DEFINE_RULE(resto_lis_de_param,
         MATCH ( SEPARATOR, ":" );
         RULE  ( clase_param, clase )();
         RULE  ( tipo , t )();
-        { FOREACH ( ls_ident.ids AS id )
-            {
-                ADD_INST( clase.clase || "_" || TYPE_OF(t.tipo) || " " || id );
+        RULE  ( resto_lis_de_param , p );
+        {
+        	p.hlistaTipos = EMPTY_LIST();
+        	p.hlistaClase = EMPTY_LIST();
 
+        	FOREACH ( ls_ident.ids AS id )
+            {
+                if ( ST_ADD(id, t.tipo) )
+                {
+                    ADD_INST( clase.clase || "_" || TYPE_OF(t.tipo) || " " || id );
+                    p.hlistaTipos = JOIN(p.hlistaTipos, INIT_LIST(t.tipo));
+                    p.hlistaClase = JOIN(p.hlistaClase, INIT_LIST(clase.clase));
+                }
             }
         }
-        RULE  ( resto_lis_de_param )();
+        p();
+        {
+        	THIS.listaTipos = p.listaTipos;
+        	THIS.listaClase = p.listaClase;
+        }
     }
     else
     {
         // Vacío
+    	THIS.listaTipos = THIS.hlistaTipos;
+    	THIS.listaClase = THIS.hlistaClase;
     }
 }
 
