@@ -340,7 +340,6 @@ struct __ETDS__Foreach_Iterator
 #define IS_VARIABLE(x)  ( IS_INTEGER(x) || IS_REAL(x) || IS_BOOLEAN(x) || IS_ARRAY(x) )
 #define IS_PROCEDURE(x) ( CTypeInfo(x).GetType() == CTypeInfo::PROCEDURE )
 #define IS_FUNCTION(x)  ( CTypeInfo(x).GetType() == CTypeInfo::FUNCTION )
-#define IS_LITERAL(x)   ( x.literal == true )
 #define IS_NUMERIC(x)   ( IS_REAL(x) || IS_INTEGER(x) )
 #define TYPE_OF(x)      type_of(x)
 
