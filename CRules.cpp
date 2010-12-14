@@ -865,20 +865,20 @@ DEFINE_RULE(disyuncion_prima,
         {
             if ( IS_NUMERIC(THIS.htipo) )
             {
-                THIS.hgtrue = GET_REF();
+                THIS.hgtrue = INIT_LIST(GET_REF());
                 ADD_INST( "if " || THIS.hnombre || " > 0 goto ");
-                THIS.hgfalse = GET_REF();
+                THIS.hgfalse = INIT_LIST(GET_REF());
                 ADD_INST( "goto ");
             }
             if ( IS_NUMERIC(c.tipo) )
             {
-                c.gtrue = GET_REF();
+                c.gtrue = INIT_LIST(GET_REF());
                 ADD_INST( "if " || c.nombre || " > 0 goto ");
-                c.gfalse = GET_REF();
+                c.gfalse = INIT_LIST(GET_REF());
                 ADD_INST( "goto ");
             }
-            COMPLETE(THIS.hgfalse,m.ref);
-            d.hgtrue = JOIN(THIS.hgtrue,c.gtrue);
+            COMPLETE( THIS.hgfalse, m.ref );
+            d.hgtrue = JOIN( THIS.hgtrue, c.gtrue );
             d.hgfalse = c.gfalse;
         }
         d();
@@ -959,20 +959,20 @@ DEFINE_RULE(conjuncion_prima,
         {
             if ( IS_NUMERIC(THIS.htipo) )
             {
-                THIS.hgtrue = GET_REF();
+                THIS.hgtrue = INIT_LIST(GET_REF());
                 ADD_INST( "if " || THIS.hnombre || " > 0 goto ");
-                THIS.hgfalse = GET_REF();
+                THIS.hgfalse = INIT_LIST(GET_REF());
                 ADD_INST( "goto ");
             }
             if ( IS_NUMERIC(r.tipo) )
             {
-                r.gtrue = GET_REF();
+                r.gtrue = INIT_LIST(GET_REF());
                 ADD_INST( "if " || r.nombre || " > 0 goto ");
-                r.gfalse = GET_REF();
+                r.gfalse = INIT_LIST(GET_REF());
                 ADD_INST( "goto ");
             }
-            COMPLETE(THIS.hgtrue,m.ref);
-            c.hgfalse = JOIN(THIS.hgfalse,r.gfalse);
+            COMPLETE( THIS.hgtrue, m.ref );
+            c.hgfalse = JOIN( THIS.hgfalse, r.gfalse );
             c.hgtrue = r.gtrue;
         }
         c();
@@ -1055,9 +1055,9 @@ DEFINE_RULE(relacional_prima,
         {
             if ( IS_NUMERIC(THIS.htipo) && IS_NUMERIC(a.tipo)) {
 
-                r.hgtrue = GET_REF();
+                r.hgtrue = INIT_LIST(GET_REF());
                 ADD_INST( "if" || THIS.hnombre || op.op || a.nombre || " goto ");
-                r.hgfalse = GET_REF();
+                r.hgfalse = INIT_LIST(GET_REF());
                 ADD_INST( "goto ");
 
                 r.htipo = NEW_BASIC_TYPE(BOOLEAN);
@@ -1762,5 +1762,5 @@ DEFINE_RULE(M,
                 )
 )
 {
-    THIS.ref = INIT_LIST(GET_REF());
+    THIS.ref = GET_REF();
 }
