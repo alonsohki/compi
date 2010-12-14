@@ -794,8 +794,23 @@ DEFINE_RULE(disyuncion,
                 )
 )
 {
-    RULE ( conjuncion )();
-    RULE ( disyuncion_prima )();
+    RULE ( conjuncion , c )();
+    RULE ( disyuncion_prima , d );
+    {
+        d.hnombre = c.nombre;
+        d.htipo = c.tipo;
+        d.hgfalse = c.gfalse;
+        d.hgtrue = c.gtrue;
+        d.hliteral = c.literal;
+    }
+    d();
+    {
+        THIS.nombre = d.nombre;
+        THIS.tipo = d.tipo;
+        THIS.gfalse = d.gfalse;
+        THIS.gtrue = d.gtrue;
+        THIS.literal = d.literal;
+    }
 }
 
 DEFINE_RULE(disyuncion_prima,
@@ -815,10 +830,43 @@ DEFINE_RULE(disyuncion_prima,
 {
     if (IS_FIRST (RESERVED, "or")) {
         MATCH ( RESERVED, "or");
-        RULE  ( conjuncion )();
-        RULE  ( disyuncion_prima )();
+        RULE  ( conjuncion , c )();
+        RULE  ( M , m )();
+        RULE  ( disyuncion_prima , d );
+        {
+            if ( IS_NUMERIC(THIS.htipo) )
+            {
+                THIS.hgtrue = GET_REF();
+                ADD_INST( "if " || THIS.hnombre || " > 0 goto ");
+                THIS.hgfalse = GET_REF();
+                ADD_INST( "goto ");
+            }
+            if ( IS_NUMERIC(c.tipo) )
+            {
+                c.gtrue = GET_REF();
+                ADD_INST( "if " || c.nombre || " > 0 goto ");
+                c.gfalse = GET_REF();
+                ADD_INST( "goto ");
+            }
+            COMPLETE(THIS.hgfalse,m.ref);
+            d.hgtrue = JOIN(THIS.hgtrue,c.gtrue);
+            d.hgfalse = c.gfalse;
+            d.hliteral = false;
+        }
+        d();
+        {
+            THIS.nombre = d.nombre;
+            THIS.tipo = d.tipo;
+            THIS.gfalse = d.gfalse;
+            THIS.gtrue = d.gtrue;
+            THIS.literal = d.literal;
+        }
     } else {
-        // vacio
+        THIS.nombre = THIS.hnombre;
+        THIS.tipo = THIS.htipo;
+        THIS.gfalse = THIS.hgfalse;
+        THIS.gtrue = THIS.hgtrue;
+        THIS.literal = THIS.hliteral;
     }
 }
 
@@ -844,8 +892,23 @@ DEFINE_RULE(conjuncion,
                 )
 )
 {
-    RULE ( relacional )();
-    RULE ( conjuncion_prima )();
+    RULE ( relacional , r )();
+    RULE ( conjuncion_prima , c );
+    {
+        c.hnombre = r.nombre;
+        c.htipo = r.tipo;
+        c.hgfalse = r.gfalse;
+        c.hgtrue = r.gtrue;
+        c.hliteral = r.literal;
+    }
+    c();
+    {
+        THIS.nombre = c.nombre;
+        THIS.tipo = c.tipo;
+        THIS.gfalse = c.gfalse;
+        THIS.gtrue = c.gtrue;
+        THIS.literal = c.literal;
+    }
 }
 
 DEFINE_RULE(conjuncion_prima,
@@ -870,54 +933,24 @@ DEFINE_RULE(conjuncion_prima,
         RULE  ( relacional , r )();
         RULE  ( conjuncion_prima , c );
         {
-            // Optimización
-            if ( IS_BOOLEAN(THIS.htipo) && IS_LITERAL(THIS) )
+            if ( IS_NUMERIC(THIS.htipo) )
             {
-                if (IS_BOOLEAN(r.tipo) && IS_LITERAL(r))
-                {
-                    if (THIS.hnombre == false || r.nombre == false )
-                        c.nombre = false;
-                    else
-                        c.nombre = true;
-                    c.hliteral = r.tipo;
-                    c.htipo = r.tipo;
-                }
-                else
-                {
-                    c.hnombre = r.nombre;
-                    c.hgtrue = r.gtrue;
-                    c.hgfalse = r.gfalse;
-                    c.htipo = r.tipo;
-                }
+                THIS.hgtrue = GET_REF();
+                ADD_INST( "if " || THIS.hnombre || " > 0 goto ");
+                THIS.hgfalse = GET_REF();
+                ADD_INST( "goto ");
             }
-            else if (IS_BOOLEAN(r.tipo) && IS_LITERAL(r))
+            if ( IS_NUMERIC(r.tipo) )
             {
-                   c.hnombre = THIS.hnombre;
-                c.hgtrue = THIS.hgtrue;
-                c.hgfalse = THIS.hgfalse;
-                c.htipo = THIS.htipo;
+                r.gtrue = GET_REF();
+                ADD_INST( "if " || r.nombre || " > 0 goto ");
+                r.gfalse = GET_REF();
+                ADD_INST( "goto ");
             }
-            else
-            {
-                if ( IS_NUMERIC(THIS.htipo) )
-                {
-                    THIS.hgtrue = GET_REF();
-                    ADD_INST( "if " || THIS.hnombre || " > 0 goto ");
-                    THIS.hgfalse = GET_REF();
-                    ADD_INST( "goto ");
-                }
-                if ( IS_NUMERIC(r.tipo) )
-                {
-                    r.gtrue = GET_REF();
-                    ADD_INST( "if " || r.nombre || " > 0 goto ");
-                    r.gfalse = GET_REF();
-                    ADD_INST( "goto ");
-                }
-                COMPLETE(THIS.hgtrue,m.ref);
-                c.hgfalse = JOIN(THIS.hgfalse,r.gfalse);
-                c.hgtrue = r.gtrue;
-                c.hliteral = false;
-            }
+            COMPLETE(THIS.hgtrue,m.ref);
+            c.hgfalse = JOIN(THIS.hgfalse,r.gfalse);
+            c.hgtrue = r.gtrue;
+            c.hliteral = false;
         }
         c();
         {
@@ -928,7 +961,12 @@ DEFINE_RULE(conjuncion_prima,
             THIS.literal = c.literal;
         }
     } else {
-        // vacio
+        // Si es vacio
+        THIS.nombre = THIS.hnombre;
+        THIS.tipo = THIS.htipo;
+        THIS.gfalse = THIS.hgfalse;
+        THIS.gtrue = THIS.hgtrue;
+        THIS.literal = THIS.hliteral;
     }
 }
 
