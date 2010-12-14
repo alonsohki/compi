@@ -166,6 +166,45 @@ protected:
         }
         return CTypeInfo ( vecDimensions, CTypeInfo ( arrayContent ) ).toString ();
     }
+    CString     new_function_type       ( const CString& paramTypeList,
+                                          const CString& paramClassesList,
+                                          const CString& returns)
+    {
+        std::vector < CString > vecTypeList;
+        std::vector < CString > vecClassesList;
+
+        CTypeInfo typeReturns = CTypeInfo ( returns );
+
+        CListInString::GetListElements( paramTypeList, vecTypeList );
+        CListInString::GetListElements( paramClassesList, vecClassesList );
+
+        std::vector < CTypeInfo > vecTypeList2;
+        std::vector < CTypeInfo::EParamClass > vecClassesList2;
+
+        std::vector<CString>::const_iterator cit = vecClassesList.begin ();
+        for ( std::vector<CString>::const_iterator it = vecTypeList.begin ();
+              it != vecTypeList.end ();
+              ++it, ++cit )
+        {
+        	vecTypeList2.push_back( CTypeInfo ( *it ) );
+
+            if ( *cit == "copyandrestore" )
+            {
+            	vecClassesList2.push_back( CTypeInfo::PARAM_COPY_AND_RESTORE );
+            }
+            else if ( *cit == "copy" )
+            {
+            	vecClassesList2.push_back( CTypeInfo::PARAM_COPY );
+            }
+            else if ( *cit == "ref" )
+            {
+            	vecClassesList2.push_back( CTypeInfo::PARAM_REF);
+            }
+            else assert ( false ); // No debería suceder nunca.
+
+        }
+        return CTypeInfo ( vecTypeList2, vecClassesList2, &typeReturns ).toString ();
+    }
 
 private:
     CTranslator*   m_pTranslator;
@@ -305,16 +344,18 @@ struct __ETDS__Foreach_Iterator
 #define IS_NUMERIC(x)   ( IS_REAL(x) || IS_INTEGER(x) )
 #define TYPE_OF(x)      type_of(x)
 
+// Arrays
 #define NEW_BASIC_TYPE(x)       ( CTypeInfo(CTypeInfo:: x ).toString() )
 #define NEW_ARRAY_TYPE(d,t)     new_array_type(d,t)
 
-// Arrays
 #define ARRAY_CONTENT(x)        ( CTypeInfo(x).GetArrayContent()->toString() )
 #define ARRAY_SIZE(x)           CString( CTypeInfo(x).GetArraySize() )
 #define ARRAY_DEPTH(x)          CTypeInfo(x).GetArrayDepth()
 #define ARRAY_DIMENSION(x,y)    CTypeInfo(x).GetArrayDimensions()[y]
 
 // Funciones y procedimientos
+#define NEW_FUNCTION_TYPE(x,y,z)    new_array_type(x,y,z)
+
 #define SUBPROG_NUM_PARAMS(x)   ( CTypeInfo(x).GetNumparams )
 #define SUBPROG_PARAM(x,y)      ( CTypeInfo(x).GetProcedureParams()[y]->toString() )
 #define FUNCTION_RETURN(x)      ( CTypeInfo(x).GetFunctionRetType()->toString() )
