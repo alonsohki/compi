@@ -294,9 +294,9 @@ struct __ETDS__Foreach_Iterator
 #define AS ,
 
 // Tipos
-#define IS_INTEGER(x)   ( CTypeInfo(x).GetType() == CTypeInfo::INTEGER )
-#define IS_REAL(x)      ( CTypeInfo(x).GetType() == CTypeInfo::REAL )
-#define IS_BOOLEAN(x)   ( CTypeInfo(x).GetType() == CTypeInfo::BOOLEAN )
+#define IS_INTEGER(x)   ( CTypeInfo(x).GetType() == CTypeInfo::INTEGER || IS_ARRAY(x) && ARRAY_CONTENT(x) == CTypeInfo::INTEGER)
+#define IS_REAL(x)      ( CTypeInfo(x).GetType() == CTypeInfo::REAL || IS_ARRAY(x) && ARRAY_CONTENT(x) == CTypeInfo::REAL)
+#define IS_BOOLEAN(x)   ( CTypeInfo(x).GetType() == CTypeInfo::BOOLEAN || IS_ARRAY(x) && ARRAY_CONTENT(x) == CTypeInfo::BOOLEAN)
 #define IS_ARRAY(x)     ( CTypeInfo(x).GetType() == CTypeInfo::ARRAY )
 #define IS_VARIABLE(x)  ( IS_INTEGER(x) || IS_REAL(x) || IS_BOOLEAN(x) || IS_ARRAY(x) )
 #define IS_PROCEDURE(x) ( CTypeInfo(x).GetType() == CTypeInfo::PROCEDURE )
