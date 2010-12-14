@@ -72,7 +72,7 @@ DEFINE_RULE(declaraciones,
                 }
             }
         }
-        RULE  ( declaraciones )();
+        RULE( declaraciones )();
     }
     else
     {
@@ -382,6 +382,7 @@ DEFINE_RULE(resto_lis_de_param,
         { FOREACH ( ls_ident.ids AS id )
             {
                 ADD_INST( clase.clase || "_" || TYPE_OF(t.tipo) || " " || id );
+
             }
         }
         RULE  ( resto_lis_de_param )();
@@ -524,6 +525,7 @@ DEFINE_RULE(sentencia,
         TOKEN id = MATCH ( IDENTIFIER );
         RULE  ( asignacion_o_llamada , a );
         { a.hident = id.value; }
+        a();
         MATCH ( SEPARATOR, ";" );
         { THIS.salir_si = EMPTY_LIST(); }
     }
@@ -533,7 +535,11 @@ DEFINE_RULE(sentencia,
         RULE  ( expresion , e )();
         MATCH ( RESERVED, "entonces" );
         RULE  ( M , m1 )();
-        RULE  ( lista_de_sentencias , ls )();
+        RULE  ( lista_de_sentencias, ls );
+        {
+            ls.hinloop = THIS.hinloop;
+        }
+        ls();
         MATCH ( RESERVED, "fin");
         MATCH ( RESERVED, "si");
         RULE  ( M , m2 )();
@@ -549,7 +555,9 @@ DEFINE_RULE(sentencia,
         MATCH ( RESERVED, "hacer" );
         RULE  ( M , m1 )();
         RULE  ( lista_de_sentencias, ls );
-        ls.hinloop = true;
+        {
+            ls.hinloop = true;
+        }
         ls();
         MATCH ( RESERVED, "mientras" );
         RULE  ( expresion , e )();
@@ -608,7 +616,7 @@ DEFINE_RULE(id_o_array,
 {
     if ( IS_RULE_FIRST ( acceso_a_array ) )
     {
-        RULE ( acceso_a_array ) ();
+        RULE ( acceso_a_array )();
     }
     else
     {
@@ -633,8 +641,7 @@ DEFINE_RULE(asignacion_o_llamada,
         MATCH ( OPERATOR, "=" );
         RULE  ( expresion , e )();
         {
-            // FIXME Comprobar que los tipos son compatibles
-            if (true)
+            if (THIS.hident)
                 ADD_INST( THIS.hident || ":=" || e.nombre );
             else
                 ERROR("Type mismatch");
@@ -642,20 +649,33 @@ DEFINE_RULE(asignacion_o_llamada,
     }
     else if (IS_RULE_FIRST( acceso_a_array ))
     {
-        RULE  ( acceso_a_array )();
+        RULE  ( acceso_a_array , a )();
         MATCH ( OPERATOR, "=" );
         RULE  ( expresion , e )();
         {
-            // FIXME Comprobar que los tipos son compatibles
-            if (true)
+            if (a.tipo == e.tipo)
+            {
                 ADD_INST( THIS.hident || ":=" || e.nombre );
+            }
+            else if ( IS_NUMERIC(a.tipo) && IS_BOOLEAN(e.tipo) )
+            {
+                CString next_ref;
+                next_ref = GET_REF().value() + 2;
+                ADD_INST ( "if " || e.nombre || " >  0 goto " || next_ref );
+                next_ref = GET_REF().value() + 2;
+                ADD_INST ( "goto " || next_ref );
+                ADD_INST( THIS.hident || ":= 1 ");
+                ADD_INST( THIS.hident || ":= 0 ");
+            }
             else
+            {
                 ERROR("Type mismatch");
+            }
         }
     }
     else if (IS_RULE_FIRST( parametros_llamadas ))
     {
-        RULE  ( parametros_llamadas , p )();
+        RULE  ( parametros_llamadas , p );
         {
             // FIXME Comprobar que la función existe en la tabla de simbolos y que los parametros coinciden
             //{ FOREACH ( p.parametros AS par )
@@ -663,7 +683,11 @@ DEFINE_RULE(asignacion_o_llamada,
             //        ADD_INST( "param_" || par.clase || " " || TYPE_OF(par.tipo) || " " || par.nombre );
             //    }
             //}
-            //ADD_INST( "call " || THIS.hident );
+            //
+        }
+        p();
+        {
+            ADD_INST( "call " || THIS.hident );
         }
     }
     else PANIC();
@@ -739,7 +763,14 @@ DEFINE_RULE(expresion,
                 )
 )
 {
-    RULE ( disyuncion )();
+    RULE ( disyuncion , d )();
+    {
+        THIS.nombre = d.nombre;
+        THIS.tipo = d.tipo;
+        THIS.gfalse = d.gfalse;
+        THIS.gtrue = d.gtrue;
+        THIS.literal = d.literal;
+    }
 }
 
 DEFINE_RULE(disyuncion,
@@ -835,8 +866,67 @@ DEFINE_RULE(conjuncion_prima,
 {
     if (IS_FIRST (RESERVED, "and")) {
         MATCH ( RESERVED, "and");
-        RULE  ( relacional )();
-        RULE  ( conjuncion_prima )();
+        RULE  ( M , m );
+        RULE  ( relacional , r )();
+        RULE  ( conjuncion_prima , c );
+        {
+            // Optimización
+            if ( IS_BOOLEAN(THIS.htipo) && IS_LITERAL(THIS) )
+            {
+                if (IS_BOOLEAN(r.tipo) && IS_LITERAL(r))
+                {
+                    if (THIS.hnombre == false || r.nombre == false )
+                        c.nombre = false;
+                    else
+                        c.nombre = true;
+                    c.hliteral = r.tipo;
+                    c.htipo = r.tipo;
+                }
+                else
+                {
+                    c.hnombre = r.nombre;
+                    c.hgtrue = r.gtrue;
+                    c.hgfalse = r.gfalse;
+                    c.htipo = r.tipo;
+                }
+            }
+            else if (IS_BOOLEAN(r.tipo) && IS_LITERAL(r))
+            {
+                   c.hnombre = THIS.hnombre;
+                c.hgtrue = THIS.hgtrue;
+                c.hgfalse = THIS.hgfalse;
+                c.htipo = THIS.htipo;
+            }
+            else
+            {
+                if ( IS_NUMERIC(THIS.htipo) )
+                {
+                    THIS.hgtrue = GET_REF();
+                    ADD_INST( "if " || THIS.hnombre || " > 0 goto ");
+                    THIS.hgfalse = GET_REF();
+                    ADD_INST( "goto ");
+                }
+                if ( IS_NUMERIC(r.tipo) )
+                {
+                    r.gtrue = GET_REF();
+                    ADD_INST( "if " || r.nombre || " > 0 goto ");
+                    r.gfalse = GET_REF();
+                    ADD_INST( "goto ");
+                }
+                COMPLETE(THIS.hgtrue,m.ref);
+                c.hgfalse = JOIN(THIS.hgfalse,r.gfalse);
+                c.hgtrue = r.gtrue;
+                c.hliteral = false;
+            }
+        }
+        c();
+        {
+            THIS.nombre = c.nombre;
+            THIS.tipo = c.tipo;
+            THIS.gfalse = c.gfalse;
+            THIS.gtrue = c.gtrue;
+            THIS.literal = c.literal;
+        }
     } else {
         // vacio
     }
@@ -865,8 +955,23 @@ DEFINE_RULE(relacional,
                 )
 )
 {
-    RULE ( aritmetica )();
-    RULE ( relacional_prima )();
+    RULE ( aritmetica , a )();
+    RULE ( relacional_prima , r );
+    {
+        r.hnombre = a.nombre;
+        r.htipo = a.tipo;
+        r.hgfalse = a.gfalse;
+        r.hgtrue = a.gtrue;
+        r.hliteral = a.literal;
+    }
+    r();
+    {
+        THIS.nombre = r.nombre;
+        THIS.tipo = r.tipo;
+        THIS.gfalse = r.gfalse;
+        THIS.gtrue = r.gtrue;
+        THIS.literal = r.literal;
+    }
 }
 
 DEFINE_RULE(relacional_prima,
@@ -887,11 +992,39 @@ DEFINE_RULE(relacional_prima,
 )
 {
     if (IS_RULE_FIRST ( oprel )) {
-        RULE ( oprel )();
-        RULE ( aritmetica )();
-        RULE ( relacional_prima )();
+        RULE ( oprel , op )();
+        RULE ( aritmetica , a )();
+        RULE ( relacional_prima , r );
+        {
+            if ( IS_NUMERIC(THIS.htipo) && IS_NUMERIC(a.tipo)) {
+
+                r.hgtrue = GET_REF();
+                ADD_INST( "if" || THIS.hnombre || op.op || a.nombre || " goto ");
+                r.hgfalse = GET_REF();
+                ADD_INST( "goto ");
+
+                r.htipo = NEW_BASIC_TYPE(BOOLEAN);
+                r.literal = false;
+
+            } else {
+                ERROR("Type mismatch error");
+            }
+        }
+        r();
+        {
+            THIS.nombre = r.hnombre;
+            THIS.tipo = r.htipo;
+            THIS.gfalse = r.hgfalse;
+            THIS.gtrue = r.hgtrue;
+            THIS.literal = r.hliteral;
+        }
     } else {
-        // vacio
+        // Si es vacio
+        THIS.nombre = THIS.hnombre;
+        THIS.tipo = THIS.htipo;
+        THIS.gfalse = THIS.hgfalse;
+        THIS.gtrue = THIS.hgtrue;
+        THIS.literal = THIS.hliteral;
     }
 }
 
@@ -919,8 +1052,23 @@ DEFINE_RULE(aritmetica,
                 )
 )
 {
-    RULE ( termino )();
-    RULE ( aritmetica_prima )();
+    RULE ( termino , t )();
+    RULE ( aritmetica_prima , a );
+    {
+        a.hnombre = t.nombre;
+        a.htipo = t.tipo;
+        a.hgfalse = t.gfalse;
+        a.hgtrue = t.gtrue;
+        a.hliteral = t.literal;
+    }
+    a();
+    {
+        THIS.nombre = a.nombre;
+        THIS.tipo = a.tipo;
+        THIS.gfalse = a.gfalse;
+        THIS.gtrue = a.gtrue;
+        THIS.literal = a.literal;
+    }
 }
 
 DEFINE_RULE(aritmetica_prima,
@@ -942,11 +1090,41 @@ DEFINE_RULE(aritmetica_prima,
 )
 {
     if (IS_RULE_FIRST ( opl2 )) {
-        RULE ( opl2 )();
-        RULE ( termino )();
-        RULE ( aritmetica_prima )();
+        RULE ( opl2 , op )();
+        RULE ( termino , t )();
+        RULE ( aritmetica_prima , a );
+        {
+            if ( IS_NUMERIC(THIS.htipo) && IS_NUMERIC(t.tipo) ) {
+
+                a.hnombre = NEW_IDENT();
+                ADD_INST( a.hnombre || ":=" || THIS.hnombre || op.op || t.nombre );
+
+                if ( IS_REAL(THIS.htipo) || IS_REAL(t.tipo) )
+                    a.htipo = NEW_BASIC_TYPE(REAL);
+                else
+                    a.htipo = NEW_BASIC_TYPE(INTEGER);
+
+                a.literal = false;
+
+            } else {
+                ERROR("Type mismatch error");
+            }
+        }
+        a();
+        {
+            THIS.nombre = a.hnombre;
+            THIS.tipo = a.htipo;
+            THIS.gfalse = a.hgfalse;
+            THIS.gtrue = a.hgtrue;
+            THIS.literal = a.hliteral;
+        }
     } else {
-        // vacio
+        // Si es vacio
+        THIS.nombre = THIS.hnombre;
+        THIS.tipo = THIS.htipo;
+        THIS.gfalse = THIS.hgfalse;
+        THIS.gtrue = THIS.hgtrue;
+        THIS.literal = THIS.hliteral;
     }
 }
 
@@ -975,8 +1153,23 @@ DEFINE_RULE(termino,
                 )
 )
 {
-    RULE ( negacion )();
-    RULE ( termino_prima )();
+    RULE ( negacion , n )();
+    RULE ( termino_prima , t );
+    {
+        t.hnombre = n.nombre;
+        t.htipo = n.tipo;
+        t.hgfalse = n.gfalse;
+        t.hgtrue = n.gtrue;
+        t.hliteral = n.literal;
+    }
+    t();
+    {
+        THIS.nombre = t.nombre;
+        THIS.tipo = t.tipo;
+        THIS.gfalse = t.gfalse;
+        THIS.gtrue = t.gtrue;
+        THIS.literal = t.literal;
+    }
 }
 
 DEFINE_RULE(termino_prima,
@@ -999,11 +1192,41 @@ DEFINE_RULE(termino_prima,
 )
 {
     if (IS_RULE_FIRST ( opl1 )) {
-        RULE ( opl1 )();
-        RULE ( negacion )();
-        RULE ( termino_prima )();
+        RULE ( opl1 , op )();
+        RULE ( negacion , f )();
+        RULE ( termino_prima , t );
+        {
+            if ( IS_NUMERIC(THIS.htipo) && IS_NUMERIC(f.tipo) ) {
+
+                t.hnombre = NEW_IDENT();
+                ADD_INST( t.hnombre || ":=" || THIS.hnombre || op.op || f.nombre );
+
+                if ( IS_REAL(THIS.htipo) || IS_REAL(f.tipo) )
+                    t.htipo = NEW_BASIC_TYPE(REAL);
+                else
+                    t.htipo = NEW_BASIC_TYPE(INTEGER);
+
+                t.literal = false;
+
+            } else {
+                ERROR("Type mismatch error");
+            }
+        }
+        t();
+        {
+            THIS.nombre = t.hnombre;
+            THIS.tipo = t.htipo;
+            THIS.gfalse = t.hgfalse;
+            THIS.gtrue = t.hgtrue;
+            THIS.literal = t.hliteral;
+        }
     } else {
-        // vacio
+        // Si es vacio
+        THIS.nombre = THIS.hnombre;
+        THIS.tipo = THIS.htipo;
+        THIS.gfalse = THIS.hgfalse;
+        THIS.gtrue = THIS.hgtrue;
+        THIS.literal = THIS.hliteral;
     }
 }
 
@@ -1037,11 +1260,38 @@ DEFINE_RULE(negacion,
     if (IS_FIRST ( RESERVED, "not"))
     {
         MATCH ( RESERVED, "not");
-        RULE  ( factor )();
+        RULE  ( factor , f )();
+        {
+            if ( IS_BOOLEAN(f.tipo) )
+            {
+                if (IS_LITERAL(f))
+                {
+                    THIS.nombre = (f.nombre == true)? false : true;
+                }
+                else
+                {
+                    THIS.gfalse = f.gtrue;
+                    THIS.gtrue = f.gfalse;
+                }
+                THIS.tipo = f.tipo;
+                THIS.literal = f.literal;
+            }
+            else
+            {
+                ERROR("Type mismatch error");
+            }
+        }
     }
     else if (IS_RULE_FIRST ( factor ))
     {
-        RULE  ( factor )();
+        RULE  ( factor , f )();
+        {
+           THIS.nombre = f.nombre;
+           THIS.tipo = f.tipo;
+           THIS.gfalse = f.gfalse;
+           THIS.gtrue = f.gtrue;
+           THIS.literal = f.literal;
+        }
     }
     else PANIC();
 }
@@ -1073,11 +1323,31 @@ DEFINE_RULE(factor,
 {
     if (IS_FIRST ( OPERATOR, "-" )) {
         MATCH ( OPERATOR, "-" );
-        RULE ( factor_prima )();
+        RULE ( factor_prima , f )();
+        {
+            if ( IS_REAL(f.tipo) || IS_INTEGER(f.tipo) )
+            {
+                THIS.nombre = NEW_IDENT();
+                ADD_INST( THIS.nombre || ":=" || " - " || f.nombre );
+                THIS.tipo = f.tipo;
+                THIS.literal = false;
+            }
+            else
+            {
+                ERROR("Type mismatch error");
+            }
+        }
     }
     else if (IS_RULE_FIRST ( factor_prima ))
     {
-        RULE ( factor_prima )();
+        RULE ( factor_prima , f )();
+        {
+           THIS.nombre = f.nombre;
+           THIS.tipo = f.tipo;
+           THIS.gfalse = f.gfalse;
+           THIS.gtrue = f.gtrue;
+           THIS.literal = f.literal;
+        }
     }
     else PANIC();
 }
@@ -1107,26 +1377,53 @@ DEFINE_RULE(factor_prima,
 )
 {
     if (IS_FIRST ( IDENTIFIER )) {
-        MATCH ( IDENTIFIER);
-        RULE  ( array_o_llamada )();
+        TOKEN id = MATCH ( IDENTIFIER);
+        RULE  ( array_o_llamada , a );
+        {
+            a.hident = id.value;
+        }
+        a();
     }
     else if (IS_FIRST ( INTEGER ))
     {
-        MATCH ( INTEGER );
+        TOKEN token = MATCH ( INTEGER );
+        {
+            THIS.tipo = NEW_BASIC_TYPE(INTEGER);
+            THIS.nombre = token.value;
+            THIS.literal = true;
+        }
     }
     else if (IS_FIRST ( REAL ))
     {
-        MATCH ( REAL );
+        TOKEN token = MATCH ( REAL );
+        {
+            THIS.tipo = NEW_BASIC_TYPE(REAL);
+            THIS.nombre = token.value;
+            THIS.literal = true;
+        }
     }
     else if (IS_RULE_FIRST ( booleano ))
     {
-        RULE  ( booleano )();
+        RULE ( booleano , token )();
+        {
+            THIS.tipo = NEW_BASIC_TYPE(BOOLEAN);
+            THIS.nombre = token.value;
+            THIS.literal = true;
+        }
     }
     else if (IS_FIRST ( SEPARATOR, "(" ))
     {
         MATCH ( SEPARATOR, "(" );
-        RULE  ( expresion )();
+        RULE  ( expresion , e )();
         MATCH ( SEPARATOR, ")" );
+        {
+            THIS.tipo = e.tipo;
+            THIS.nombre = e.nombre;
+            THIS.tipo = e.tipo;
+            THIS.gfalse = e.gfalse;
+            THIS.gtrue = e.gtrue;
+            THIS.literal = e.literal;
+        }
     }
     else PANIC();
 }
@@ -1153,14 +1450,45 @@ DEFINE_RULE(array_o_llamada,
 )
 {
     if (IS_RULE_FIRST ( parametros_llamadas )) {
-        RULE  ( parametros_llamadas )();
+        RULE  ( parametros_llamadas , p);
+        {
+            p.hident = THIS.hident;
+            p.htipo = ST_GET_TYPE(THIS.hident);
+
+            if ( IS_FUNCTION(p.htipo) == false)
+            {
+                ERROR("Unknow function " || THIS.hident);
+            }
+        }
+        p();
     }
     else if (IS_RULE_FIRST ( acceso_a_array )) {
-        RULE  ( acceso_a_array )();
+        RULE  ( acceso_a_array , a )();
+        {
+            a.hident = THIS.hident;
+            a.htipo = ST_GET_TYPE(THIS.hident);
+
+            if ( IS_ARRAY(a.htipo) == false )
+            {
+                ERROR("Unknow array " || THIS.hident);
+            }
+        }
+        a();
+        {
+            THIS.nombre = a.nombre;
+            THIS.tipo = a.tipo;
+        }
     }
     else
     {
-        // vacío
+        // Variable
+        THIS.nombre = THIS.hident;
+        THIS.tipo = ST_GET_TYPE(THIS.hident);
+
+        if ( IS_VARIABLE(THIS.tipo) == false )
+        {
+            ERROR("Unknow variable " || THIS.hident);
+        }
     }
 }
 
@@ -1181,8 +1509,33 @@ DEFINE_RULE(lista_de_expr,
                 )
 )
 {
-    RULE ( expresion )();
-    RULE ( resto_lista_expr )();
+    RULE  ( expresion , e )();
+    RULE  ( resto_lista_expr , resto );
+    {
+        if ( IS_INTEGER(e.tipo) )
+        {
+            if ( IS_LITERAL(e) )
+            {
+                resto.hliteral = true;
+                resto.hoffset = e.nombre;
+            }
+            else
+            {
+                resto.hoffset = NEW_IDENT();
+                ADD_INST( resto.hoffset || ":=" || e.nombre);
+                resto.hliteral = false;
+            }
+            resto.hdepth = 0;
+        }
+        else
+        {
+            ERROR("Invalid array index: Only integer expressions allowed");
+        }
+    }
+    resto();
+    {
+        THIS.nombre = resto.nombre;
+    }
 }
 
 DEFINE_RULE(resto_lista_expr,
@@ -1199,12 +1552,50 @@ DEFINE_RULE(resto_lista_expr,
     if ( IS_FIRST ( SEPARATOR, "," ) )
     {
         MATCH ( SEPARATOR, "," );
-        RULE  ( expresion )();
-        RULE  ( resto_lista_expr )();
+        {
+            unsigned int depth = ARRAY_DEPTH(THIS.htipo);
+            if (THIS.hdepth >= depth - 1)
+                ERROR("Array access out of bound");
+        }
+        RULE  ( expresion , e )();
+        RULE  ( resto_lista_expr , resto );
+        {
+            if ( IS_INTEGER(e.tipo) )
+            {
+                unsigned int dimension = ARRAY_DIMENSION(THIS.htipo, THIS.hdepth.value());
+
+                if ( IS_LITERAL(e) )
+                {
+                    resto.hliteral = true;
+                    resto.hoffset = (THIS.hoffset * dimension) + e.nombre.value();
+                }
+                else
+                {
+                    CString tmp = NEW_IDENT();
+                    CString cdimension = dimension;
+                    ADD_INST( tmp || ":=" || THIS.hoffset || " * " || cdimension );
+
+                    resto.hoffset = NEW_IDENT();
+                    ADD_INST( resto.hoffset || ":=" || tmp || " + " || e.nombre );
+                    resto.hliteral = false;
+                }
+                resto.hdepth = THIS.hdepth + 1;
+            }
+            else
+            {
+                ERROR("Invalid array index: Only integer expressions allowed");
+            }
+        }
+        resto();
     }
     else
     {
         // Vacío.
+        {
+            //ARRAY_SIZE
+            THIS.nombre = NEW_IDENT();
+            ADD_INST( THIS.nombre || ":=" || THIS.hident || "[" || THIS.hoffset || "]" );
+        }
     }
 }
 
@@ -1225,10 +1616,12 @@ DEFINE_RULE(opl1,
 )
 {
     if (IS_FIRST ( OPERATOR, "*" )) {
-        MATCH ( OPERATOR, "*" );
+        TOKEN token = MATCH ( OPERATOR, "*" );
+        THIS.op = token.value;
     }
     else if (IS_FIRST ( OPERATOR, "/" )) {
-        MATCH ( OPERATOR, "/" );
+        TOKEN token = MATCH ( OPERATOR, "/" );
+        THIS.op = token.value;
     }
     else PANIC();
 }
@@ -1250,10 +1643,12 @@ DEFINE_RULE(opl2,
 )
 {
     if (IS_FIRST ( OPERATOR, "-" )) {
-        MATCH ( OPERATOR, "-" );
+        TOKEN token = MATCH ( OPERATOR, "-" );
+        THIS.op = token.value;
     }
     else if (IS_FIRST ( OPERATOR, "+" )) {
-        MATCH ( OPERATOR, "+" );
+        TOKEN token = MATCH ( OPERATOR, "+" );
+        THIS.op = token.value;
     }
     else PANIC();
 }
@@ -1275,22 +1670,28 @@ DEFINE_RULE(oprel,
 )
 {
     if (IS_FIRST ( OPERATOR, "<" )) {
-        MATCH ( OPERATOR, "<" );
+        TOKEN token = MATCH ( OPERATOR, "<" );
+        THIS.op = token.value;
     }
     else if (IS_FIRST ( OPERATOR, ">" )) {
-        MATCH ( OPERATOR, ">" );
+        TOKEN token = MATCH ( OPERATOR, ">" );
+        THIS.op = token.value;
     }
     else if (IS_FIRST ( OPERATOR, "<=" )) {
-        MATCH ( OPERATOR, "<=" );
+        TOKEN token = MATCH ( OPERATOR, "<=" );
+        THIS.op = token.value;
     }
     else if (IS_FIRST ( OPERATOR, ">=" )) {
-        MATCH ( OPERATOR, ">=" );
+        TOKEN token = MATCH ( OPERATOR, ">=" );
+        THIS.op = token.value;
     }
     else if (IS_FIRST ( OPERATOR, "==" )) {
-        MATCH ( OPERATOR, "==" );
+        TOKEN token = MATCH ( OPERATOR, "==" );
+        THIS.op = token.value;
     }
     else if (IS_FIRST ( OPERATOR, "/=" )) {
-        MATCH ( OPERATOR, "/=" );
+        TOKEN token = MATCH ( OPERATOR, "/=" );
+        THIS.op = token.value;
     }
     else PANIC();
 }
@@ -1316,10 +1717,12 @@ DEFINE_RULE(booleano,
 )
 {
     if (IS_FIRST ( RESERVED, "true" )) {
-        MATCH ( RESERVED, "true" );
+        TOKEN token = MATCH ( RESERVED, "true" );
+        THIS.value = token.value;
     }
     else if (IS_FIRST ( RESERVED, "false" )) {
-        MATCH ( RESERVED, "false" );
+        TOKEN token = MATCH ( RESERVED, "false" );
+        THIS.value = token.value;
     }
     else PANIC();
 }
@@ -1340,5 +1743,5 @@ DEFINE_RULE(M,
                 )
 )
 {
-    THIS.ref = GET_REF();
+    THIS.ref = INIT_LIST(GET_REF());
 }

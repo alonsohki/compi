@@ -298,6 +298,7 @@ struct __ETDS__Foreach_Iterator
 #define IS_REAL(x)      ( CTypeInfo(x).GetType() == CTypeInfo::REAL )
 #define IS_BOOLEAN(x)   ( CTypeInfo(x).GetType() == CTypeInfo::BOOLEAN )
 #define IS_ARRAY(x)     ( CTypeInfo(x).GetType() == CTypeInfo::ARRAY )
+#define IS_VARIABLE(x)  ( IS_INTEGER(x) || IS_REAL(x) || IS_BOOLEAN(x) || IS_ARRAY(x) )
 #define IS_PROCEDURE(x) ( CTypeInfo(x).GetType() == CTypeInfo::PROCEDURE )
 #define IS_FUNCTION(x)  ( CTypeInfo(x).GetType() == CTypeInfo::FUNCTION )
 #define IS_LITERAL(x)   ( x.literal == true )
@@ -317,7 +318,7 @@ struct __ETDS__Foreach_Iterator
 #define ST_PUSH                 symbol_table_push
 #define ST_POP                  symbol_table_pop
 #define ST_ADD(x,t)             symbol_table_add((CString)x,(CString)t)
-#define ST_GET_TYPE(var)        symbol_table_type((CString)var)
+#define ST_GET_TYPE(var)        symbol_table_type((CString)var).toString()
 
 #endif	/* CRULES_INTERNAL_H */
 
