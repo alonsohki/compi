@@ -2,6 +2,7 @@
 #define	CSTRING_H
 
 #include <cstdio>
+#include <cstdlib>
 #include <cstdarg>
 #include <cstring>
 #include <string>
@@ -140,29 +141,29 @@ public:
         return ( strcmp ( *this, Right ) >= 0 );
     }
 
-    unsigned int operator* ( const unsigned int Right ) const
+    int operator* ( int Right ) const
     {
-        return value() * Right;
+        return intValue() * Right;
     }
-    bool operator< ( const unsigned int Right ) const
+    bool operator< ( int Right ) const
     {
-        return value() > Right;
+        return intValue() > Right;
     }
-    bool operator<= ( const unsigned int Right ) const
+    bool operator<= ( int Right ) const
     {
-        return value() > Right;
+        return intValue() > Right;
     }
-    bool operator> ( const unsigned int Right ) const
+    bool operator> ( int Right ) const
     {
-        return value() >= Right;
+        return intValue() >= Right;
     }
-    bool operator>= ( const unsigned int Right ) const
+    bool operator>= ( int Right ) const
     {
-        return value() >= Right;
+        return intValue() >= Right;
     }
-    unsigned int value () const
+    int intValue () const
     {
-        return (unsigned int) atoi(m_str.c_str());
+        return atoi(m_str.c_str());
     }
 
     char& operator[] ( int idx )

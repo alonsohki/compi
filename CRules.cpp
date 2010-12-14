@@ -660,9 +660,9 @@ DEFINE_RULE(asignacion_o_llamada,
             else if ( IS_NUMERIC(a.tipo) && IS_BOOLEAN(e.tipo) )
             {
                 CString next_ref;
-                next_ref = GET_REF().value() + 2;
+                next_ref = GET_REF().intValue() + 2;
                 ADD_INST ( "if " || e.nombre || " >  0 goto " || next_ref );
-                next_ref = GET_REF().value() + 2;
+                next_ref = GET_REF().intValue() + 2;
                 ADD_INST ( "goto " || next_ref );
                 ADD_INST( THIS.hident || ":= 1 ");
                 ADD_INST( THIS.hident || ":= 0 ");
@@ -1557,7 +1557,7 @@ DEFINE_RULE(resto_lista_expr,
         {
             if ( IS_INTEGER(e.tipo) )
             {
-                unsigned int dimension = ARRAY_DIMENSION(THIS.htipo, THIS.hdepth.value());
+                unsigned int dimension = ARRAY_DIMENSION(THIS.htipo, THIS.hdepth.intValue());
 
                 CString tmp = NEW_IDENT();
                 ADD_INST( tmp || ":=" || THIS.hoffset || " * " || CString(dimension) );
