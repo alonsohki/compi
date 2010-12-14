@@ -353,7 +353,7 @@ struct __ETDS__Foreach_Iterator
 #define ARRAY_DIMENSION(x,y)    CTypeInfo(x).GetArrayDimensions()[y]
 
 // Funciones y procedimientos
-#define NEW_FUNCTION_TYPE(x,y,z)    new_array_type(x,y,z)
+#define NEW_FUNCTION_TYPE(x,y,z)    new_function_type(x,y,z)
 
 #define SUBPROG_NUM_PARAMS(x)   ( CTypeInfo(x).GetNumparams )
 #define SUBPROG_PARAM(x,y)      ( CTypeInfo(x).GetProcedureParams()[y]->toString() )
