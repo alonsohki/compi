@@ -290,9 +290,11 @@ CTokenizer::SToken CTranslator::Match ( CTokenizer::ETokenType eType,
             break;
     }
 
+#ifdef _DEBUG
     // Generamos un string para información de debug, el cual contiene el
     // nombre del fichero y la linea de este en la que se ha ejecutado este match.
     snprintf ( debuggingPrefix, NUMELEMS(debuggingPrefix), "[%s:%d] ", szFile, uiLine );
+#endif
 
     // Si habíamos alcanzado el fin de fichero, no deberíamos recibir más match.
     if ( EOFReached () == true )
@@ -381,7 +383,7 @@ unsigned int CTranslator::GetRef () const
 
 CString CTranslator::NewIdent ()
 {
-    return m_uiLastIdent++;
+    return Format ( "_t%u", m_uiLastIdent++ );
 }
 
 void CTranslator::Complete ( const std::vector<unsigned int>& refs, unsigned int ref )

@@ -11,9 +11,29 @@
 class __CRule__Base__
 {
 protected:
-    __CRule__Base__ ( CTranslator* pTranslator )
+    __CRule__Base__ ( CTranslator* pTranslator,
+                      // Los siguientes parámetros son utilizados para debugging.
+                      const char* szRuleName, unsigned int uiExecutionDepth )
     : m_pTranslator ( pTranslator )
+    , m_szRuleName ( szRuleName )
+    , m_uiExecutionDepth ( uiExecutionDepth )
     {}
+
+public:
+    void                operator()      ()
+    {
+#ifdef _DEBUG
+        printf ( "Executing rule: %s\n", m_szRuleName );
+#endif
+        Execute();
+    }
+    unsigned int        GetExecutionDepth   () const
+    {
+        return m_uiExecutionDepth;
+    }
+    
+protected:
+    virtual void        Execute         () = 0;
 
     CTranslator*        GetTranslator   () { return m_pTranslator; }
     bool                panic_mode      () const
@@ -111,6 +131,10 @@ protected:
 
         m_pTranslator->Complete ( listNumbers, static_cast < unsigned int > ( atoi(ref) ) );
     }
+    CString         list_size           ( const CString& list )
+    {
+        return CString ( CListInString::CountListElements( list ) );
+    }
     void            symbol_table_push   ()
     {
         m_pTranslator->ST_Push();
@@ -188,26 +212,56 @@ protected:
         {
         	vecTypeList2.push_back( CTypeInfo ( *it ) );
 
-            if ( *cit == "copyandrestore" )
-            {
-            	vecClassesList2.push_back( CTypeInfo::PARAM_COPY_AND_RESTORE );
-            }
-            else if ( *cit == "copy" )
+            if ( *cit == "val" )
             {
             	vecClassesList2.push_back( CTypeInfo::PARAM_COPY );
             }
             else if ( *cit == "ref" )
             {
-            	vecClassesList2.push_back( CTypeInfo::PARAM_REF);
+            	vecClassesList2.push_back( CTypeInfo::PARAM_REF );
             }
             else assert ( false ); // No debería suceder nunca.
 
         }
         return CTypeInfo ( vecTypeList2, vecClassesList2, &typeReturns ).toString ();
     }
+    CString     new_procedure_type       ( const CString& paramTypeList,
+                                           const CString& paramClassesList )
+    {
+        std::vector < CString > vecTypeList;
+        std::vector < CString > vecClassesList;
+
+        CListInString::GetListElements( paramTypeList, vecTypeList );
+        CListInString::GetListElements( paramClassesList, vecClassesList );
+
+        std::vector < CTypeInfo > vecTypeList2;
+        std::vector < CTypeInfo::EParamClass > vecClassesList2;
+
+        std::vector<CString>::const_iterator cit = vecClassesList.begin ();
+        for ( std::vector<CString>::const_iterator it = vecTypeList.begin ();
+              it != vecTypeList.end ();
+              ++it, ++cit )
+        {
+            vecTypeList2.push_back( CTypeInfo ( *it ) );
+
+            if ( *cit == "val" )
+            {
+            	vecClassesList2.push_back( CTypeInfo::PARAM_COPY );
+            }
+            else if ( *cit == "ref" )
+            {
+            	vecClassesList2.push_back( CTypeInfo::PARAM_REF );
+            }
+            else assert ( false ); // No debería suceder nunca.
+
+        }
+        return CTypeInfo ( vecTypeList2, vecClassesList2, 0 ).toString ();
+    }
 
 private:
-    CTranslator*   m_pTranslator;
+    CTranslator*    m_pTranslator;
+    const char*     m_szRuleName;
+    unsigned int    m_uiExecutionDepth;
 };
 
 // Macros de uso interno.
@@ -263,8 +317,8 @@ public: \
 \
 public: \
     FOR_EACH_PARAM(MAP_ATTRIBUTE_TYPE, __VA_ARGS__); \
-    BUILD_RULE_CLASS_NAME(x) ( CTranslator* pTranslator ) : __CRule__Base__(pTranslator) {} \
-    void operator() (); \
+    BUILD_RULE_CLASS_NAME(x) ( CTranslator* pTranslator, unsigned int uiExecutionDepth ) : __CRule__Base__( pTranslator, #x, uiExecutionDepth ) {} \
+    void Execute (); \
 }
 
 #define MAP_STOKEN2(type, ...) ( CTokenizer:: type , ## __VA_ARGS__ )
@@ -274,23 +328,24 @@ public: \
 #define DEFINE_RULE(x, first, next) \
 const CTokenizer::SToken BUILD_RULE_CLASS_NAME(x) :: ms_firstToken [] = first; \
 const CTokenizer::SToken BUILD_RULE_CLASS_NAME(x) :: ms_nextToken [] = next; \
-void BUILD_RULE_CLASS_NAME(x) :: operator() ()
+void BUILD_RULE_CLASS_NAME(x) :: Execute ()
 
 #define FIRST_RULE_IS(x) class __CRuleFirst__ : public BUILD_RULE_CLASS_NAME(x) { \
 public: \
-    __CRuleFirst__ ( CTranslator* pTranslator ) : BUILD_RULE_CLASS_NAME(x) (pTranslator) {} \
-    void operator() () { BUILD_RULE_CLASS_NAME(x) :: operator() (); } \
+    __CRuleFirst__ ( CTranslator* pTranslator ) : BUILD_RULE_CLASS_NAME(x) (pTranslator, 0) {} \
+    void Execute () { BUILD_RULE_CLASS_NAME(x) :: Execute (); } \
 }
 
 #define RULE(T, ...) RULE_I(T, NUMARGS(__VA_ARGS__), __VA_ARGS__)
 #define RULE_I(T, n, ...) CAT(RULE_I_, n)(T, ## __VA_ARGS__)
-#define RULE_I_0(T, varName) BUILD_RULE_CLASS_NAME(T) ( this->GetTranslator() )
-#define RULE_I_1(T, varName) BUILD_RULE_CLASS_NAME(T) (varName) ( this->GetTranslator() ); (varName)
+#define RULE_I_0(T, varName) BUILD_RULE_CLASS_NAME(T) ( this->GetTranslator(), GetExecutionDepth() + 1 )
+#define RULE_I_1(T, varName) BUILD_RULE_CLASS_NAME(T) (varName) ( this->GetTranslator(), GetExecutionDepth() + 1 ); (varName)
 
 #define EXECUTE_FIRST_RULE(T) __CRuleFirst__ ( this ) ()
 
 // Abstracciones funcionales de la ETDS, y macros de apoyo.
 #define THIS (*this)
+#define VAR CString
 #define TT(x) CTokenizer:: x
 #define TOKEN CTokenizer::SToken
 #define MATCH(T, ...) MATCH_I(T, NUMARGS(__VA_ARGS__), __VA_ARGS__); if ( panic_mode() == true ) return
@@ -300,10 +355,6 @@ public: \
 #define ADD_INST(x) push_instruction(CString() || x )
 #define GET_REF get_ref
 #define NEW_IDENT new_ident
-#define EMPTY_LIST empty_list
-#define INIT_LIST init_list
-#define JOIN join_lists
-#define COMPLETE complete
 #define IS_FIRST(x, ...) is_first ( CTokenizer:: x, ## __VA_ARGS__ )
 #define IS_RULE_FIRST(x) is_rule_first ( BUILD_RULE_CLASS_NAME(x) :: ms_firstToken , BUILD_RULE_CLASS_NAME(x) :: ms_nextToken )
 #define PANIC() panic(ms_nextToken)
@@ -311,7 +362,13 @@ public: \
 #define ERROR(msg) error(CString() || msg )
 #define DIE(msg) die(CString() || msg )
 
-// Foreach
+// Listas
+#define EMPTY_LIST empty_list
+#define INIT_LIST init_list
+#define JOIN join_lists
+#define COMPLETE complete
+#define LIST_SIZE(x) list_size(x)
+// Listas - Foreach
 struct __ETDS__Foreach_Iterator
 {
     __ETDS__Foreach_Iterator ( const CString& ls )
@@ -350,11 +407,11 @@ struct __ETDS__Foreach_Iterator
 #define ARRAY_CONTENT(x)        ( CTypeInfo(x).GetArrayContent()->toString() )
 #define ARRAY_SIZE(x)           CString( CTypeInfo(x).GetArraySize() )
 #define ARRAY_DEPTH(x)          CTypeInfo(x).GetArrayDepth()
-#define ARRAY_DIMENSION(x,y)    CTypeInfo(x).GetArrayDimensions()[y]
+#define ARRAY_DIMENSION(x,y)    CString ( CTypeInfo(x).GetArrayDimensions()[y.intValue()] )
 
 // Funciones y procedimientos
-#define NEW_FUNCTION_TYPE(x,y,z)    new_function_type(x,y,z)
-
+#define NEW_FUNCTION_TYPE(x,y,z)  new_function_type(x,y,z)
+#define NEW_PROCEDURE_TYPE(x,y)   new_procedure_type(x,y)
 #define SUBPROG_NUM_PARAMS(x)   ( CTypeInfo(x).GetNumparams )
 #define SUBPROG_PARAM(x,y)      ( CTypeInfo(x).GetProcedureParams()[y]->toString() )
 #define FUNCTION_RETURN(x)      ( CTypeInfo(x).GetFunctionRetType()->toString() )
@@ -364,6 +421,7 @@ struct __ETDS__Foreach_Iterator
 #define ST_POP                  symbol_table_pop
 #define ST_ADD(x,t)             symbol_table_add((CString)x,(CString)t)
 #define ST_GET_TYPE(var)        symbol_table_type((CString)var).toString()
+#define ST_EXISTS(x)            symbol_table_get((CString)x, 0, 0)
 
 #endif	/* CRULES_INTERNAL_H */
 

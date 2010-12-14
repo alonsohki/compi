@@ -1,0 +1,16 @@
+programa accesos_llamadas
+	variables a : entero;
+	variables b : real;
+	variables c : array [ 3, 2, 3 ] de entero;
+	variables d : booleano;
+	
+	funcion suma ( x: entrada real; y: entrada real ) retorna real
+	comienzo
+		retornar x + y;
+	fin;
+comienzo
+	get ( a );
+	get ( b );
+	b = suma ( a, b ) + c [ a+1, a+2, 0 ];
+	d = a > c;
+fin ;

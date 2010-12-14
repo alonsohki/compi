@@ -67,6 +67,9 @@
             <pElem>.</pElem>
           </incDir>
           <commandLine>-Wall -Wno-unused-value</commandLine>
+          <preprocessorList>
+            <Elem>_DEBUG=1</Elem>
+          </preprocessorList>
         </ccTool>
         <fortranCompilerTool>
           <commandlineTool>g77</commandlineTool>

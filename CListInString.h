@@ -59,6 +59,13 @@ public:
         }
         return to;
     }
+
+    static unsigned int CountListElements ( const CString& list )
+    {
+        std::vector<CString> elements;
+        GetListElements ( list, elements );
+        return elements.size ();
+    }
 };
 
 
