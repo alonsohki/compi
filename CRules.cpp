@@ -638,12 +638,15 @@ DEFINE_RULE(sentencia,
     {
         MATCH ( RESERVED, "get" );
         MATCH ( SEPARATOR, "(" );
-        MATCH ( IDENTIFIER );
-        RULE  ( id_o_array )();
+        TOKEN ID = MATCH ( IDENTIFIER );
+        RULE  ( id_o_array, ioa );
+        { ioa.hident = ID.value; }
+        ioa ();
         MATCH ( SEPARATOR, ")" );
         MATCH ( SEPARATOR, ";" );
         {
             THIS.salir_si = EMPTY_LIST ();
+            ADD_INST ( "read " || ioa.nombre );
         }
     }
     else if (IS_FIRST ( RESERVED, "put_line"))
@@ -672,11 +675,18 @@ DEFINE_RULE(id_o_array,
 {
     if ( IS_RULE_FIRST ( acceso_a_array ) )
     {
-        RULE ( acceso_a_array )();
+        RULE ( acceso_a_array, a );
+        { a.hident = THIS.hident; }
+        a();
+        {
+            THIS.nombre = THIS.hident || "[" || a.offset || "]";
+        }
     }
     else
     {
-        // Vacío.
+        if ( ST_EXISTS(THIS.hident) == false )
+            ERROR("Unknown identifier '" || THIS.hident || "'");
+        THIS.nombre = THIS.hident;
     }
 }
 
@@ -705,10 +715,13 @@ DEFINE_RULE(asignacion_o_llamada,
     }
     else if (IS_RULE_FIRST( acceso_a_array ))
     {
-        RULE  ( acceso_a_array , a )();
+        RULE  ( acceso_a_array , a );
+        { a.hident = THIS.hident; }
+        a();
         MATCH ( OPERATOR, "=" );
         RULE  ( expresion , e )();
         {
+            /*ADD_INST ( THIS.hident || "[" ||  := " || TYPECAST() )
             if ( a.tipo == e.tipo )
             {
                 ADD_INST( THIS.hident || " := " || e.nombre );
@@ -726,7 +739,7 @@ DEFINE_RULE(asignacion_o_llamada,
             else
             {
                 ERROR("Type mismatch");
-            }
+            }*/
         }
     }
     else if (IS_RULE_FIRST( parametros_llamadas ))
@@ -768,26 +781,43 @@ DEFINE_RULE(acceso_a_array,
     RULE  ( lista_de_expr, ls )();
     MATCH ( SEPARATOR, "]" );
     {
-        if ( LIST_SIZE(ls.exprs) > ARRAY_DEPTH(THIS.htipo) )
-            ERROR ( "Too many subscripts for array '" || THIS.hident || "'" );
-        else if ( LIST_SIZE(ls.exprs) < ARRAY_DEPTH(THIS.htipo) )
-            ERROR ( "Too few subscripts for array '" || THIS.hident || "'" );
+        THIS.offset = NEW_IDENT ();
+        ADD_INST ( THIS.offset || " := 0" );
+        
+        if ( ST_EXISTS(THIS.hident) == false )
+        {
+            ERROR ( "Identifier '" || THIS.hident || "' not found." );
+            THIS.tipo = NEW_BASIC_TYPE ( UNKNOWN );
+        }
         else
         {
-            VAR dimOffset;
-            VAR curDimension = ARRAY_DEPTH(THIS.htipo) - 1;
-            VAR offset = NEW_IDENT ();
-            ADD_INST ( offset || " := 0" );
-            FOREACH ( ls.exprs AS nombre )
+            VAR tipo = ST_GET_TYPE ( THIS.hident );
+            if ( IS_ARRAY(tipo) == false )
             {
-                dimOffset = NEW_IDENT ();
-                ADD_INST ( dimOffset || " := "  || nombre || " * " || ARRAY_DIMENSION(THIS.htipo, curDimension) );
-                ADD_INST ( offset || " := " || offset || " + " || dimOffset );
-                curDimension = curDimension - 1;
+                ERROR( "Identifier '" || THIS.hident || "' is not of type 'array'.");
+                THIS.tipo = NEW_BASIC_TYPE ( UNKNOWN );
             }
-            THIS.nombre = NEW_IDENT ();
-            THIS.tipo = ARRAY_CONTENT(THIS.htipo);
-            ADD_INST ( THIS.nombre || " := " || THIS.hident || "[" || offset || "]" );
+            else
+            {
+                THIS.tipo = ARRAY_CONTENT(tipo);
+                if ( LIST_SIZE(ls.exprs) > ARRAY_DEPTH(tipo) )
+                    ERROR ( "Too many subscripts for array '" || THIS.hident || "'" );
+                else if ( LIST_SIZE(ls.exprs) < ARRAY_DEPTH(tipo) )
+                    ERROR ( "Too few subscripts for array '" || THIS.hident || "'" );
+                else
+                {
+                    VAR dimOffset;
+                    VAR curDimension = ARRAY_DEPTH(tipo) - 1;
+
+                    FOREACH ( ls.exprs AS nombre )
+                    {
+                        dimOffset = NEW_IDENT ();
+                        ADD_INST ( dimOffset || " := "  || nombre || " * " || ARRAY_DIMENSION(tipo, curDimension) );
+                        ADD_INST ( THIS.offset || " := " || THIS.offset || " + " || dimOffset );
+                        curDimension = curDimension - 1;
+                    }
+                }
+            }
         }
     }
 }
@@ -1559,24 +1589,11 @@ DEFINE_RULE(array_o_llamada,
     }
     else if (IS_RULE_FIRST ( acceso_a_array )) {
         RULE  ( acceso_a_array , a );
-        {
-            a.hident = THIS.hident;
-
-            if ( ST_EXISTS(THIS.hident) == false )
-            {
-                ERROR ( "Identifier '" || THIS.hident || "' not found." );
-                a.htipo = NEW_BASIC_TYPE ( UNKNOWN );
-            }
-            else
-            {
-                a.htipo = ST_GET_TYPE ( THIS.hident );
-                if ( IS_ARRAY(a.htipo) == false )
-                    ERROR( "Identifier '" || THIS.hident || "' is not of type 'array'.");
-            }
-        }
+        { a.hident = THIS.hident; }
         a();
         {
-            THIS.nombre = a.nombre;
+            THIS.nombre = NEW_IDENT ();
+            ADD_INST ( THIS.nombre || " := " || THIS.hident || "[" || a.offset || "]" );
             THIS.tipo = a.tipo;
         }
     }
