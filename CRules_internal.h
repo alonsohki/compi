@@ -314,6 +314,11 @@ struct __ETDS__Foreach_Iterator
 #define ARRAY_DEPTH(x)          CTypeInfo(x).GetArrayDepth()
 #define ARRAY_DIMENSION(x,y)    CTypeInfo(x).GetArrayDimensions()[y]
 
+// Funciones y procedimientos
+#define SUBPROG_NUM_PARAMS(x)   ( CTypeInfo(x).GetNumparams )
+#define SUBPROG_PARAM(x,y)      ( CTypeInfo(x).GetProcedureParams()[y]->toString() )
+#define FUNCTION_RETURN(x)      ( CTypeInfo(x).GetFunctionRetType()->toString() )
+
 // Tabla de símbolos
 #define ST_PUSH                 symbol_table_push
 #define ST_POP                  symbol_table_pop
