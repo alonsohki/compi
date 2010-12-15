@@ -13,23 +13,34 @@ class __CRule__Base__
 protected:
     __CRule__Base__ ( CTranslator* pTranslator,
                       // Los siguientes parámetros son utilizados para debugging.
-                      const char* szRuleName, unsigned int uiExecutionDepth )
+                      const char* szRuleName, const char* szFile,
+                      unsigned int uiLine, const __CRule__Base__* pParent )
     : m_pTranslator ( pTranslator )
+#ifdef _DEBUG
     , m_szRuleName ( szRuleName )
-    , m_uiExecutionDepth ( uiExecutionDepth )
+    , m_szFile ( szFile )
+    , m_uiLine ( uiLine )
+    , m_pParent ( pParent )
+#endif
     {}
 
 public:
     void                operator()      ()
     {
 #ifdef _DEBUG
-        printf ( "Executing rule: %s\n", m_szRuleName );
+        //printf ( "Executing rule: %s\n", m_szRuleName );
 #endif
         Execute();
     }
-    unsigned int        GetExecutionDepth   () const
+
+    void                print_stack_trace () const
     {
-        return m_uiExecutionDepth;
+#ifdef _DEBUG
+        for ( const __CRule__Base__* pCur = this; pCur != 0; pCur = pCur->m_pParent )
+        {
+            printf ( "[%s:%u] %s\n", pCur->m_szFile, pCur->m_uiLine, pCur->m_szRuleName );
+        }
+#endif
     }
     
 protected:
@@ -44,15 +55,21 @@ protected:
     {
         m_pTranslator->Panic ( pNextToken );
     }
-    void                warning         ( const CString& msg )
+    void                warning         ( const CString& msg, const char* szFile, unsigned int uiLine )
     {
         m_pTranslator->Warning ( msg );
     }
-    void                error           ( const CString& msg )
+    void                error           ( const CString& msg, const char* szFile, unsigned int uiLine )
     {
         m_pTranslator->Error ( msg );
+#ifdef _DEBUG
+        puts("****** STACK TRACE ******");
+        printf ( "[%s:%u] Error starts here.\n", szFile, uiLine );
+        print_stack_trace ();
+        puts("*************************");
+#endif
     }
-    void                die             ( const CString& msg )
+    void                die             ( const CString& msg, const char* szFile, unsigned int uiLine )
     {
         m_pTranslator->Die ( msg );
     }
@@ -176,7 +193,7 @@ protected:
             default: return "";
         }
     }
-    CString     type_cast               ( const CString& ident, const CString& from_, const CString& to_ )
+    CString     type_cast               ( const CString& ident, const CString& from_, const CString& to_, const char* szFile, unsigned int uiLine )
     {
         // Si son ambos iguales, no hacemos conversiones.
         if ( from_ == to_ )
@@ -258,7 +275,7 @@ protected:
         error("Cannot convert '" || ident || "' from " ||
               CTypeInfo::NameThisType(from.GetType())
               || " to " ||
-              CTypeInfo::NameThisType(to.GetType()) );
+              CTypeInfo::NameThisType(to.GetType()), szFile, uiLine );
         return ident;
     }
     CString     new_array_type          ( const CString& integerList,
@@ -344,9 +361,11 @@ protected:
     }
 
 private:
-    CTranslator*    m_pTranslator;
-    const char*     m_szRuleName;
-    unsigned int    m_uiExecutionDepth;
+    CTranslator*            m_pTranslator;
+    const char*             m_szRuleName;
+    const char*             m_szFile;
+    unsigned int            m_uiLine;
+    const __CRule__Base__*  m_pParent;
 };
 
 // Macros de uso interno.
@@ -402,7 +421,10 @@ public: \
 \
 public: \
     FOR_EACH_PARAM(MAP_ATTRIBUTE_TYPE, __VA_ARGS__); \
-    BUILD_RULE_CLASS_NAME(x) ( CTranslator* pTranslator, unsigned int uiExecutionDepth ) : __CRule__Base__( pTranslator, #x, uiExecutionDepth ) {} \
+    BUILD_RULE_CLASS_NAME(x) ( CTranslator* pTranslator, \
+                               const char* szFile, unsigned int uiLine, \
+                               const __CRule__Base__* pParent ) \
+                             : __CRule__Base__( pTranslator, #x, szFile, uiLine, pParent ) {} \
     void Execute (); \
 }
 
@@ -417,16 +439,17 @@ void BUILD_RULE_CLASS_NAME(x) :: Execute ()
 
 #define FIRST_RULE_IS(x) class __CRuleFirst__ : public BUILD_RULE_CLASS_NAME(x) { \
 public: \
-    __CRuleFirst__ ( CTranslator* pTranslator ) : BUILD_RULE_CLASS_NAME(x) (pTranslator, 0) {} \
+    __CRuleFirst__ ( CTranslator* pTranslator, const char* szFile, unsigned int uiLine ) \
+                   : BUILD_RULE_CLASS_NAME(x) (pTranslator, szFile, uiLine, 0) {} \
     void Execute () { BUILD_RULE_CLASS_NAME(x) :: Execute (); } \
 }
 
 #define RULE(T, ...) RULE_I(T, NUMARGS(__VA_ARGS__), __VA_ARGS__)
 #define RULE_I(T, n, ...) CAT(RULE_I_, n)(T, ## __VA_ARGS__)
-#define RULE_I_0(T, varName) BUILD_RULE_CLASS_NAME(T) ( this->GetTranslator(), GetExecutionDepth() + 1 )
-#define RULE_I_1(T, varName) BUILD_RULE_CLASS_NAME(T) (varName) ( this->GetTranslator(), GetExecutionDepth() + 1 ); (varName)
+#define RULE_I_0(T, varName) BUILD_RULE_CLASS_NAME(T) ( this->GetTranslator(), __FILE__, __LINE__, this )
+#define RULE_I_1(T, varName) BUILD_RULE_CLASS_NAME(T) (varName) ( this->GetTranslator(), __FILE__, __LINE__, this ); (varName)
 
-#define EXECUTE_FIRST_RULE(T) __CRuleFirst__ ( this ) ()
+#define EXECUTE_FIRST_RULE(T) __CRuleFirst__ ( this, __FILE__, __LINE__ ) ()
 
 // Abstracciones funcionales de la ETDS, y macros de apoyo.
 #define THIS (*this)
@@ -443,9 +466,10 @@ public: \
 #define IS_FIRST(x, ...) is_first ( CTokenizer:: x, ## __VA_ARGS__ )
 #define IS_RULE_FIRST(x) is_rule_first ( BUILD_RULE_CLASS_NAME(x) :: ms_firstToken , BUILD_RULE_CLASS_NAME(x) :: ms_nextToken )
 #define PANIC() panic(ms_nextToken)
-#define WARNING(msg) warning(CString() || msg )
-#define ERROR(msg) error(CString() || msg )
-#define DIE(msg) die(CString() || msg )
+#define WARNING(msg) warning(CString() || msg, __FILE__, __LINE__ )
+#define ERROR(msg) error(CString() || msg, __FILE__, __LINE__ )
+#define DIE(msg) die(CString() || msg, __FILE__, __LINE__ )
+#define PRINT_STACK_TRACE print_stack_trace
 
 // Listas
 #define EMPTY_LIST empty_list
@@ -485,7 +509,7 @@ struct __ETDS__Foreach_Iterator
 #define IS_FUNCTION(x)  ( CTypeInfo(x).GetType() == CTypeInfo::FUNCTION )
 #define IS_NUMERIC(x)   ( IS_REAL(x) || IS_INTEGER(x) )
 #define TYPE_OF(x)      type_of(x)
-#define TYPECAST(x,from,to) type_cast(x, from, to)
+#define TYPECAST(x,from,to) type_cast(x, from, to, __FILE__, __LINE__)
 
 // Arrays
 #define NEW_BASIC_TYPE(x)       ( CTypeInfo(CTypeInfo:: x ).toString() )
