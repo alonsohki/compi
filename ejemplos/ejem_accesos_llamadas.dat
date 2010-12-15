@@ -11,6 +11,6 @@ programa accesos_llamadas
 comienzo
 	get ( a );
 	get ( b );
-	b = suma ( a, b ) + c [ a+1, a+2, 0 ];
+	b = suma ( a*2+b/(2+b), b/(a+a) ) + c [ a+1, a+2, 0 ];
 	d = a > c;
 fin ;

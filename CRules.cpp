@@ -731,7 +731,7 @@ DEFINE_RULE(asignacion_o_llamada,
         RULE  ( parametros_llamadas , p );
         {
             p.hident = THIS.hident;
-
+            p.hrequireFunc = false;
         }
         p();
         {
@@ -824,8 +824,11 @@ DEFINE_RULE(parametros_llamadas,
 )
 {
     MATCH ( SEPARATOR, "(" );
-    RULE  ( lista_de_expr )();
+    RULE  ( lista_de_expr, ls )();
     MATCH ( SEPARATOR, ")" );
+    {
+
+    }
 }
 
 DEFINE_RULE(expresion,
@@ -1552,8 +1555,8 @@ DEFINE_RULE(array_o_llamada,
 )
 {
     if (IS_RULE_FIRST ( parametros_llamadas )) {
-        RULE  ( parametros_llamadas , p );
-        {
+        RULE  ( parametros_llamadas , p )();
+/*        {
             p.hident = THIS.hident;
             p.htipo = ST_GET_TYPE(THIS.hident);
 
@@ -1569,7 +1572,7 @@ DEFINE_RULE(array_o_llamada,
             THIS.nombre = NEW_IDENT();
             ADD_INST ( "store_function_ret " || THIS.nombre );
             THIS.tipo = FUNCTION_RETURN(ST_GET_TYPE(THIS.hident));
-        }
+        }*/
     }
     else if (IS_RULE_FIRST ( acceso_a_array )) {
         RULE  ( acceso_a_array , a );
@@ -1619,6 +1622,7 @@ DEFINE_RULE(lista_de_expr,
     RULE  ( resto_lista_expr , resto )();
     {
         THIS.exprs = JOIN(INIT_LIST(e.nombre), resto.exprs);
+        THIS.tipos = JOIN(INIT_LIST(e.tipo), resto.tipos);
     }
 }
 
@@ -1640,11 +1644,13 @@ DEFINE_RULE(resto_lista_expr,
         RULE  ( resto_lista_expr , resto ) ();
         {
             THIS.exprs = JOIN(INIT_LIST(e.nombre), resto.exprs);
+            THIS.tipos = JOIN(INIT_LIST(e.tipo), resto.tipos);
         }
     }
     else
     {
         THIS.exprs = EMPTY_LIST();
+        THIS.tipos = EMPTY_LIST();
     }
 }
 
