@@ -67,6 +67,7 @@ protected:
         printf ( "[%s:%u] Error starts here.\n", szFile, uiLine );
         print_stack_trace ();
         puts("*************************");
+        puts("");
 #endif
     }
     void                die             ( const CString& msg, const char* szFile, unsigned int uiLine )
@@ -472,11 +473,11 @@ public: \
 #define PRINT_STACK_TRACE print_stack_trace
 
 // Listas
-#define EMPTY_LIST empty_list
-#define INIT_LIST init_list
-#define JOIN join_lists
-#define COMPLETE complete
-#define LIST_SIZE(x) list_size(x)
+#define EMPTY_LIST(x)   (empty_list(x))
+#define INIT_LIST(x)    (init_list(x))
+#define JOIN(x,y)       (join_lists(x,y))
+#define COMPLETE(x,y)   (complete(x,y))
+#define LIST_SIZE(x)    (list_size(x))
 // Listas - Foreach
 struct __ETDS__Foreach_Iterator
 {
@@ -516,8 +517,8 @@ struct __ETDS__Foreach_Iterator
 #define NEW_ARRAY_TYPE(d,t)     new_array_type(d,t)
 
 #define ARRAY_CONTENT(x)        ( CTypeInfo(x).GetArrayContent()->toString() )
-#define ARRAY_SIZE(x)           CString( CTypeInfo(x).GetArraySize() )
-#define ARRAY_DEPTH(x)          CTypeInfo(x).GetArrayDepth()
+#define ARRAY_SIZE(x)           CString ( CTypeInfo(x).GetArraySize() )
+#define ARRAY_DEPTH(x)          CString ( CTypeInfo(x).GetArrayDepth() )
 #define ARRAY_DIMENSION(x,y)    CString ( CTypeInfo(x).GetArrayDimensions()[y.intValue()] )
 
 // Funciones y procedimientos

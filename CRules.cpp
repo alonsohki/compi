@@ -390,6 +390,7 @@ DEFINE_RULE(lista_de_param,
         THIS.classes = EMPTY_LIST ();
     	FOREACH ( ls_ident.ids AS id )
         {
+            ADD_INST( clase.clase || "_" || TYPE_OF(t.tipo) || " " || id );
             ST_ADD ( id, t.tipo );
             THIS.args = JOIN(THIS.args, INIT_LIST(t.tipo));
             THIS.classes = JOIN(THIS.classes, INIT_LIST(clase.clase));
@@ -1117,8 +1118,10 @@ DEFINE_RULE(relacional_prima,
 
                 r.htipo = NEW_BASIC_TYPE(BOOLEAN);
 
-            } else {
-                ERROR("Type mismatch error");
+            }
+            else
+            {
+                //ERROR("Type mismatch error");
             }
         }
         r();
