@@ -721,25 +721,8 @@ DEFINE_RULE(asignacion_o_llamada,
         MATCH ( OPERATOR, "=" );
         RULE  ( expresion , e )();
         {
-            /*ADD_INST ( THIS.hident || "[" ||  := " || TYPECAST() )
-            if ( a.tipo == e.tipo )
-            {
-                ADD_INST( THIS.hident || " := " || e.nombre );
-            }
-            else if ( IS_NUMERIC(a.tipo) && IS_BOOLEAN(e.tipo) )
-            {
-                CString next_ref;
-                next_ref = GET_REF().intValue() + 2;
-                ADD_INST ( "if " || e.nombre || " >  0 goto " || next_ref );
-                next_ref = GET_REF().intValue() + 2;
-                ADD_INST ( "goto " || next_ref );
-                ADD_INST( THIS.hident || ":= 1 ");
-                ADD_INST( THIS.hident || ":= 0 ");
-            }
-            else
-            {
-                ERROR("Type mismatch");
-            }*/
+            ADD_INST ( THIS.hident || "[" || a.offset || "]" ||
+                       " := " || TYPECAST(e.nombre, e.tipo, a.tipo) );
         }
     }
     else if (IS_RULE_FIRST( parametros_llamadas ))

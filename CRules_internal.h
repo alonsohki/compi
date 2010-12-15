@@ -176,6 +176,91 @@ protected:
             default: return "";
         }
     }
+    CString     type_cast               ( const CString& ident, const CString& from_, const CString& to_ )
+    {
+        // Si son ambos iguales, no hacemos conversiones.
+        if ( from_ == to_ )
+            return ident;
+
+        // Obtenemos la información de tipos.
+        CTypeInfo from ( from_ );
+        CTypeInfo to ( to_ );
+
+        // Si alguno de ellos es desconocido, no hacemos conversiones.
+        if ( from.GetType() == CTypeInfo::UNKNOWN || to.GetType() == CTypeInfo::UNKNOWN )
+            return ident;
+
+        switch ( from.GetType() )
+        {
+            case CTypeInfo::INTEGER:
+            {
+                switch ( to.GetType() )
+                {
+                    case CTypeInfo::REAL:
+                    {
+                        CString newIdent = new_ident ();
+                        push_instruction ( newIdent || " := _int2real " || ident );
+                        return newIdent;
+                    }
+                    case CTypeInfo::BOOLEAN:
+                    {
+                        CString newIdent = new_ident ();
+                        push_instruction ( newIdent || " := _int2boolean " || ident );
+                        return newIdent;
+                    }
+                    default: break;
+                }
+            }
+
+            case CTypeInfo::REAL:
+            {
+                switch ( to.GetType() )
+                {
+                    case CTypeInfo::INTEGER:
+                    {
+                        CString newIdent = new_ident ();
+                        push_instruction ( newIdent || " := _real2int " || ident );
+                        return newIdent;
+                    }
+                    case CTypeInfo::BOOLEAN:
+                    {
+                        CString newIdent = new_ident ();
+                        push_instruction ( newIdent || " := _real2boolean " || ident );
+                        return newIdent;
+                    }
+                    default: break;
+                }
+            }
+
+            case CTypeInfo::BOOLEAN:
+            {
+                switch ( to.GetType() )
+                {
+                    case CTypeInfo::INTEGER:
+                    {
+                        CString newIdent = new_ident ();
+                        push_instruction ( newIdent || " := _bool2int " || ident );
+                        return newIdent;
+                    }
+                    case CTypeInfo::REAL:
+                    {
+                        CString newIdent = new_ident ();
+                        push_instruction ( newIdent || " := _bool2real " || ident );
+                        return newIdent;
+                    }
+                    default: break;
+                }
+            }
+
+            default: break;
+        }
+
+        error("Cannot convert '" || ident || "' from " ||
+              CTypeInfo::NameThisType(from.GetType())
+              || " to " ||
+              CTypeInfo::NameThisType(to.GetType()) );
+        return ident;
+    }
     CString     new_array_type          ( const CString& integerList,
                                           const CString& arrayContent )
     {
@@ -393,12 +478,14 @@ struct __ETDS__Foreach_Iterator
 #define IS_INTEGER(x)   ( CTypeInfo(x).GetType() == CTypeInfo::INTEGER )
 #define IS_REAL(x)      ( CTypeInfo(x).GetType() == CTypeInfo::REAL )
 #define IS_BOOLEAN(x)   ( CTypeInfo(x).GetType() == CTypeInfo::BOOLEAN )
+#define IS_BOOLEXPR(x)  ( CTypeInfo(x).GetType() == CTypeInfo::BOOLEXPR )
 #define IS_ARRAY(x)     ( CTypeInfo(x).GetType() == CTypeInfo::ARRAY )
 #define IS_VARIABLE(x)  ( IS_INTEGER(x) || IS_REAL(x) || IS_BOOLEAN(x) || IS_ARRAY(x) )
 #define IS_PROCEDURE(x) ( CTypeInfo(x).GetType() == CTypeInfo::PROCEDURE )
 #define IS_FUNCTION(x)  ( CTypeInfo(x).GetType() == CTypeInfo::FUNCTION )
 #define IS_NUMERIC(x)   ( IS_REAL(x) || IS_INTEGER(x) )
 #define TYPE_OF(x)      type_of(x)
+#define TYPECAST(x,from,to) type_cast(x, from, to)
 
 // Arrays
 #define NEW_BASIC_TYPE(x)       ( CTypeInfo(CTypeInfo:: x ).toString() )

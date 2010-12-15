@@ -27,9 +27,25 @@ public:
         ARRAY,
         PROCEDURE,
         FUNCTION,
+        BOOLEXPR,
 
         UNKNOWN
     };
+
+    static const char* NameThisType ( EType eType )
+    {
+        switch ( eType )
+        {
+            case INTEGER: return "integer";
+            case REAL: return "real";
+            case BOOLEAN: return "boolean";
+            case ARRAY: return "array";
+            case PROCEDURE: return "procedure";
+            case FUNCTION: return "function";
+            case BOOLEXPR: return "boolean expression";
+            default: case UNKNOWN: return "unknown";
+        }
+    }
 
 
     // Clases de parámetros.
@@ -218,6 +234,11 @@ private:
             m_eType = BOOLEAN;
             return 8;
         }
+        else if ( str.compare ( 0, 9, "boolexpr#" ) == 0 )
+        {
+            m_eType = BOOLEXPR;
+            return 9;
+        }
         else if ( str.compare ( 0, 6, "array$" ) == 0 )
         {
             size_t pos = str.find ( '$', 6 );
@@ -317,6 +338,9 @@ public:
                 break;
             case BOOLEAN:
                 ret = "boolean#";
+                break;
+            case BOOLEXPR:
+                ret = "boolexpr#";
                 break;
             case ARRAY:
                 ret = "array$";
@@ -480,6 +504,7 @@ public:
                 break;
             case PROCEDURE:
             case FUNCTION:
+            case BOOLEXPR:
                 uiSize = 0;
                 break;
             case ARRAY:
