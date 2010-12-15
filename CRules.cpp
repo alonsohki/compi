@@ -794,7 +794,7 @@ DEFINE_RULE(acceso_a_array,
 
                     FOREACH ( ls.tipos AS tipos )
                     {
-                        if ( IS_INTEGER(tipos) )
+                        if ( IS_INTEGER(tipos) == false )
                         {
                             ERROR ( "Non integer subscript for array '" || THIS.hident || "'" );
                         }
@@ -835,7 +835,57 @@ DEFINE_RULE(parametros_llamadas,
     RULE  ( lista_de_expr, ls )();
     MATCH ( SEPARATOR, ")" );
     {
+        if ( ST_EXISTS ( THIS.hident ) == false )
+        {
+            ERROR ( "Unknown identifier '" || THIS.hident || "'" );
+            THIS.tipoRetorno = NEW_BASIC_TYPE ( UNKNOWN );
+        }
+        else
+        {
+            VAR tipo = ST_GET_TYPE ( THIS.hident );
+            if ( ( IS_FUNCTION ( tipo ) || IS_PROCEDURE ( tipo ) ) == false )
+            {
+                ERROR ( "Attempting to call '" || THIS.hident || "', which is not a function or procedure." );
+                THIS.tipoRetorno = NEW_BASIC_TYPE ( UNKNOWN );
+            }
+            else if ( THIS.hrequireFunc == true && IS_PROCEDURE ( tipo ) )
+            {
+                ERROR ( "You cannot call '" || THIS.hident || "' from here. It must be a function." );
+                THIS.tipoRetorno = NEW_BASIC_TYPE ( UNKNOWN );
+            }
+            else
+            {
+                if ( IS_PROCEDURE ( tipo ) )
+                {
+                    THIS.tipoRetorno = NEW_BASIC_TYPE ( UNKNOWN );
+                    if ( THIS.hrequireFunc == true )
+                        ERROR ( "You cannot call '" || THIS.hident || "' from here. It must be a function." );
+                }
+                else
+                    THIS.tipoRetorno = FUNCTION_RETURN( tipo );
 
+                if ( LIST_SIZE(ls.exprs) != SUBPROG_NUM_PARAMS(tipo) )
+                {
+                    ERROR ( "Wrong number of arguments for '" || THIS.hident || "'" );
+                }
+                else
+                {
+                    VAR i = 0;
+                    FOREACH ( ls.exprs AS expr )
+                    {
+                        VAR paramTipo = LIST_ITEM(ls.tipos, i);
+                        VAR reqTipo = SUBPROG_PARAM(tipo, i);
+                        if ( SUBPROG_PARAM_CLASS(tipo, i) == "ref" && LIST_ITEM(ls.literales, i) == true )
+                            ERROR ( "You cannot pass literal values as out parameters." );
+                        else if ( SUBPROG_PARAM_CLASS(tipo, i) == "ref" && paramTipo != reqTipo )
+                            ERROR ( "Cannot make type conversion for parameter #" || i || " of '" || THIS.hident || "' (Out parameter types must match)" );
+                        else
+                            ADD_INST ( "param_" || SUBPROG_PARAM_CLASS(tipo, i) || " " || TYPECAST(expr, paramTipo, reqTipo) );
+                        i = i + 1;
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -866,6 +916,7 @@ DEFINE_RULE(expresion,
         THIS.tipo = d.tipo;
         THIS.gfalse = d.gfalse;
         THIS.gtrue = d.gtrue;
+        THIS.literal = d.literal;
     }
 }
 
@@ -897,6 +948,7 @@ DEFINE_RULE(disyuncion,
         d.htipo = c.tipo;
         d.hgfalse = c.gfalse;
         d.hgtrue = c.gtrue;
+        d.hliteral = c.literal;
     }
     d();
     {
@@ -904,6 +956,7 @@ DEFINE_RULE(disyuncion,
         THIS.tipo = d.tipo;
         THIS.gfalse = d.gfalse;
         THIS.gtrue = d.gtrue;
+        THIS.literal = d.literal;
     }
 }
 
@@ -952,12 +1005,14 @@ DEFINE_RULE(disyuncion_prima,
             THIS.tipo = d.tipo;
             THIS.gfalse = d.gfalse;
             THIS.gtrue = d.gtrue;
+            THIS.literal = false;
         }
     } else {
         THIS.nombre = THIS.hnombre;
         THIS.tipo = THIS.htipo;
         THIS.gfalse = THIS.hgfalse;
         THIS.gtrue = THIS.hgtrue;
+        THIS.literal = THIS.hliteral;
     }
 }
 
@@ -990,6 +1045,7 @@ DEFINE_RULE(conjuncion,
         c.htipo = r.tipo;
         c.hgfalse = r.gfalse;
         c.hgtrue = r.gtrue;
+        c.hliteral = r.literal;
     }
     c();
     {
@@ -997,6 +1053,7 @@ DEFINE_RULE(conjuncion,
         THIS.tipo = c.tipo;
         THIS.gfalse = c.gfalse;
         THIS.gtrue = c.gtrue;
+        THIS.literal = c.literal;
     }
 }
 
@@ -1046,6 +1103,7 @@ DEFINE_RULE(conjuncion_prima,
             THIS.tipo = c.tipo;
             THIS.gfalse = c.gfalse;
             THIS.gtrue = c.gtrue;
+            THIS.literal = false;
         }
     } else {
         // Si es vacio
@@ -1053,6 +1111,7 @@ DEFINE_RULE(conjuncion_prima,
         THIS.tipo = THIS.htipo;
         THIS.gfalse = THIS.hgfalse;
         THIS.gtrue = THIS.hgtrue;
+        THIS.literal = THIS.hliteral;
     }
 }
 
@@ -1086,6 +1145,7 @@ DEFINE_RULE(relacional,
         r.htipo = a.tipo;
         r.hgfalse = a.gfalse;
         r.hgtrue = a.gtrue;
+        r.hliteral = a.literal;
     }
     r();
     {
@@ -1093,6 +1153,7 @@ DEFINE_RULE(relacional,
         THIS.tipo = r.tipo;
         THIS.gfalse = r.gfalse;
         THIS.gtrue = r.gtrue;
+        THIS.literal = r.literal;
     }
 }
 
@@ -1139,6 +1200,7 @@ DEFINE_RULE(relacional_prima,
             THIS.tipo = r.htipo;
             THIS.gfalse = r.hgfalse;
             THIS.gtrue = r.hgtrue;
+            THIS.literal = false;
         }
     } else {
         // Si es vacio
@@ -1146,6 +1208,7 @@ DEFINE_RULE(relacional_prima,
         THIS.tipo = THIS.htipo;
         THIS.gfalse = THIS.hgfalse;
         THIS.gtrue = THIS.hgtrue;
+        THIS.literal = THIS.hliteral;
     }
 }
 
@@ -1180,6 +1243,7 @@ DEFINE_RULE(aritmetica,
         a.htipo = t.tipo;
         a.hgfalse = t.gfalse;
         a.hgtrue = t.gtrue;
+        a.hliteral = t.literal;
     }
     a();
     {
@@ -1187,6 +1251,7 @@ DEFINE_RULE(aritmetica,
         THIS.tipo = a.tipo;
         THIS.gfalse = a.gfalse;
         THIS.gtrue = a.gtrue;
+        THIS.literal = a.literal;
     }
 }
 
@@ -1217,7 +1282,7 @@ DEFINE_RULE(aritmetica_prima,
             if ( IS_NUMERIC(THIS.htipo) && IS_NUMERIC(t.tipo) ) {
 
                 a.hnombre = NEW_IDENT();
-                ADD_INST( a.hnombre || ":=" || THIS.hnombre || op.op || t.nombre );
+                ADD_INST( a.hnombre || " := " || THIS.hnombre || " " || op.op || " " || t.nombre );
 
                 if ( IS_REAL(THIS.htipo) || IS_REAL(t.tipo) )
                     a.htipo = NEW_BASIC_TYPE(REAL);
@@ -1235,6 +1300,7 @@ DEFINE_RULE(aritmetica_prima,
             THIS.tipo = a.htipo;
             THIS.gfalse = a.hgfalse;
             THIS.gtrue = a.hgtrue;
+            THIS.literal = false;
         }
     }
     else
@@ -1244,6 +1310,7 @@ DEFINE_RULE(aritmetica_prima,
         THIS.tipo = THIS.htipo;
         THIS.gfalse = THIS.hgfalse;
         THIS.gtrue = THIS.hgtrue;
+        THIS.literal = THIS.hliteral;
     }
 }
 
@@ -1279,6 +1346,7 @@ DEFINE_RULE(termino,
         t.htipo = n.tipo;
         t.hgfalse = n.gfalse;
         t.hgtrue = n.gtrue;
+        t.hliteral = n.literal;
     }
     t();
     {
@@ -1286,6 +1354,7 @@ DEFINE_RULE(termino,
         THIS.tipo = t.tipo;
         THIS.gfalse = t.gfalse;
         THIS.gtrue = t.gtrue;
+        THIS.literal = t.literal;
     }
 }
 
@@ -1316,7 +1385,7 @@ DEFINE_RULE(termino_prima,
             if ( IS_NUMERIC(THIS.htipo) && IS_NUMERIC(f.tipo) ) {
 
                 t.hnombre = NEW_IDENT();
-                ADD_INST( t.hnombre || ":=" || THIS.hnombre || op.op || f.nombre );
+                ADD_INST( t.hnombre || " := " || THIS.hnombre || " " || op.op || " " || f.nombre );
 
                 if ( IS_REAL(THIS.htipo) || IS_REAL(f.tipo) )
                     t.htipo = NEW_BASIC_TYPE(REAL);
@@ -1334,6 +1403,7 @@ DEFINE_RULE(termino_prima,
             THIS.tipo = t.htipo;
             THIS.gfalse = t.hgfalse;
             THIS.gtrue = t.hgtrue;
+            THIS.literal = false;
         }
     } else {
         // Si es vacio
@@ -1341,6 +1411,7 @@ DEFINE_RULE(termino_prima,
         THIS.tipo = THIS.htipo;
         THIS.gfalse = THIS.hgfalse;
         THIS.gtrue = THIS.hgtrue;
+        THIS.literal = THIS.hliteral;
     }
 }
 
@@ -1397,6 +1468,8 @@ DEFINE_RULE(negacion,
             {
                 ERROR("Type mismatch error");
             }
+
+            THIS.literal = false;
         }
     }
     else if (IS_RULE_FIRST ( factor ))
@@ -1407,6 +1480,7 @@ DEFINE_RULE(negacion,
            THIS.tipo = f.tipo;
            THIS.gfalse = f.gfalse;
            THIS.gtrue = f.gtrue;
+           THIS.literal = f.literal;
         }
     }
     else PANIC();
@@ -1444,13 +1518,14 @@ DEFINE_RULE(factor,
             if ( IS_REAL(f.tipo) || IS_INTEGER(f.tipo) )
             {
                 THIS.nombre = NEW_IDENT();
-                ADD_INST( THIS.nombre || ":=" || " - " || f.nombre );
+                ADD_INST( THIS.nombre || " := 0 - " || f.nombre );
                 THIS.tipo = f.tipo;
             }
             else
             {
                 ERROR("Type mismatch error");
             }
+            THIS.literal = f.literal;
         }
     }
     else if (IS_RULE_FIRST ( factor_prima ))
@@ -1461,6 +1536,7 @@ DEFINE_RULE(factor,
            THIS.tipo = f.tipo;
            THIS.gfalse = f.gfalse;
            THIS.gtrue = f.gtrue;
+           THIS.literal = f.literal;
         }
     }
     else PANIC();
@@ -1500,6 +1576,7 @@ DEFINE_RULE(factor_prima,
         {
             THIS.nombre = a.nombre;
             THIS.tipo = a.tipo;
+            THIS.literal = false;
         }
     }
     else if (IS_FIRST ( INTEGER ))
@@ -1508,6 +1585,7 @@ DEFINE_RULE(factor_prima,
         {
             THIS.tipo = NEW_BASIC_TYPE(INTEGER);
             THIS.nombre = token.value;
+            THIS.literal = true;
         }
     }
     else if (IS_FIRST ( REAL ))
@@ -1516,6 +1594,7 @@ DEFINE_RULE(factor_prima,
         {
             THIS.tipo = NEW_BASIC_TYPE(REAL);
             THIS.nombre = token.value;
+            THIS.literal = true;
         }
     }
     else if (IS_RULE_FIRST ( booleano ))
@@ -1524,6 +1603,7 @@ DEFINE_RULE(factor_prima,
         {
             THIS.tipo = NEW_BASIC_TYPE(BOOLEAN);
             THIS.nombre = token.value;
+            THIS.literal = true;
         }
     }
     else if (IS_FIRST ( SEPARATOR, "(" ))
@@ -1536,6 +1616,7 @@ DEFINE_RULE(factor_prima,
             THIS.nombre = e.nombre;
             THIS.gfalse = e.gfalse;
             THIS.gtrue = e.gtrue;
+            THIS.literal = e.literal;
         }
     }
     else PANIC();
@@ -1563,15 +1644,10 @@ DEFINE_RULE(array_o_llamada,
 )
 {
     if (IS_RULE_FIRST ( parametros_llamadas )) {
-        RULE  ( parametros_llamadas , p )();
-/*        {
+        RULE  ( parametros_llamadas , p );
+        {
             p.hident = THIS.hident;
-            p.htipo = ST_GET_TYPE(THIS.hident);
-
-            if ( IS_FUNCTION(p.htipo) == false )
-            {
-                ERROR( "Identifier '" || THIS.hident || "' is not a function." );
-            }
+            p.hrequireFunc = true;
         }
         p();
         {
@@ -1580,7 +1656,7 @@ DEFINE_RULE(array_o_llamada,
             THIS.nombre = NEW_IDENT();
             ADD_INST ( "store_function_ret " || THIS.nombre );
             THIS.tipo = FUNCTION_RETURN(ST_GET_TYPE(THIS.hident));
-        }*/
+        }
     }
     else if (IS_RULE_FIRST ( acceso_a_array )) {
         RULE  ( acceso_a_array , a );
@@ -1631,6 +1707,7 @@ DEFINE_RULE(lista_de_expr,
     {
         THIS.exprs = JOIN(INIT_LIST(e.nombre), resto.exprs);
         THIS.tipos = JOIN(INIT_LIST(e.tipo), resto.tipos);
+        THIS.literales = JOIN(INIT_LIST(e.literal), resto.literales);
     }
 }
 
@@ -1653,12 +1730,14 @@ DEFINE_RULE(resto_lista_expr,
         {
             THIS.exprs = JOIN(INIT_LIST(e.nombre), resto.exprs);
             THIS.tipos = JOIN(INIT_LIST(e.tipo), resto.tipos);
+            THIS.literales = JOIN(INIT_LIST(e.literal), resto.literales);
         }
     }
     else
     {
         THIS.exprs = EMPTY_LIST();
         THIS.tipos = EMPTY_LIST();
+        THIS.literales = EMPTY_LIST();
     }
 }
 

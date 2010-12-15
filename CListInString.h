@@ -66,6 +66,13 @@ public:
         GetListElements ( list, elements );
         return elements.size ();
     }
+
+    static CString GetItem ( const CString& list, int idx )
+    {
+        std::vector<CString> elements;
+        GetListElements ( list, elements );
+        return elements [ idx ];
+    }
 };
 
 

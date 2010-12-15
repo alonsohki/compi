@@ -4,13 +4,14 @@ programa accesos_llamadas
 	variables c : array [ 3, 2, 3 ] de entero;
 	variables d : booleano;
 	
-	funcion suma ( x: entrada real; y: entrada real ) retorna real
+	funcion suma ( x,y: entrada real; z: salida real ) retorna real
 	comienzo
 		retornar x + y;
 	fin;
 comienzo
 	get ( a );
 	get ( b );
-	b = suma ( a*2+b/(2+b), b/(a+a) ) + c [ a+1, a+2, 0 ];
+	b = suma ( a*2+b/(2+b), b/(a+a), b ) + c [ a+1, a+2, 3 ];
 	d = a > c;
+	suma ( 1, 2.0, b );
 fin ;

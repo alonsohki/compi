@@ -153,6 +153,10 @@ protected:
     {
         return CString ( CListInString::CountListElements( list ) );
     }
+    CString         list_item           ( const CString& list, const CString& idx )
+    {
+        return CListInString::GetItem ( list, idx.intValue() );
+    }
     void            symbol_table_push   ()
     {
         m_pTranslator->ST_Push();
@@ -217,16 +221,17 @@ protected:
                     case CTypeInfo::REAL:
                     {
                         CString newIdent = new_ident ();
-                        push_instruction ( newIdent || " := _int2real " || ident );
+                        push_instruction ( newIdent || " := " || ident );
+                        push_instruction ( CString("int2real ") || newIdent );
                         return newIdent;
                     }
                     case CTypeInfo::BOOLEAN:
                     {
                         CString newIdent = new_ident ();
                         CString ref = get_ref ();
-                        push_instruction ( "if " || ident || " == 0 goto " || ref + 3 );
+                        push_instruction ( CString("if ") || ident || " == 0 goto " || CString(ref + 3) );
                         push_instruction ( newIdent || " := true" );
-                        push_instruction ( "goto " || ref + 4 );
+                        push_instruction ( CString("goto ") || CString(ref + 4) );
                         push_instruction ( newIdent || " := false" );
                         return newIdent;
                     }
@@ -241,16 +246,17 @@ protected:
                     case CTypeInfo::INTEGER:
                     {
                         CString newIdent = new_ident ();
-                        push_instruction ( newIdent || " := _real2int " || ident );
+                        push_instruction ( newIdent || " := " || ident );
+                        push_instruction ( CString("real2int ") || newIdent );
                         return newIdent;
                     }
                     case CTypeInfo::BOOLEAN:
                     {
                         CString newIdent = new_ident ();
                         CString ref = get_ref ();
-                        push_instruction ( "if " || ident || " == 0.0 goto " || ref + 3 );
+                        push_instruction ( CString("if ") || ident || " == 0.0 goto " || CString(ref + 3) );
                         push_instruction ( newIdent || " := true" );
-                        push_instruction ( "goto " || ref + 4 );
+                        push_instruction ( CString("goto ") || CString(ref + 4) );
                         push_instruction ( newIdent || " := false" );
                         return newIdent;
                     }
@@ -347,6 +353,23 @@ protected:
 
         }
         return CTypeInfo ( vecTypeList2, vecClassesList2, 0 ).toString ();
+    }
+
+    CString         subprog_param_class     ( const CString& subprog, const CString& idx )
+    {
+        CTypeInfo info ( subprog );
+        switch ( info.GetProcedureParamClasses()[idx.intValue()] )
+        {
+            case CTypeInfo::PARAM_COPY_AND_RESTORE:
+            case CTypeInfo::PARAM_REF:
+                return "ref";
+            case CTypeInfo::PARAM_COPY:
+                return "copy";
+            default:
+                break;
+        }
+
+        return "unknown";
     }
 
 private:
@@ -466,6 +489,7 @@ public: \
 #define JOIN(x,y)       (join_lists(x,y))
 #define COMPLETE(x,y)   (complete(x,y))
 #define LIST_SIZE(x)    (list_size(x))
+#define LIST_ITEM(x,y)  (list_item(x,y))
 // Listas - Foreach
 struct __ETDS__Foreach_Iterator
 {
@@ -498,7 +522,7 @@ struct __ETDS__Foreach_Iterator
 #define IS_FUNCTION(x)  ( CTypeInfo((CString)x).GetType() == CTypeInfo::FUNCTION )
 #define IS_NUMERIC(x)   ( IS_REAL(x) || IS_INTEGER(x) )
 #define TYPE_OF(x)      type_of(x)
-#define TYPECAST(x,from,to) type_cast(x, from, to, __FILE__, __LINE__)
+#define TYPECAST(x,from,to) type_cast((CString)x, (CString)from, (CString)to, __FILE__, __LINE__)
 
 // Arrays
 #define NEW_BASIC_TYPE(x)       ( CTypeInfo(CTypeInfo:: x ).toString() )
@@ -512,8 +536,9 @@ struct __ETDS__Foreach_Iterator
 // Funciones y procedimientos
 #define NEW_FUNCTION_TYPE(x,y,z)  new_function_type(x,y,z)
 #define NEW_PROCEDURE_TYPE(x,y)   new_procedure_type(x,y)
-#define SUBPROG_NUM_PARAMS(x)   ( CTypeInfo(x).GetNumparams )
-#define SUBPROG_PARAM(x,y)      ( CTypeInfo(x).GetProcedureParams()[y]->toString() )
+#define SUBPROG_NUM_PARAMS(x)   ( CTypeInfo(x).GetNumparams() )
+#define SUBPROG_PARAM(x,y)      ( CTypeInfo(x).GetProcedureParams()[y.intValue()]->toString() )
+#define SUBPROG_PARAM_CLASS(x,y)  subprog_param_class(x,y)
 #define FUNCTION_RETURN(x)      ( CTypeInfo(x).GetFunctionRetType()->toString() )
 
 // Tabla de símbolos

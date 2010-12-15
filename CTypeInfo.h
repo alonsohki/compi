@@ -489,6 +489,7 @@ public:
     const CTypeInfo*    GetFunctionRetType  () const { return m_params.returns; }
     const CTypeInfo* const*
                         GetProcedureParams  () const { return m_params.paramTypes; }
+    const EParamClass*  GetProcedureParamClasses () const { return m_params.paramClasses; }
     unsigned int        GetNumparams        () const { return m_params.numParams; }
 
     unsigned int        GetSize             () const
