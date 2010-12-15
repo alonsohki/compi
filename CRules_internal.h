@@ -223,7 +223,11 @@ protected:
                     case CTypeInfo::BOOLEAN:
                     {
                         CString newIdent = new_ident ();
-                        push_instruction ( newIdent || " := _int2boolean " || ident );
+                        CString ref = get_ref ();
+                        push_instruction ( "if " || ident || " == 0 goto " || ref + 3 );
+                        push_instruction ( newIdent || " := true" );
+                        push_instruction ( "goto " || ref + 4 );
+                        push_instruction ( newIdent || " := false" );
                         return newIdent;
                     }
                     default: break;
@@ -243,27 +247,11 @@ protected:
                     case CTypeInfo::BOOLEAN:
                     {
                         CString newIdent = new_ident ();
-                        push_instruction ( newIdent || " := _real2boolean " || ident );
-                        return newIdent;
-                    }
-                    default: break;
-                }
-            }
-
-            case CTypeInfo::BOOLEAN:
-            {
-                switch ( to.GetType() )
-                {
-                    case CTypeInfo::INTEGER:
-                    {
-                        CString newIdent = new_ident ();
-                        push_instruction ( newIdent || " := _bool2int " || ident );
-                        return newIdent;
-                    }
-                    case CTypeInfo::REAL:
-                    {
-                        CString newIdent = new_ident ();
-                        push_instruction ( newIdent || " := _bool2real " || ident );
+                        CString ref = get_ref ();
+                        push_instruction ( "if " || ident || " == 0.0 goto " || ref + 3 );
+                        push_instruction ( newIdent || " := true" );
+                        push_instruction ( "goto " || ref + 4 );
+                        push_instruction ( newIdent || " := false" );
                         return newIdent;
                     }
                     default: break;
