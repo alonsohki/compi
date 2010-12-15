@@ -792,6 +792,14 @@ DEFINE_RULE(acceso_a_array,
                 {
                     VAR curDimension = ARRAY_DEPTH(tipo) - 1;
 
+                    FOREACH ( ls.tipos AS tipos )
+                    {
+                        if ( IS_INTEGER(tipos) )
+                        {
+                            ERROR ( "Non integer subscript for array '" || THIS.hident || "'" );
+                        }
+                    }
+
                     FOREACH ( ls.exprs AS nombre )
                     {
                         ADD_INST ( THIS.offset || " := "  || THIS.offset || " * " || ARRAY_DIMENSION(tipo, curDimension) );
