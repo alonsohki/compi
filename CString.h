@@ -141,9 +141,21 @@ public:
         return ( strcmp ( *this, Right ) >= 0 );
     }
 
+    int operator+ ( int Right ) const
+    {
+        return intValue() + Right;
+    }
+    int operator- ( int Right ) const
+    {
+        return intValue() - Right;
+    }
     int operator* ( int Right ) const
     {
         return intValue() * Right;
+    }
+    int operator/ ( int Right ) const
+    {
+        return intValue() / Right;
     }
     bool operator< ( int Right ) const
     {

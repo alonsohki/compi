@@ -790,14 +790,12 @@ DEFINE_RULE(acceso_a_array,
                     ERROR ( "Too few subscripts for array '" || THIS.hident || "'" );
                 else
                 {
-                    VAR dimOffset;
                     VAR curDimension = ARRAY_DEPTH(tipo) - 1;
 
                     FOREACH ( ls.exprs AS nombre )
                     {
-                        dimOffset = NEW_IDENT ();
-                        ADD_INST ( dimOffset || " := "  || nombre || " * " || ARRAY_DIMENSION(tipo, curDimension) );
-                        ADD_INST ( THIS.offset || " := " || THIS.offset || " + " || dimOffset );
+                        ADD_INST ( THIS.offset || " := "  || THIS.offset || " * " || ARRAY_DIMENSION(tipo, curDimension) );
+                        ADD_INST ( THIS.offset || " := " || THIS.offset || " + " || nombre );
                         curDimension = curDimension - 1;
                     }
                 }
