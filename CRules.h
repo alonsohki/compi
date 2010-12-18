@@ -29,6 +29,7 @@ DECLARE_RULE(sentencia, salir_si, hinloop);
 DECLARE_RULE(id_o_array, hident, nombre);
 DECLARE_RULE(asignacion_o_llamada, hident );
 DECLARE_RULE(acceso_a_array, hident, offset, tipo);
+DECLARE_RULE(acceso_a_array_prima, exprs, tipos);
 DECLARE_RULE(parametros_llamadas , hident, hrequireFunc, tipoRetorno );
 DECLARE_RULE(expresion, nombre, tipo, gtrue, gfalse, literal);
 DECLARE_RULE(disyuncion, nombre, tipo, gtrue, gfalse, literal);

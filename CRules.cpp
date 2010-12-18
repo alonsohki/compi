@@ -769,9 +769,13 @@ DEFINE_RULE(acceso_a_array,
     MATCH ( SEPARATOR, "[" );
     RULE  ( lista_de_expr, ls )();
     MATCH ( SEPARATOR, "]" );
+    RULE  ( acceso_a_array_prima, otros )();
     {
         THIS.offset = NEW_IDENT ();
         ADD_INST ( THIS.offset || " := 0" );
+
+        VAR exprs = JOIN(ls.exprs, otros.exprs);
+        VAR tipos = JOIN(ls.tipos, otros.tipos);
         
         if ( ST_EXISTS(THIS.hident) == false )
         {
@@ -789,25 +793,64 @@ DEFINE_RULE(acceso_a_array,
             else
             {
                 THIS.tipo = ARRAY_CONTENT(tipo);
-                if ( LIST_SIZE(ls.exprs) > ARRAY_DEPTH(tipo) )
+                if ( LIST_SIZE(exprs) > ARRAY_DEPTH(tipo) )
                     ERROR ( "Too many subscripts for array '" || THIS.hident || "'" );
-                else if ( LIST_SIZE(ls.exprs) < ARRAY_DEPTH(tipo) )
+                else if ( LIST_SIZE(exprs) < ARRAY_DEPTH(tipo) )
                     ERROR ( "Too few subscripts for array '" || THIS.hident || "'" );
                 else
                 {
                     VAR i = 0;
                     VAR curDimension = ARRAY_DEPTH(tipo) - 1;
-                    FOREACH ( ls.exprs AS nombre )
+                    FOREACH ( exprs AS nombre )
                     {
                         ADD_INST ( THIS.offset || " := " || THIS.offset || " * " || ARRAY_DIMENSION(tipo, curDimension) );
                         ADD_INST ( THIS.offset || " := " || THIS.offset || " + " ||
-                        		   TYPECAST(nombre, LIST_ITEM(ls.tipos,i), NEW_BASIC_TYPE(INTEGER)) );
+                        		   TYPECAST(nombre, LIST_ITEM(tipos,i), NEW_BASIC_TYPE(INTEGER)) );
                         curDimension = curDimension - 1;
                         i = i + 1;
                     }
                 }
             }
         }
+    }
+}
+DEFINE_RULE(acceso_a_array_prima,
+            FIRST(
+                ( SEPARATOR, "[" ),
+                ( EMPTY )
+                ),
+            NEXT(
+                    ( OPERATOR, "=" ),
+                    OPL1_TUPLES,
+                    OPL2_TUPLES,
+                    OPREL_TUPLES,
+                    ( RESERVED, "and" ),
+                    ( RESERVED, "or" ),
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
+                    ( SEPARATOR, "," )
+                )
+)
+{
+    if ( IS_FIRST ( SEPARATOR, "[" ) )
+    {
+        MATCH ( SEPARATOR, "[" );
+        RULE  ( lista_de_expr, ls )();
+        MATCH ( SEPARATOR, "]" );
+        RULE  ( acceso_a_array_prima, otros )();
+        {
+            THIS.exprs = JOIN(ls.exprs, otros.exprs);
+            THIS.tipos = JOIN(ls.tipos, otros.tipos);
+        }
+    }
+    else
+    {
+        // Vacío
+        THIS.exprs = EMPTY_LIST();
+        THIS.tipos = EMPTY_LIST();
     }
 }
 
