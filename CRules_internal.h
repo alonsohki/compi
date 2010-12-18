@@ -25,7 +25,8 @@ protected:
     {}
 
 public:
-    void                operator()      ()
+    virtual             ~__CRule__Base__    () {}
+    void                operator()          ()
     {
 #ifdef _DEBUG
         //printf ( "Executing rule: %s\n", m_szRuleName );
@@ -501,6 +502,7 @@ struct __ETDS__Foreach_Iterator
     bool end () const { return iter == m_vec.end(); }
     __ETDS__Foreach_Iterator& operator++() { ++iter; return *this; }
     operator const char*() const { return *(*iter); }
+    __ETDS__Foreach_Iterator& operator=(const CString& str) { *iter = str; return *this; }
 
     std::vector<CString> m_vec;
     std::vector<CString>::iterator iter;
