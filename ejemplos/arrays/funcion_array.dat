@@ -1,0 +1,11 @@
+programa ejemplo
+
+    funcion suma retorna array [ 2 ] de array
+    variables a : array [ 2 ] de array ;
+    comienzo
+        retornar a;
+    fin;
+
+comienzo
+    put_line ( a() [ 2 ] );
+fin ;

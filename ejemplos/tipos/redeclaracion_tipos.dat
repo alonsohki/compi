@@ -1,0 +1,5 @@
+programa ejemplo
+    variables a,b,c : entero;
+    variables d,c : real;
+comienzo
+fin ;

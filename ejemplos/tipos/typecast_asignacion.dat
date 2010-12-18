@@ -1,0 +1,36 @@
+programa ejemplo
+
+    variables a : booleano ;
+    variables b : entero ;
+    variables c : real ;
+    variables nuevo_bloque : entero ;
+
+comienzo
+
+    /* Asignaciones sin conversion */
+    a = true ;
+    b = 5 ;
+    c = 5.0 ;
+
+    put_line( nuevo_bloque );
+
+    /* Asignacion de literales con conversion */
+    a = 5 ;    /* de entero a booleano */
+    a = 5.0 ;  /* de real   a booleano */
+    c = 5 ;    /* de entero a real     */
+    b = 5.0 ;  /* de real   a entero   */
+
+    put_line( nuevo_bloque );
+
+    /* Asignaciones de variables con conversion */
+    a = b;
+    a = c;
+
+    put_line( nuevo_bloque );
+
+    /* Asignacion de expresiones con conversión */
+    b = b / c ;
+    b = c / c ;
+
+fin ;
+

@@ -1,0 +1,5 @@
+programa ejemplo
+    variables i : array [ 2 ] de entero;
+comienzo
+    i[ 4 ] = 5;
+fin ;

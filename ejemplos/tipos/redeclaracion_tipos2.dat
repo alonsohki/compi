@@ -1,0 +1,11 @@
+programa ejemplo
+    variables a,b,c : entero;
+
+    funcion suma retorna real
+    variables a : real;
+    comienzo
+        retornar 5.0 ;
+    fin;
+
+comienzo
+fin ;
