@@ -268,7 +268,7 @@ protected:
             default: break;
         }
 
-        error(CString("Cannot convert '") || ident || "' from " ||
+        error(CString("Cannot convert from " ||
               CTypeInfo::NameThisType(from.GetType())
               || " to " ||
               CTypeInfo::NameThisType(to.GetType()), szFile, uiLine );
