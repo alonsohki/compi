@@ -1663,11 +1663,10 @@ DEFINE_RULE(array_o_llamada,
         }
         p();
         {
-            // TODO: poner los parámetros.
             ADD_INST ( "call " || THIS.hident );
             THIS.nombre = NEW_IDENT();
             ADD_INST ( "store_function_ret " || THIS.nombre );
-            THIS.tipo = FUNCTION_RETURN(ST_GET_TYPE(THIS.hident));
+            THIS.tipo = p.tipoRetorno;
         }
     }
     else if (IS_RULE_FIRST ( acceso_a_array )) {
