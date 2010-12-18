@@ -1035,7 +1035,7 @@ DEFINE_RULE(disyuncion_prima,
         RULE  ( disyuncion_prima , d );
         {
             TYPECAST( c.nombre, c.tipo, NEW_BASIC_TYPE(BOOLEXPR), c.gtrue , c.gfalse );
-            TYPECAST( THIS.hnombre, THIS.htipo, NEW_BASIC_TYPE(BOOLEXPR), THIS.gtrue , THIS.gfalse );
+            TYPECAST( THIS.hnombre, THIS.htipo, NEW_BASIC_TYPE(BOOLEXPR), THIS.hgtrue , THIS.hgfalse );
             COMPLETE( THIS.hgfalse, m.ref );
             d.hgtrue = JOIN( THIS.hgtrue, c.gtrue );
             d.hgfalse = c.gfalse;
@@ -1121,7 +1121,7 @@ DEFINE_RULE(conjuncion_prima,
         RULE  ( conjuncion_prima , c );
         {
             TYPECAST( r.nombre, r.tipo, NEW_BASIC_TYPE(BOOLEXPR), r.gtrue , r.gfalse );
-            TYPECAST( THIS.hnombre, THIS.htipo, NEW_BASIC_TYPE(BOOLEXPR), THIS.gtrue , THIS.gfalse );
+            TYPECAST( THIS.hnombre, THIS.htipo, NEW_BASIC_TYPE(BOOLEXPR), THIS.hgtrue , THIS.hgfalse );
             COMPLETE( THIS.hgtrue, m.ref );
             c.hgfalse = JOIN( THIS.hgfalse, r.gfalse );
             c.hgtrue = r.gtrue;

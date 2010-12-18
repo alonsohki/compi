@@ -1,0 +1,15 @@
+programa accesos_llamadas
+	variables a : real;
+	
+	funcion suma ( x,y: entrada real ) retorna entero
+	comienzo
+		retornar x + y;
+	fin;
+
+comienzo
+
+	a = suma ( 1.0, 1.0 ) + 5.0 ;
+
+        suma ( 2.0, 2.0 ) ;
+
+fin ;

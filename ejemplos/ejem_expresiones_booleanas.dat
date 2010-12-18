@@ -1,0 +1,13 @@
+programa ejem_expresiones_booleanas
+    variables a : booleano;
+comienzo
+
+    si 1 > 2 or true and false entonces
+
+       put_line ( 1 );
+
+    fin si ;
+
+    a = 3 or 5;
+
+fin ;

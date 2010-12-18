@@ -1,0 +1,20 @@
+programa accesos_llamadas
+	variables a : entero ;
+        variables c : array [ 2 ] de entero ;
+	
+	funcion operar ( x,y: entrada entero ) retorna array [ 2 ] de entero
+        variables b : array [ 2 ] de entero ;
+	comienzo
+                b [ 0 ] = x + y ;
+                b [ 1 ] = x - y ;
+		retornar b ;
+	fin;
+
+comienzo
+
+    a = operar ( 1 , 2 ) [ 0 ];
+
+    c = operar ( 3 , 4 ) ;
+        
+    a = c [ 0 ] ;
+fin ;

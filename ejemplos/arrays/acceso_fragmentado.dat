@@ -1,0 +1,14 @@
+programa ejemplo
+    variables a : array [ 2 , 3 ] de array [ 4, 5 ] de entero;
+    variables b : array [ 2 , 3, 4 , 5 ] de entero;
+comienzo
+
+    a = b;
+    
+    put_line ( a [ 1 , 2 ] [ 3, 4 ] );
+
+    put_line ( a [ 1, 2, 3, 4 ] );
+
+    put_line ( a [ 1 ] [ 2 ] [ 3 ] [ 4 ] );
+
+fin ;
