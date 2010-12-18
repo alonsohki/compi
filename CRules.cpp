@@ -276,15 +276,8 @@ DEFINE_RULE(decl_de_funcion,
     MATCH ( RESERVED, "retornar" );
     RULE  ( expresion , e )();
     {
-        if ( e.tipo == c.tipoRetorno )
-        {
-            ADD_INST ( "ret " || e.nombre );
-            ADD_INST ( "finfunc" );
-        }
-        else
-        {
-            ERROR( "Function return type mismatch" );
-        }
+        ADD_INST ( "ret " || TYPECAST( e.nombre, e.tipo, c.tipoRetorno, e.gtrue, e.gfalse ) );
+        ADD_INST ( "finfunc" );
     }
     MATCH ( SEPARATOR, ";" );
     MATCH ( RESERVED, "fin" );
