@@ -677,7 +677,10 @@ DEFINE_RULE(id_o_array,
     if ( IS_RULE_FIRST ( acceso_a_array ) )
     {
         RULE ( acceso_a_array, a );
-        { a.hident = THIS.hident; }
+        {
+            a.hident = THIS.hident;
+            a.htipo = NEW_BASIC_TYPE(UNKNOWN);
+        }
         a();
         {
             THIS.nombre = THIS.hident || "[" || a.offset || "]";
@@ -722,7 +725,10 @@ DEFINE_RULE(asignacion_o_llamada,
     else if (IS_RULE_FIRST( acceso_a_array ))
     {
         RULE  ( acceso_a_array , a );
-        { a.hident = THIS.hident; }
+        {
+            a.hident = THIS.hident;
+            a.htipo = NEW_BASIC_TYPE(UNKNOWN);
+        }
         a();
         MATCH ( OPERATOR, "=" );
         RULE  ( expresion , e )();
@@ -777,14 +783,18 @@ DEFINE_RULE(acceso_a_array,
         VAR exprs = JOIN(ls.exprs, otros.exprs);
         VAR tipos = JOIN(ls.tipos, otros.tipos);
         
-        if ( ST_EXISTS(THIS.hident) == false )
+        if ( IS_UNKNOWN(THIS.htipo) == false && ST_EXISTS(THIS.hident) == false )
         {
             ERROR ( "Identifier '" || THIS.hident || "' not found." );
             THIS.tipo = NEW_BASIC_TYPE ( UNKNOWN );
         }
         else
         {
-            VAR tipo = ST_GET_TYPE ( THIS.hident );
+            VAR tipo;
+            if ( IS_UNKNOWN(THIS.htipo) == false )
+                tipo = ST_GET_TYPE ( THIS.hident );
+            else
+                tipo = THIS.htipo;
             if ( IS_ARRAY(tipo) == false )
             {
                 ERROR( "Identifier '" || THIS.hident || "' is not of type 'array'.");
@@ -868,6 +878,7 @@ DEFINE_RULE(parametros_llamadas,
                     ( RESERVED, "fin" ),
                     ( SEPARATOR, ";" ),
                     ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
                     ( SEPARATOR, "]" ),
                     ( SEPARATOR, "," )
                 )
@@ -1698,16 +1709,25 @@ DEFINE_RULE(array_o_llamada,
             p.hrequireFunc = true;
         }
         p();
+        RULE  ( acceso_a_array_opcional, arr );
         {
             ADD_INST ( "call " || THIS.hident );
-            THIS.nombre = NEW_IDENT();
-            ADD_INST ( "store_function_ret " || THIS.nombre );
-            THIS.tipo = p.tipoRetorno;
+            arr.hnombre = NEW_IDENT();
+            arr.htipo = p.tipoRetorno;
+            ADD_INST ( "store_function_ret " || arr.hnombre );
+        }
+        arr();
+        {
+            THIS.nombre = arr.nombre;
+            THIS.tipo = arr.tipo;
         }
     }
     else if (IS_RULE_FIRST ( acceso_a_array )) {
         RULE  ( acceso_a_array , a );
-        { a.hident = THIS.hident; }
+        {
+            a.hident = THIS.hident;
+            a.htipo = NEW_BASIC_TYPE(UNKNOWN);
+        }
         a();
         {
             THIS.nombre = NEW_IDENT ();
@@ -1729,6 +1749,48 @@ DEFINE_RULE(array_o_llamada,
         {
             THIS.tipo = ST_GET_TYPE ( THIS.hident );
         }
+    }
+}
+
+DEFINE_RULE(acceso_a_array_opcional,
+            FIRST(
+                    ( SEPARATOR, "[" ),
+                    ( EMPTY )
+                 ),
+            NEXT(
+                    OPL1_TUPLES,
+                    OPL2_TUPLES,
+                    OPREL_TUPLES,
+                    ( RESERVED, "and" ),
+                    ( RESERVED, "or" ),
+                    ( RESERVED, "entonces" ),
+                    ( RESERVED, "fin" ),
+                    ( SEPARATOR, ";" ),
+                    ( SEPARATOR, ")" ),
+                    ( SEPARATOR, "]" ),
+                    ( SEPARATOR, "," )
+                )
+)
+{
+    if ( IS_RULE_FIRST(acceso_a_array) )
+    {
+        RULE ( acceso_a_array, arr );
+        {
+            arr.hident = "`function return value`";
+            arr.htipo = THIS.htipo;
+        }
+        arr ();
+        {
+            THIS.nombre = NEW_IDENT ();
+            ADD_INST ( THIS.nombre || " := " || THIS.hnombre || "[" || arr.offset || "]" );
+            THIS.tipo = arr.tipo;
+        }
+    }
+    else
+    {
+        // Vacío.
+        THIS.nombre = THIS.hnombre;
+        THIS.tipo = THIS.htipo;
     }
 }
 

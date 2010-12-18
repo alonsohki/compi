@@ -598,6 +598,7 @@ struct __ETDS__Foreach_Iterator
 #define IS_PROCEDURE(x) ( CTypeInfo((CString)x).GetType() == CTypeInfo::PROCEDURE )
 #define IS_FUNCTION(x)  ( CTypeInfo((CString)x).GetType() == CTypeInfo::FUNCTION )
 #define IS_NUMERIC(x)   ( IS_REAL(x) || IS_INTEGER(x) )
+#define IS_UNKNOWN(x)   ( CTypeInfo((CString)x).GetType() == CTypeInfo::UNKNOWN )
 #define TYPE_OF(x)      type_of(x)
 #define TYPECAST(x,from,to,...) TYPECAST_I(x,from,to,NUMARGS(__VA_ARGS__), ## __VA_ARGS__)
 #define TYPECAST_I(x,from,to,n,...) CAT(TYPECAST_I_,n)(x,from,to, ## __VA_ARGS__)
