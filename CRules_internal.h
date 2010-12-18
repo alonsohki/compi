@@ -199,7 +199,24 @@ protected:
             default: return "";
         }
     }
-    CString     type_cast               ( const CString& ident, const CString& from_, const CString& to_, const char* szFile, unsigned int uiLine )
+
+    CString     type_cast               ( const CString& ident,
+                                          const CString& from_,
+                                          const CString& to_,
+                                          const char* szFile,
+                                          unsigned int uiLine )
+    {
+        CString emptyList = empty_list();
+        return type_cast ( ident, from_, to_, emptyList, emptyList, szFile, uiLine );
+    }
+
+    CString     type_cast               ( const CString& ident,
+                                          const CString& from_,
+                                          const CString& to_,
+                                          CString& gtrue,
+                                          CString& gfalse,
+                                          const char* szFile,
+                                          unsigned int uiLine )
     {
         // Si son ambos iguales, no hacemos conversiones.
         if ( from_ == to_ )
@@ -236,8 +253,17 @@ protected:
                         push_instruction ( newIdent || " := false" );
                         return newIdent;
                     }
+                    case CTypeInfo::BOOLEXPR:
+                    {
+                        gfalse = join_lists(gfalse, init_list(get_ref()));
+                        push_instruction ( CString("if ") || ident || " == 0 goto " );
+                        gtrue = join_lists(gtrue, init_list(get_ref()));
+                        push_instruction ( CString("goto ") );
+                        return ident;
+                    }
                     default: break;
                 }
+                break;
             }
 
             case CTypeInfo::REAL:
@@ -261,14 +287,63 @@ protected:
                         push_instruction ( newIdent || " := false" );
                         return newIdent;
                     }
+                    case CTypeInfo::BOOLEXPR:
+                    {
+                        gfalse = join_lists(gfalse, init_list(get_ref()));
+                        push_instruction ( CString("if ") || ident || " == 0.0 goto " );
+                        gtrue = join_lists(gtrue, init_list(get_ref()));
+                        push_instruction ( CString("goto ") );
+                        return ident;
+                    }
                     default: break;
                 }
+                break;
+            }
+
+            case CTypeInfo::BOOLEAN:
+            {
+                switch ( to.GetType() )
+                {
+                    case CTypeInfo::BOOLEXPR:
+                    {
+                        gfalse = join_lists(gfalse, init_list(get_ref()));
+                        push_instruction ( CString("if ") || ident || " goto " );
+                        gtrue = join_lists(gtrue, init_list(get_ref()));
+                        push_instruction ( CString("goto ") );
+                        return ident;
+                    }
+                    default: break;
+                }
+                break;
+            }
+
+            case CTypeInfo::BOOLEXPR:
+            {
+                switch ( to.GetType() )
+                {
+                    case CTypeInfo::BOOLEAN:
+                    {
+                        CString newIdent = new_ident ();
+                        CString ref = get_ref ();
+                        push_instruction ( newIdent || " := true" );
+                        push_instruction ( CString("goto ") || CString(ref + 3) );
+                        push_instruction ( newIdent || " := false" );
+                        complete ( gtrue, ref );
+                        complete ( gfalse, CString(ref + 2) );
+                        gtrue = empty_list();
+                        gfalse = empty_list();
+                        return newIdent;
+                    }
+                    
+                    default: break;
+                }
+                break;
             }
 
             default: break;
         }
 
-        error(CString("Cannot convert from " ||
+        error(CString("Cannot convert from ") ||
               CTypeInfo::NameThisType(from.GetType())
               || " to " ||
               CTypeInfo::NameThisType(to.GetType()), szFile, uiLine );
@@ -524,7 +599,10 @@ struct __ETDS__Foreach_Iterator
 #define IS_FUNCTION(x)  ( CTypeInfo((CString)x).GetType() == CTypeInfo::FUNCTION )
 #define IS_NUMERIC(x)   ( IS_REAL(x) || IS_INTEGER(x) )
 #define TYPE_OF(x)      type_of(x)
-#define TYPECAST(x,from,to) (CString)(x = type_cast((CString)x, (CString)from, (CString)to, __FILE__, __LINE__))
+#define TYPECAST(x,from,to,...) TYPECAST_I(x,from,to,NUMARGS(__VA_ARGS__), ## __VA_ARGS__)
+#define TYPECAST_I(x,from,to,n,...) CAT(TYPECAST_I_,n)(x,from,to, ## __VA_ARGS__)
+#define TYPECAST_I_0(x,from,to) (CString)(x = type_cast((CString)x, (CString)from, (CString)to, __FILE__, __LINE__))
+#define TYPECAST_I_2(x,from,to,gtrue,gfalse) (CString)(x = type_cast((CString)x, (CString)from, (CString)to, (CString)gtrue, (CString)gfalse, __FILE__, __LINE__))
 
 // Arrays
 #define NEW_BASIC_TYPE(x)       ( CTypeInfo(CTypeInfo:: x ).toString() )
