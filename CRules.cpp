@@ -586,6 +586,9 @@ DEFINE_RULE(sentencia,
     {
         MATCH ( RESERVED, "si" );
         RULE  ( expresion , e )();
+        {
+           TYPECAST( e.nombre, e.tipo, NEW_BASIC_TYPE(BOOLEXPR), e.gtrue, e.gfalse);
+        }
         MATCH ( RESERVED, "entonces" );
         RULE  ( M , m1 )();
         RULE  ( lista_de_sentencias, ls );
@@ -720,7 +723,7 @@ DEFINE_RULE(asignacion_o_llamada,
             	tipo = NEW_BASIC_TYPE(UNKNOWN);
             	ERROR ( "Identifier '" || THIS.hident || "' not found" );
             }
-            ADD_INST( THIS.hident || " := " || TYPECAST( e.nombre, e.tipo, tipo ) );
+            ADD_INST( THIS.hident || " := " || TYPECAST( e.nombre, e.tipo, tipo, e.gtrue, e.gfalse ) );
         }
     }
     else if (IS_RULE_FIRST( acceso_a_array ))
@@ -984,20 +987,8 @@ DEFINE_RULE(disyuncion_prima,
         RULE  ( M , m )();
         RULE  ( disyuncion_prima , d );
         {
-            if ( IS_NUMERIC(THIS.htipo) )
-            {
-                THIS.hgtrue = INIT_LIST(GET_REF());
-                ADD_INST( "if " || THIS.hnombre || " > 0 goto ");
-                THIS.hgfalse = INIT_LIST(GET_REF());
-                ADD_INST( "goto ");
-            }
-            if ( IS_NUMERIC(c.tipo) )
-            {
-                c.gtrue = INIT_LIST(GET_REF());
-                ADD_INST( "if " || c.nombre || " > 0 goto ");
-                c.gfalse = INIT_LIST(GET_REF());
-                ADD_INST( "goto ");
-            }
+            TYPECAST( c.nombre, c.tipo, NEW_BASIC_TYPE(BOOLEXPR), c.gtrue , c.gfalse );
+            TYPECAST( THIS.hnombre, THIS.htipo, NEW_BASIC_TYPE(BOOLEXPR), THIS.gtrue , THIS.gfalse );
             COMPLETE( THIS.hgfalse, m.ref );
             d.hgtrue = JOIN( THIS.hgtrue, c.gtrue );
             d.hgfalse = c.gfalse;
@@ -1082,20 +1073,8 @@ DEFINE_RULE(conjuncion_prima,
         RULE  ( relacional , r )();
         RULE  ( conjuncion_prima , c );
         {
-            if ( IS_NUMERIC(THIS.htipo) )
-            {
-                THIS.hgtrue = INIT_LIST(GET_REF());
-                ADD_INST( "if " || THIS.hnombre || " > 0 goto ");
-                THIS.hgfalse = INIT_LIST(GET_REF());
-                ADD_INST( "goto ");
-            }
-            if ( IS_NUMERIC(r.tipo) )
-            {
-                r.gtrue = INIT_LIST(GET_REF());
-                ADD_INST( "if " || r.nombre || " > 0 goto ");
-                r.gfalse = INIT_LIST(GET_REF());
-                ADD_INST( "goto ");
-            }
+            TYPECAST( r.nombre, r.tipo, NEW_BASIC_TYPE(BOOLEXPR), r.gtrue , r.gfalse );
+            TYPECAST( THIS.hnombre, THIS.htipo, NEW_BASIC_TYPE(BOOLEXPR), THIS.gtrue , THIS.gfalse );
             COMPLETE( THIS.hgtrue, m.ref );
             c.hgfalse = JOIN( THIS.hgfalse, r.gfalse );
             c.hgtrue = r.gtrue;
@@ -1602,6 +1581,8 @@ DEFINE_RULE(factor_prima,
             THIS.nombre = a.nombre;
             THIS.tipo = a.tipo;
             THIS.literal = false;
+            THIS.gtrue = EMPTY_LIST();
+            THIS.gfalse = EMPTY_LIST();
         }
     }
     else if (IS_FIRST ( INTEGER ))
@@ -1611,6 +1592,8 @@ DEFINE_RULE(factor_prima,
             THIS.tipo = NEW_BASIC_TYPE(INTEGER);
             THIS.nombre = token.value;
             THIS.literal = true;
+            THIS.gtrue = EMPTY_LIST();
+            THIS.gfalse = EMPTY_LIST();
         }
     }
     else if (IS_FIRST ( REAL ))
@@ -1620,6 +1603,8 @@ DEFINE_RULE(factor_prima,
             THIS.tipo = NEW_BASIC_TYPE(REAL);
             THIS.nombre = token.value;
             THIS.literal = true;
+            THIS.gtrue = EMPTY_LIST();
+            THIS.gfalse = EMPTY_LIST();
         }
     }
     else if (IS_RULE_FIRST ( booleano ))
@@ -1629,6 +1614,8 @@ DEFINE_RULE(factor_prima,
             THIS.tipo = NEW_BASIC_TYPE(BOOLEAN);
             THIS.nombre = token.value;
             THIS.literal = true;
+            THIS.gtrue = EMPTY_LIST();
+            THIS.gfalse = EMPTY_LIST();
         }
     }
     else if (IS_FIRST ( SEPARATOR, "(" ))

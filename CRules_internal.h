@@ -306,9 +306,9 @@ protected:
                 {
                     case CTypeInfo::BOOLEXPR:
                     {
-                        gfalse = join_lists(gfalse, init_list(get_ref()));
-                        push_instruction ( CString("if ") || ident || " goto " );
                         gtrue = join_lists(gtrue, init_list(get_ref()));
+                        push_instruction ( CString("if ") || ident || " goto " );
+                        gfalse = join_lists(gfalse, init_list(get_ref()));
                         push_instruction ( CString("goto ") );
                         return ident;
                     }
@@ -602,7 +602,7 @@ struct __ETDS__Foreach_Iterator
 #define TYPECAST(x,from,to,...) TYPECAST_I(x,from,to,NUMARGS(__VA_ARGS__), ## __VA_ARGS__)
 #define TYPECAST_I(x,from,to,n,...) CAT(TYPECAST_I_,n)(x,from,to, ## __VA_ARGS__)
 #define TYPECAST_I_0(x,from,to) (CString)(x = type_cast((CString)x, (CString)from, (CString)to, __FILE__, __LINE__))
-#define TYPECAST_I_2(x,from,to,gtrue,gfalse) (CString)(x = type_cast((CString)x, (CString)from, (CString)to, (CString)gtrue, (CString)gfalse, __FILE__, __LINE__))
+#define TYPECAST_I_2(x,from,to,gtrue,gfalse) (CString)(x = type_cast((CString)x, (CString)from, (CString)to, (CString &)gtrue, (CString &)gfalse, __FILE__, __LINE__))
 
 // Arrays
 #define NEW_BASIC_TYPE(x)       ( CTypeInfo(CTypeInfo:: x ).toString() )
