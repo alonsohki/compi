@@ -783,7 +783,7 @@ DEFINE_RULE(acceso_a_array,
         VAR exprs = JOIN(ls.exprs, otros.exprs);
         VAR tipos = JOIN(ls.tipos, otros.tipos);
         
-        if ( IS_UNKNOWN(THIS.htipo) == false && ST_EXISTS(THIS.hident) == false )
+        if ( IS_UNKNOWN(THIS.htipo) == true && ST_EXISTS(THIS.hident) == false )
         {
             ERROR ( "Identifier '" || THIS.hident || "' not found." );
             THIS.tipo = NEW_BASIC_TYPE ( UNKNOWN );
@@ -791,7 +791,7 @@ DEFINE_RULE(acceso_a_array,
         else
         {
             VAR tipo;
-            if ( IS_UNKNOWN(THIS.htipo) == false )
+            if ( IS_UNKNOWN(THIS.htipo) == true )
                 tipo = ST_GET_TYPE ( THIS.hident );
             else
                 tipo = THIS.htipo;
