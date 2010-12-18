@@ -1,0 +1,30 @@
+programa ejemplo
+
+    variables a : booleano ;
+    variables b : entero ;
+
+comienzo
+
+    si true entonces 
+        put_line ( 1 );
+    fin si ;
+
+    si false entonces
+       put_line ( 0 ) ;
+    fin si ;
+
+   si 5 entonces
+        put_line ( 1 );
+    fin si ;
+
+    si 0.0 entonces
+       put_line ( 0 ) ;
+    fin si ;
+
+    a = b > 5 ;
+    si a entonces
+       put_line ( 1 );
+    fin si ;
+
+fin ;
+

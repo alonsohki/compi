@@ -1,0 +1,11 @@
+programa ejemplo
+
+    variables a : booleano ;
+    variables b : entero ;
+
+comienzo
+
+    a = b > b ;
+
+fin ;
+
