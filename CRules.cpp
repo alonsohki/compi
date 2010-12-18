@@ -1039,6 +1039,8 @@ DEFINE_RULE(disyuncion_prima,
             COMPLETE( THIS.hgfalse, m.ref );
             d.hgtrue = JOIN( THIS.hgtrue, c.gtrue );
             d.hgfalse = c.gfalse;
+            c.hnombre = THIS.hnombre;
+            c.htipo = THIS.tipo;
         }
         d();
         {
@@ -1125,6 +1127,8 @@ DEFINE_RULE(conjuncion_prima,
             COMPLETE( THIS.hgtrue, m.ref );
             c.hgfalse = JOIN( THIS.hgfalse, r.gfalse );
             c.hgtrue = r.gtrue;
+            c.hnombre = THIS.hnombre;
+            c.htipo = THIS.tipo;
         }
         c();
         {
