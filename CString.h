@@ -218,7 +218,7 @@ public:
 
         for ( unsigned int i = 0; i < uiLength; ++i )
         {
-            if ( m_str[i] != ' ' && m_str[i] != '\t' && m_str[i] != 160 &&
+            if ( m_str[i] != ' ' && m_str[i] != '\t' && m_str[i] != '\xA0' &&
                  m_str[i] != '\r' && m_str[i] != '\n' )
             {
                 szTemp [ copyPos ] = m_str [ i ];
