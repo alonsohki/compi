@@ -524,7 +524,7 @@ struct __ETDS__Foreach_Iterator
 #define IS_FUNCTION(x)  ( CTypeInfo((CString)x).GetType() == CTypeInfo::FUNCTION )
 #define IS_NUMERIC(x)   ( IS_REAL(x) || IS_INTEGER(x) )
 #define TYPE_OF(x)      type_of(x)
-#define TYPECAST(x,from,to) type_cast((CString)x, (CString)from, (CString)to, __FILE__, __LINE__)
+#define TYPECAST(x,from,to) (CString)(x = type_cast((CString)x, (CString)from, (CString)to, __FILE__, __LINE__))
 
 // Arrays
 #define NEW_BASIC_TYPE(x)       ( CTypeInfo(CTypeInfo:: x ).toString() )

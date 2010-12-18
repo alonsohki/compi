@@ -575,7 +575,9 @@ DEFINE_RULE(sentencia,
     {
         TOKEN id = MATCH ( IDENTIFIER );
         RULE  ( asignacion_o_llamada , a );
-        { a.hident = id.value; }
+        {
+            a.hident = id.value;
+        }
         a();
         MATCH ( SEPARATOR, ";" );
         { THIS.salir_si = EMPTY_LIST(); }
@@ -654,11 +656,13 @@ DEFINE_RULE(sentencia,
     {
         MATCH ( RESERVED, "put_line" );
         MATCH ( SEPARATOR, "(" );
-        RULE  ( expresion )();
+        RULE  ( expresion , e )();
         MATCH ( SEPARATOR, ")");
         MATCH ( SEPARATOR, ";");
         {
             THIS.salir_si = EMPTY_LIST ();
+            ADD_INST ( "write " || e.nombre );
+            ADD_INST ( "writeln" );
         }
     }
     else PANIC();
@@ -708,10 +712,15 @@ DEFINE_RULE(asignacion_o_llamada,
         MATCH ( OPERATOR, "=" );
         RULE  ( expresion , e )();
         {
-            if (THIS.hident)
-                ADD_INST( THIS.hident || " := " || e.nombre );
+            VAR tipo;
+            if ( ST_EXISTS (THIS.hident))
+            	tipo = ST_GET_TYPE(THIS.hident);
             else
-                ERROR("Type mismatch");
+            {
+            	tipo = NEW_BASIC_TYPE(UNKNOWN);
+            	ERROR ( "Identifier '" || THIS.hident || "' not found" );
+            }
+            ADD_INST( THIS.hident || " := " || TYPECAST( e.nombre, e.tipo, tipo ) );
         }
     }
     else if (IS_RULE_FIRST( acceso_a_array ))
@@ -790,21 +799,15 @@ DEFINE_RULE(acceso_a_array,
                     ERROR ( "Too few subscripts for array '" || THIS.hident || "'" );
                 else
                 {
+                    VAR i = 0;
                     VAR curDimension = ARRAY_DEPTH(tipo) - 1;
-
-                    FOREACH ( ls.tipos AS tipos )
-                    {
-                        if ( IS_INTEGER(tipos) == false )
-                        {
-                            ERROR ( "Non integer subscript for array '" || THIS.hident || "'" );
-                        }
-                    }
-
                     FOREACH ( ls.exprs AS nombre )
                     {
-                        ADD_INST ( THIS.offset || " := "  || THIS.offset || " * " || ARRAY_DIMENSION(tipo, curDimension) );
-                        ADD_INST ( THIS.offset || " := " || THIS.offset || " + " || nombre );
+                        ADD_INST ( THIS.offset || " := " || THIS.offset || " * " || ARRAY_DIMENSION(tipo, curDimension) );
+                        ADD_INST ( THIS.offset || " := " || THIS.offset || " + " ||
+                        		   TYPECAST(nombre, LIST_ITEM(ls.tipos,i), NEW_BASIC_TYPE(INTEGER)) );
                         curDimension = curDimension - 1;
+                        i = i + 1;
                     }
                 }
             }
@@ -1179,19 +1182,29 @@ DEFINE_RULE(relacional_prima,
         RULE ( aritmetica , a )();
         RULE ( relacional_prima , r );
         {
-            if ( IS_NUMERIC(THIS.htipo) && IS_NUMERIC(a.tipo)) {
+            if ( ! IS_NUMERIC(THIS.htipo) ) {
+            	ERROR("Relational operand '" || THIS.hnombre || "' is not scalar");
+            }
+            else if ( ! IS_NUMERIC(a.tipo) )
+            {
+            	ERROR("Relational operand '" || a.nombre || "' is not scalar");
+            }
+            else
+            {
+
+                if ( IS_REAL(THIS.htipo) || IS_REAL(a.tipo) )
+                {
+                    TYPECAST( THIS.hnombre, THIS.htipo, NEW_BASIC_TYPE(REAL) );
+                    TYPECAST( a.nombre, a.tipo, NEW_BASIC_TYPE(REAL) );
+                }
 
                 r.hgtrue = INIT_LIST(GET_REF());
                 ADD_INST( "if " || THIS.hnombre || " " || op.op || " " || a.nombre || " goto ");
                 r.hgfalse = INIT_LIST(GET_REF());
                 ADD_INST( "goto ");
 
-                r.htipo = NEW_BASIC_TYPE(BOOLEAN);
+                r.htipo = NEW_BASIC_TYPE(BOOLEXPR);
 
-            }
-            else
-            {
-                //ERROR("Type mismatch error");
             }
         }
         r();
@@ -1281,14 +1294,20 @@ DEFINE_RULE(aritmetica_prima,
         {
             if ( IS_NUMERIC(THIS.htipo) && IS_NUMERIC(t.tipo) ) {
 
+                if ( IS_REAL(THIS.htipo) || IS_REAL(t.tipo) )
+                {
+                    TYPECAST( THIS.hnombre, THIS.htipo, NEW_BASIC_TYPE(REAL) );
+                    TYPECAST( t.nombre, t.tipo, NEW_BASIC_TYPE(REAL) );
+                    a.htipo = NEW_BASIC_TYPE(REAL);
+                }
+                else
+                {
+                    a.htipo = NEW_BASIC_TYPE(INTEGER);
+                }
+
                 a.hnombre = NEW_IDENT();
                 ADD_INST( a.hnombre || " := " || THIS.hnombre || " " || op.op || " " || t.nombre );
-
-                if ( IS_REAL(THIS.htipo) || IS_REAL(t.tipo) )
-                    a.htipo = NEW_BASIC_TYPE(REAL);
-                else
-                    a.htipo = NEW_BASIC_TYPE(INTEGER);
-
+                
             } else {
                 ERROR("Type mismatch error");
                 a.htipo = NEW_BASIC_TYPE(UNKNOWN);
@@ -1384,14 +1403,20 @@ DEFINE_RULE(termino_prima,
         {
             if ( IS_NUMERIC(THIS.htipo) && IS_NUMERIC(f.tipo) ) {
 
+                if ( IS_REAL(THIS.htipo) || IS_REAL(f.tipo) )
+                {
+                    TYPECAST( THIS.hnombre, THIS.htipo, NEW_BASIC_TYPE(REAL) );
+                    TYPECAST( f.nombre, f.tipo, NEW_BASIC_TYPE(REAL) );
+                    t.htipo = NEW_BASIC_TYPE(REAL);
+                }
+                else
+                {
+                    t.htipo = NEW_BASIC_TYPE(INTEGER);
+                }
+                
                 t.hnombre = NEW_IDENT();
                 ADD_INST( t.hnombre || " := " || THIS.hnombre || " " || op.op || " " || f.nombre );
-
-                if ( IS_REAL(THIS.htipo) || IS_REAL(f.tipo) )
-                    t.htipo = NEW_BASIC_TYPE(REAL);
-                else
-                    t.htipo = NEW_BASIC_TYPE(INTEGER);
-
+                
             } else {
                 ERROR("Type mismatch error");
                 t.htipo = NEW_BASIC_TYPE(UNKNOWN);
@@ -1858,11 +1883,13 @@ DEFINE_RULE(booleano,
                 )
 )
 {
-    if (IS_FIRST ( RESERVED, "true" )) {
+    if (IS_FIRST ( RESERVED, "true" ))
+    {
         TOKEN token = MATCH ( RESERVED, "true" );
         THIS.value = token.value;
     }
-    else if (IS_FIRST ( RESERVED, "false" )) {
+    else if (IS_FIRST ( RESERVED, "false" ))
+    {
         TOKEN token = MATCH ( RESERVED, "false" );
         THIS.value = token.value;
     }
