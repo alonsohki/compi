@@ -1030,12 +1030,14 @@ DEFINE_RULE(disyuncion_prima,
 {
     if (IS_FIRST (RESERVED, "or")) {
         MATCH ( RESERVED, "or");
+        {
+            TYPECAST( THIS.hnombre, THIS.htipo, NEW_BASIC_TYPE(BOOLEXPR), THIS.hgtrue , THIS.hgfalse );
+        }
+        RULE  ( M , m)();
         RULE  ( conjuncion , c )();
-        RULE  ( M , m )();
         RULE  ( disyuncion_prima , d );
         {
-            TYPECAST( c.nombre, c.tipo, NEW_BASIC_TYPE(BOOLEXPR), c.gtrue , c.gfalse );
-            TYPECAST( THIS.hnombre, THIS.htipo, NEW_BASIC_TYPE(BOOLEXPR), THIS.hgtrue , THIS.hgfalse );
+        	TYPECAST( c.nombre, c.tipo, NEW_BASIC_TYPE(BOOLEXPR), c.gtrue , c.gfalse );
             COMPLETE( THIS.hgfalse, m.ref );
             d.hgtrue = JOIN( THIS.hgtrue, c.gtrue );
             d.hgfalse = c.gfalse;
@@ -1118,12 +1120,14 @@ DEFINE_RULE(conjuncion_prima,
 {
     if (IS_FIRST (RESERVED, "and")) {
         MATCH ( RESERVED, "and");
-        RULE  ( M , m );
+        {
+            TYPECAST( THIS.hnombre, THIS.htipo, NEW_BASIC_TYPE(BOOLEXPR), THIS.hgtrue , THIS.hgfalse );
+        }
+        RULE  ( M , m )();
         RULE  ( relacional , r )();
         RULE  ( conjuncion_prima , c );
         {
             TYPECAST( r.nombre, r.tipo, NEW_BASIC_TYPE(BOOLEXPR), r.gtrue , r.gfalse );
-            TYPECAST( THIS.hnombre, THIS.htipo, NEW_BASIC_TYPE(BOOLEXPR), THIS.hgtrue , THIS.hgfalse );
             COMPLETE( THIS.hgtrue, m.ref );
             c.hgfalse = JOIN( THIS.hgfalse, r.gfalse );
             c.hgtrue = r.gtrue;
