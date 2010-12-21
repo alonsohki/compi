@@ -1,3 +1,13 @@
+/////////////////
+//
+// Práctica de Compilación I (Curso 2010-2011)
+//
+//  FICHERO:        CListInString.h
+//  OBJETIVO:       Definir un sistema de representar listas de elementos en un string.
+//  LICENCIA:       Mira el fichero LICENSE en el directorio raíz.
+//  AUTORES:        El equipo del JAG.
+//
+
 #ifndef CLISTINSTRING_H
 #define	CLISTINSTRING_H
 

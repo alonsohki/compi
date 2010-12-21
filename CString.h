@@ -1,3 +1,13 @@
+/////////////////
+//
+// Práctica de Compilación I (Curso 2010-2011)
+//
+//  FICHERO:        CString.h
+//  OBJETIVO:       Declaración de la clase de manejo de strings.
+//  LICENCIA:       Mira el fichero LICENSE en el directorio raíz.
+//  AUTORES:        El equipo del JAG.
+//
+
 #ifndef CSTRING_H
 #define	CSTRING_H
 

@@ -1,3 +1,13 @@
+/////////////////
+//
+// Práctica de Compilación I (Curso 2010-2011)
+//
+//  FICHERO:        CTokenizer.cpp
+//  OBJETIVO:       Definición del autómata léxico.
+//  LICENCIA:       Mira el fichero LICENSE en el directorio raíz.
+//  AUTORES:        El equipo del JAG.
+//
+
 #include <cstring>
 #include "CTokenizer.h"
 #include "CClassifier.h"

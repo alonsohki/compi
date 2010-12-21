@@ -1,3 +1,13 @@
+/////////////////
+//
+// Práctica de Compilación I (Curso 2010-2011)
+//
+//  FICHERO:        CTypeInfo.h
+//  OBJETIVO:       Declaración de la clase que maneja la información de tipos.
+//  LICENCIA:       Mira el fichero LICENSE en el directorio raíz.
+//  AUTORES:        El equipo del JAG.
+//
+
 #ifndef CTYPEINFO_H
 #define	CTYPEINFO_H
 

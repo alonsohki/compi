@@ -1,3 +1,13 @@
+/////////////////
+//
+// Práctica de Compilación I (Curso 2010-2011)
+//
+//  FICHERO:        CTranslator.cpp
+//  OBJETIVO:       Definición de la clase principal del traductor.
+//  LICENCIA:       Mira el fichero LICENSE en el directorio raíz.
+//  AUTORES:        El equipo del JAG.
+//
+
 #include <cstring>
 #include <vector>
 #include "CTranslator.h"

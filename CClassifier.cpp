@@ -1,3 +1,13 @@
+/////////////////
+//
+// Práctica de Compilación I (Curso 2010-2011)
+//
+//  FICHERO:        CClassifier.cpp
+//  OBJETIVO:       Definición de la tabla de conversión del clasificador.
+//  LICENCIA:       Mira el fichero LICENSE en el directorio raíz.
+//  AUTORES:        El equipo del JAG.
+//
+
 #include "CClassifier.h"
 
 const CClassifier::ECharacterGroup CClassifier::ms_eClassifier [ 256 ] = {

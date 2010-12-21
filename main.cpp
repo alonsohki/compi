@@ -1,9 +1,12 @@
-/* 
- * File:   main.cpp
- * Author: ryden
- *
- * Created on 16 de octubre de 2010, 17:15
- */
+/////////////////
+//
+// Práctica de Compilación I (Curso 2010-2011)
+//
+//  FICHERO:        main.cpp
+//  OBJETIVO:       Punto de entrada de la aplicación. Pone en marcha el traductor.
+//  LICENCIA:       Mira el fichero LICENSE en el directorio raíz.
+//  AUTORES:        El equipo del JAG.
+//
 
 #include <cstdio>
 #include <cstdlib>

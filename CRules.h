@@ -1,3 +1,13 @@
+/////////////////
+//
+// Práctica de Compilación I (Curso 2010-2011)
+//
+//  FICHERO:        CRules.h
+//  OBJETIVO:       Declaración de las reglas y sus atributos.
+//  LICENCIA:       Mira el fichero LICENSE en el directorio raíz.
+//  AUTORES:        El equipo del JAG.
+//
+
 #ifndef CRULES_H
 #define	CRULES_H
 

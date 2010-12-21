@@ -1,3 +1,13 @@
+/////////////////
+//
+// Práctica de Compilación I (Curso 2010-2011)
+//
+//  FICHERO:        CRules.cpp
+//  OBJETIVO:       Definición de las reglas de la gramática y su semántica.
+//  LICENCIA:       Mira el fichero LICENSE en el directorio raíz.
+//  AUTORES:        El equipo del JAG.
+//
+
 #include "CRules.h"
 
 // Las siguientes tuplas son demasiado repetitivas a lo largo del código, en

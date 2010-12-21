@@ -1,3 +1,13 @@
+/////////////////
+//
+// Práctica de Compilación I (Curso 2010-2011)
+//
+//  FICHERO:        CBufferedReader.h
+//  OBJETIVO:       Lectura del stream de entrada con buffering.
+//  LICENCIA:       Mira el fichero LICENSE en el directorio raíz.
+//  AUTORES:        El equipo del JAG.
+//
+
 #ifndef CBUFFEREDREADER_H
 #define	CBUFFEREDREADER_H
 

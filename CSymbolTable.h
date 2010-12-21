@@ -1,3 +1,13 @@
+/////////////////
+//
+// Práctica de Compilación I (Curso 2010-2011)
+//
+//  FICHERO:        CSymbolTable.h
+//  OBJETIVO:       Declaración de la tabla de símbolos.
+//  LICENCIA:       Mira el fichero LICENSE en el directorio raíz.
+//  AUTORES:        El equipo del JAG.
+//
+
 #ifndef CSYMBOLTABLE_H
 #define	CSYMBOLTABLE_H
 

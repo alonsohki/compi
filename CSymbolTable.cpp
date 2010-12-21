@@ -1,3 +1,13 @@
+/////////////////
+//
+// Práctica de Compilación I (Curso 2010-2011)
+//
+//  FICHERO:        CSymbolTable.cpp
+//  OBJETIVO:       Definición de la tabla de símbolos.
+//  LICENCIA:       Mira el fichero LICENSE en el directorio raíz.
+//  AUTORES:        El equipo del JAG.
+//
+
 #include "CSymbolTable.h"
 
 CSymbolTable::CSymbolTable ()

@@ -1,3 +1,13 @@
+/////////////////
+//
+// Práctica de Compilación I (Curso 2010-2011)
+//
+//  FICHERO:        CTokenizer.h
+//  OBJETIVO:       Declaración del autómata léxico.
+//  LICENCIA:       Mira el fichero LICENSE en el directorio raíz.
+//  AUTORES:        El equipo del JAG.
+//
+
 #ifndef CTOKENIZER_H
 #define	CTOKENIZER_H
 

@@ -1,3 +1,13 @@
+/////////////////
+//
+// Práctica de Compilación I (Curso 2010-2011)
+//
+//  FICHERO:        CRules_internal.h
+//  OBJETIVO:       Parafernalia interna para conseguir un CRules.cpp bonito y ordenado.
+//  LICENCIA:       Mira el fichero LICENSE en el directorio raíz.
+//  AUTORES:        El equipo del JAG.
+//
+
 #ifndef CRULES_INTERNAL_H
 #define	CRULES_INTERNAL_H
 

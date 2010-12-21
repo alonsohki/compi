@@ -1,3 +1,13 @@
+/////////////////
+//
+// Práctica de Compilación I (Curso 2010-2011)
+//
+//  FICHERO:        CTranslator.h
+//  OBJETIVO:       Declaración de la clase principal del traductor.
+//  LICENCIA:       Mira el fichero LICENSE en el directorio raíz.
+//  AUTORES:        El equipo del JAG.
+//
+
 #ifndef CTRANSLATOR_H
 #define	CTRANSLATOR_H
 
