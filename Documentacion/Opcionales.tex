@@ -3,7 +3,60 @@
 \section{Expresiones booleanas}
 
 ● Ampliación del ETDS para recoger la traducción de expresiones booleanas. 
-● Ampliación del traductor para implementar lo anterior. 
+● Ampliación del traductor para implementar lo anterior.
+
+Añadimos las palabras reservadas \ter{ true } y ter{ false } como constantes booleanas, y añadimos un nuevo tipo de datos \ter{ booleano }. Además,
+definimos un nuevo tipo de ETDS para expresiones, que además de las ya vistas expresiones numnéricas, pueden contener expresiones booleanas;
+así como unos operadores para ellas \ter { or }, \ter{ and } y \ter{ not}.
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+tipo                                             	& $\longrightarrow$                     & \ter{ booleano } \sem{ tipo.tipo = NEW_BASIC_TYPE(REAL); } \\
+\espacio
+\end{tabular}
+
+\begin{tabular}{r c p{.72\textwidth}}
+booleano                                           	& $\longrightarrow$                     & \ter{ true } | \ter{ false } \\
+\espacio
+\end{tabular}
+
+\begin{tabular}{r c p{.72\textwidth}}
+expresiones                                           	& $\longrightarrow$                     & \ter{ = } expresion \\
+expresion                                           	& $\longrightarrow$                     & disyuncion \\
+disyuncion                                          	& $\longrightarrow$                     & conjuncion disyuncion' \\
+disyuncion'                                          	& $\longrightarrow$                     & \ter{ or } conjuncion disyuncion' \\
+                                                        &                                       & | \xi
+conjuncion                                          	& $\longrightarrow$                     & relacional conjuncion' \\
+conjuncion'                                          	& $\longrightarrow$                     & \ter{ and } relacional conjuncion' \\
+                                                        &                                       & | \xi
+relacional                                          	& $\longrightarrow$                     & aritmetica relacional' \\
+relacional'                                          	& $\longrightarrow$                     & \ter{ oprel } aritmetica relacional' \\
+                                                        &                                       & | \xi
+aritmetica                                         	& $\longrightarrow$                     & termino aritmetica' \\
+aritmetica'                                         	& $\longrightarrow$                     & \ter{ opl2 } termino aritmetica' \\
+                                                        &                                       & | \xi
+termino                                         	& $\longrightarrow$                     & negacion termino' \\
+termino'                                         	& $\longrightarrow$                     & \ter{ opl1 } negacion termino' \\
+                                                        &                                       & | \xi
+negacion                                         	& $\longrightarrow$                     & \ter{ not } factor \\
+                                                        &                                       & | factor \\
+factor                                           	& $\longrightarrow$                     & \ter{ - } factor' \\
+                                                       	&                                       & factor' \\
+factor'                                         	& $\longrightarrow$                     & \ter{ ID } array\_o\_llamada \\
+                                                        &                                       & | \ter{ INTEGER }
+                                                        &                                       & | \ter{ REAL }
+                                                        &                                       & | booleano
+                                                        &                                       & \ter{ ( } expresion \ter{ ) }
+opl1                                            	& $\longrightarrow$                     & \ter{ * } | \ter{ / } \\
+opl2                                            	& $\longrightarrow$                     & \ter{ + } | \ter{ - } \\
+oprel                                            	& $\longrightarrow$                     & \ter{ $>$ } \\
+                                                        &                                       & | \ter{ $<$ } \\
+                                                        &                                       & | \ter{ $\leq$ } \\
+                                                        &                                       & | \ter{ $\geq$ }
+                                                        &                                       & | \ter{ $==$ }
+                                                        &                                       & | \ter{ $/=$ }
+\espacio
+\end{tabular}
 
 \section{Uso correcto de identificadores}
 
@@ -23,7 +76,7 @@
 	
 	Estrategia de tipos :
 
-Cuando nos encontramos con 2 expresiones, intentamos convertilo al grupo más general :
+Cuando nos encontramos con 2 expresiones, intentamos convertirlo al grupo más general :
 
 Ejemplo : 
 
@@ -43,9 +96,47 @@ Tratamiento estático y tratamiento dinámico :
 ● Selección de una representación para la Tabla de Símbolos. 
 ● Implementación y prueba de la parte de análisis semántico. 
 
-\section{llamadas a procedimientos}
+\section{Llamadas a procedimientos}
 ● Ampliación de la gramática y del ETDS para permitir llamadas a procedimientos 
 ● Implementación y prueba de las llamadas a procedimientos.
+
+En nuestro caso, hemos permitido llamadas a procedimientos y funciones.
+
+\subsection{Ampliación de la ETDS}
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+        decl\_de\_subprogs              & $\longrightarrow$     & decl\_de\_procedimiento decl\_de\_subprogs \\
+                                        & $\longrightarrow$     & | decl\_de\_funcion decl\_de\_subprogs \\
+                                        &                       & | \xi
+        decl\_de\_procedimiento		& $\longrightarrow$	& cabecera\_procedimiento declaraciones \ter{ comienzo } lista\_de \_sentencias \ter{ fin } \ter{ ; } \\
+        decl\_de\_funcion 		& $\longrightarrow$	& cabecera\_funcion declaraciones lista\_de \_sentencias' \ter{ fin } \ter{ ; } \\
+        cabecera\_procedimiento		& $\longrightarrow$	& \ter{ procedimiento } \ter{ ID } argumentos \\
+        cabecera\_funcion 		& $\longrightarrow$	& \ter{ funcion } \ter{ ID } argumentos \ter{ retorna } tipo \\
+	argumentos                      & $\longrightarrow$	& \ter{ \( } lista\_de\_param \ter{ \) } \\
+                                        &                       & | \xi
+	lista\_de\_param		& $\longrightarrow$     & lista\_ident \ter{ : } clase\_param tipo resto\_lis\_de\_param  \\
+        resto\_lis\_de\_param		& $\longrightarrow$     & \ter{ ; } lista\_ident \ter{ : } clase\_param tipo resto\_lis\_de\_param  \\
+                                        &                       & | \xi
+        lista\_de\_sentencias'          & $\longrightarrow$     & lista\_de\_sentencias
+
+	\espacio
+
+\end{tabular}
+
+Se añade también el cambio realizado en la regla inicial (para permitir hacer procedimientos o funciones):
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+        programa                        & $\longrightarrow$     & \ter{ programa ID } \\
+					&					& \sem{ ADD\_INST(``prog'' || ID.value); } \\
+                                        &                       & declaraciones decl\_de\_subprogs \\
+                                        &                       & \ter{ comienzo } lista\_de\_sentencias' \ter{ fin ; } \\
+					&					& \sem{ ADD\_INST(``halt''); } \\
+
+	\espacio
+
+\end{tabular}
 
 \section{Errores sintácticos}
  
@@ -54,16 +145,20 @@ Tratamiento estático y tratamiento dinámico :
 
 \section{Arrays multidimensionales}
 
+● Ampliación de la gramática y del ETDS para permitir el tipo array muldimensional.
+● Implementación y prueba de los arrays.
+
 \subsection{Ampliación de la ETDS}
 
 \small
 \begin{tabular}{r c p{.72\textwidth}}
 	tipo 			& $\longrightarrow$	& \ter{array} \ter{[} lista\_de\_enteros \ter{]} \ter{de} tipo \\
 					&					& \sem{ tipo.tipo := NEW\_ARRAY\_TYPE(lista\_de\_enteros, tipo); } \\
-	
+	lista\_de\_enteros      & $\longrightarrow$     & \ter{ INTEGER } resto\_lista\_enteros \\
+                                                                                & \sem{ lista\_enteros.ints = JOIN(INIT\_LIST(INTEGER.value), resto\_lista\_enteros.ints); } \\
+        resto\_lista\_enteros   & $\longrightarrow$     & | \ter{ , } \ter{ INTEGER } resto\_lista\_enteros \\
+                                                                                & \sem{ resto\_lista\_enteros.ints = JOIN(INIT\_LIST(INTEGER.value), resto\_lista\_enteros.ints); } \\
+                                &                       & | \xi \sem{ resto\_lista\_enteros.ints = EMPTY\_LIST(); }
 	\espacio
 	
 \end{tabular}
-					
-● Ampliación de la gramática y del ETDS para permitir el tipo array muldimensional. 
-● Implementación y prueba de los arrays. 
