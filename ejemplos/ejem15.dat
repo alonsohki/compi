@@ -1,0 +1,14 @@
+/* ejem5.dat contiene declaracion y uso de booleanos. Servira para probar la correcion de la parte optativa de booleanos */
+
+programa booleanos
+
+    variables a, b, c: booleano;
+
+comienzo
+    a = 9 > 3 + 5 ; /* Posible */
+    b = a; /* Posible */
+    c = 7 + 8; /* Error */
+    si a entonces
+        put_line(5 + 6);
+    fin si;
+fin;

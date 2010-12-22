@@ -1,0 +1,15 @@
+/* ejem9.dat contiene expresiones aritmeticas. Servira para probar el uso y la deteccion de errores en la traduccion de expresiones aritmeticas */
+
+programa aritmeticas
+
+comienzo
+    variables a, b, c, d: real;
+    get(a);
+    get(b);
+    get(c);
+    get(d);
+    a = 4 * a; /* Algo simple */
+    b = b + c * d / 7 * a - b; /* Algo un poco más complejo */
+    c = (a + b) * c; /* Algo con parentesis */
+    d = 9 + c * 6 / ( 7 + 6 * a ); /* El parentesis: el mas dificil todavia */
+fin;

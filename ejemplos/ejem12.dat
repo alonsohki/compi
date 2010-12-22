@@ -1,0 +1,31 @@
+/* ejem2.dat servira para comprobar la correccion de los comentarios */
+
+/* Esto es un comentario */
+
+/* Esto es un
+   comentario
+   multilínea */
+
+/* El compilador deberia
+   ignorar estas lineas */
+                
+/*          Asi
+
+que 
+realmente no 
+                                    importa
+lo que 
+ponga 
+
+
+    aqui */
+
+programa comentario
+    
+    /* Oops, alguien deberia cerrar este :-)
+        variables c: entero;
+
+comienzo
+    get(c);
+    put_line(c);
+fin;

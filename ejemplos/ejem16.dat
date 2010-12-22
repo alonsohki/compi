@@ -1,0 +1,65 @@
+/* ejem6.dat contiene declaracion y uso de procedimientos. Servira para probar la correcion de la parte optativa de procedimientos
+
+Funcionalidades a prueba:
+    * Utilización estándar de procedimientos y funciones
+    * Sobrecarga de operadores
+    * Uso del retorno por defecto cuando no se define nada
+    * Asignación del valor devuelto por una función (correcto) y de un procedimiento (incorrecto)
+    * Comprobación de tipos compatibles en las llamadas a procedimientos
+*/
+
+programa pruebas_subprogramas
+
+    variables a, b, c, resulsuma, resulmult, resultado: entero;
+    variables d: real;
+    variables e: booleano;
+
+procedimiento sumar (a, b: entrada entero; resul: salida entero)
+
+    comienzo
+        resul = a + b;
+    fin;
+
+procedimiento sumar (a, b, c: entrada entero; resul: salida entero)
+
+    comienzo
+        resul = a + b + c;
+    fin;
+
+procedimiento multiplicar_proc (a, b: entrada entero; resul: salida entero)
+
+    comienzo
+        resul = a * b;
+    fin;
+
+funcion multiplicar_func (a, b: entrada entero) retorna entero
+
+    comienzo
+        retornar a * b;
+    fin;
+
+funcion dividir (a, b: entrada real) retorna real
+    
+    comienzo
+        si b /= 0 entonces
+            retornar a/b;
+        fin si;
+        /* Retorno por defecto */
+    fin;
+
+comienzo
+
+    get(a);
+    get(b);
+    get(c);
+    sumar(a, b, resulsuma);
+    sumar(a, b, resulsuma, resulsuma);
+    c = multiplicar_func(a, b);
+    multiplicar_proc(a, c, resulmult);
+    resultado = resulsuma + resulmult;
+    c = multiplicar_func(resulsuma, resulmult) /* Error */
+    d = dividir(a, b);
+        
+    put_line(resultado + d);
+    
+fin;

@@ -1,0 +1,17 @@
+/* ejem3.dat esta lleno de errores lexicos. Servira para comprobar la correcion del analizador lexico. */
+
+programa error_lexico
+    
+    variables a, b, c, d, e, f: real;
+
+comienzo
+    a = 3; /* Posible con el control semantico pertinente (errores semanticos) */
+    b = 1.7e-9; /* Posible */
+    c = .9e-8 /* Error */
+    d = e-9 /* Error */
+    e = 9.8+e6 /* Error */
+    f = 13.4 - 7 * 8 + 45; /* Posible con el control semantico pertinente (errores semanticos) */
+fin;
+
+
+        

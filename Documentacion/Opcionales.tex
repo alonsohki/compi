@@ -141,7 +141,14 @@ Se añade también el cambio realizado en la regla inicial (para permitir hacer 
 \section{Errores sintácticos}
  
 ● Diseño del tratamiento de errores sintácticos 
-● Implementación del tratamiento de errores sintácticos 
+● Implementación del tratamiento de errores sintácticos
+
+Los errores sintácticos se han tratado según la estrategia de modo pánico vista en clase. Para ello, hemos hecho que cada regla tenga en cuenta los
+tokens de su propio conjunto PRIMERO y SIGUIENTE.
+
+Definimos como PRIMERO de una regla, como aquel token que la regla puede generar.
+
+Definimos como SIGUIENTE de un regla, como aquel token que puede venir justo detrás de la aplicación de una regla concreta.
 
 \section{Arrays multidimensionales}
 

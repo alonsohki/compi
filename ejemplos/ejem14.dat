@@ -1,0 +1,24 @@
+/* ejem4.dat contiene multitud de errores semánticos. Comprobará la capacidad del compilador para detectar estos errores y servirá para comprobar la correción del módulo optativo de detección de errores semánticos */
+
+programa error_semantico
+
+    variables a, b, c: entero;
+    variables d, e, f: real;
+    variables g, h, i, j: booleano;
+    
+comienzo
+    a = 3.9; /* Error */
+    b = 4 + 5.6; /* Error */
+    c = false; /* Error */
+    d = 4; /* Puede no ser un error (4.0) */
+    e = 5 + 6.3 * 9.2; /* Puede no ser un error (5.0 + 6.3 * 9.2) */
+    f = true; /* Error */
+    g = 5; /* Error */
+    h = 6.7; /* Error*/
+    i = 6 + 7; /* Error */
+    j = 6 > 7; /* No es un error */
+    si a entonces /* Error -> a es de tipo entero */
+        put_line(d);
+    fin si;
+fin;
+

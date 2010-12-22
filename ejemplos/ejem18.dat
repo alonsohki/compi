@@ -1,0 +1,23 @@
+/* ejem8.dat contiene errores sintacticos. Servira para probar la correcion de detección de errores sintactico */
+
+programa sintactico
+
+comienzo
+    variables a, b, c, d: entero;
+    get(d);
+    a = 3 * d 1 +; /* Error */
+    b = 5 + 6
+    ; /* Error */
+    variables e, f: real; /* Error */
+    
+procedimiento sumar (a, b: entrada entero; resul: salida entero) /* Error */
+
+    comienzo
+        resul = a + b;
+    fin;
+    
+    c = 5 < > 6; /* Errores varios */
+
+/* Añadir mas cosas */
+
+fin /* Error */
