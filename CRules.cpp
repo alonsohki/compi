@@ -620,6 +620,9 @@ DEFINE_RULE(sentencia,
         ls();
         MATCH ( RESERVED, "mientras" );
         RULE  ( expresion , e )();
+        {
+            TYPECAST( e.nombre, e.tipo, NEW_BASIC_TYPE(BOOLEXPR), e.gtrue, e.gfalse);
+        }
         MATCH ( RESERVED, "fin" );
         MATCH ( RESERVED, "hacer" );
         RULE  ( M , m2 )();
@@ -633,6 +636,10 @@ DEFINE_RULE(sentencia,
     }
     else if (IS_FIRST ( RESERVED, "salir"))
     {
+        {
+            if ( THIS.hinloop == false )
+                ERROR ( "`salir si` outside a loop" );
+        }
         MATCH ( RESERVED, "salir" );
         MATCH ( RESERVED, "si" );
         RULE  ( expresion , e )();

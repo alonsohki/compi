@@ -1,0 +1,16 @@
+programa ejem_bucles
+	variables i, a, b : entero;
+comienzo
+	get ( a );
+	get ( b );
+	hacer
+		salir si b == 0;
+		a = a + 1;
+		b = b - 1;
+		i = 0;
+		si i < a entonces hacer
+			i = i + 1;
+		mientras i < a fin hacer; fin si;
+	mientras b > 0 fin hacer;
+	put_line(a);
+fin ;

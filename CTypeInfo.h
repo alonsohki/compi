@@ -222,9 +222,12 @@ private:
     {
         Cleanup ();
 
-        assert ( str.length() > 0 );
-
-        if ( str.compare( 0, 8, "unknown#" ) == 0 )
+        if ( str.length() == 0 )
+        {
+            m_eType = UNKNOWN;
+            return 0;
+        }
+        else if ( str.compare( 0, 8, "unknown#" ) == 0 )
         {
             m_eType = UNKNOWN;
             return 8;

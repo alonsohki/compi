@@ -1,0 +1,7 @@
+programa salir_si_fuera_de_bucle
+comienzo
+	hacer
+		salir si false;
+	mientras false fin hacer;
+	salir si true;
+fin;
