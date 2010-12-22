@@ -1,13 +1,13 @@
 \chapter{Puntos opcionales}
 
+Hemos decidido llevar a cabo los 5 puntos optativos propuestos en la práctica. La descripción de cada uno de ellos, aparece debajo.
+
 \section{Expresiones booleanas}
 
 ● Ampliación del ETDS para recoger la traducción de expresiones booleanas. 
 ● Ampliación del traductor para implementar lo anterior.
 
-Añadimos las palabras reservadas \ter{ true } y ter{ false } como constantes booleanas, y añadimos un nuevo tipo de datos \ter{ booleano }. Además,
-definimos un nuevo tipo de ETDS para expresiones, que además de las ya vistas expresiones numnéricas, pueden contener expresiones booleanas;
-así como unos operadores para ellas \ter { or }, \ter{ and } y \ter{ not}.
+Añadimos las palabras reservadas \ter{ true } y ter{ false } como constantes booleanas.
 
 \small
 \begin{tabular}{r c p{.72\textwidth}}
@@ -15,10 +15,15 @@ tipo                                             	& $\longrightarrow$           
 \espacio
 \end{tabular}
 
+Añadimos también un nuevo tipo de datos, \ter{ booleano }.
+
 \begin{tabular}{r c p{.72\textwidth}}
 booleano                                           	& $\longrightarrow$                     & \ter{ true } | \ter{ false } \\
 \espacio
 \end{tabular}
+
+Además, definimos un nuevo tipo de ETDS para expresiones, que además de las ya vistas expresiones numéricas, pueden contener expresiones booleanas;
+así como unos operadores para ellas \ter { or }, \ter{ and } y \ter{ not}.
 
 \begin{tabular}{r c p{.72\textwidth}}
 expresiones                                           	& $\longrightarrow$                     & \ter{ = } expresion \\
@@ -124,7 +129,7 @@ En nuestro caso, hemos permitido llamadas a procedimientos y funciones.
 
 \end{tabular}
 
-Se añade también el cambio realizado en la regla inicial (para permitir hacer procedimientos o funciones):
+Se añade también el cambio realizado en la regla inicial (para permitir definir procedimientos o funciones):
 
 \small
 \begin{tabular}{r c p{.72\textwidth}}
