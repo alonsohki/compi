@@ -1,0 +1,69 @@
+\chapter{Puntos opcionales}
+
+\section{Expresiones booleanas}
+
+● Ampliación del ETDS para recoger la traducción de expresiones booleanas. 
+● Ampliación del traductor para implementar lo anterior. 
+
+\section{Uso correcto de identificadores}
+
+
+	Añadimos las instrucciones ST_PUSH y ST_POP que implementan el ámbito de la tabla de símbolos, durante la declaración del subprograma.
+	
+	\small
+	\begin{tabular}{r c p{.72\textwidth}}
+	decl\_de\_procedimiento 	& $\longrightarrow$ 	& \sem{ ST\_PUSH(); } \\
+							&					& cabecera\_procedimiento declaraciones \\
+							&					& \ter{comienzo} lista\_de\_sentencias\_prima \ter{fin} \\
+							&					& \sem{ ADD\_INST(``finproc''); } \\
+							&					& \ter{;} \\
+							&					& \sem{ ST\_POP(); } \\
+	\end{tabular}	
+							
+	
+	Estrategia de tipos :
+
+Cuando nos encontramos con 2 expresiones, intentamos convertilo al grupo más general :
+
+Ejemplo : 
+
+x = 5 * 1.3 + true;
+
+1º)  convierte 5 a 5.0 mediante 5 * 1.0
+
+
+
+
+Tratamiento estático y tratamiento dinámico :
+	
+● Definición de restricciones semánticas sobre uso correcto de identificadores. 
+● Ampliación del ETDS para comprobar la corrección semántica. 
+● Especificación funcional 
+   de la Tabla de Símbolos. 
+● Selección de una representación para la Tabla de Símbolos. 
+● Implementación y prueba de la parte de análisis semántico. 
+
+\section{llamadas a procedimientos}
+● Ampliación de la gramática y del ETDS para permitir llamadas a procedimientos 
+● Implementación y prueba de las llamadas a procedimientos.
+
+\section{Errores sintácticos}
+ 
+● Diseño del tratamiento de errores sintácticos 
+● Implementación del tratamiento de errores sintácticos 
+
+\section{Arrays multidimensionales}
+
+\subsection{Ampliación de la ETDS}
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+	tipo 			& $\longrightarrow$	& \ter{array} \ter{[} lista\_de\_enteros \ter{]} \ter{de} tipo \\
+					&					& \sem{ tipo.tipo := NEW\_ARRAY\_TYPE(lista\_de\_enteros, tipo); } \\
+	
+	\espacio
+	
+\end{tabular}
+					
+● Ampliación de la gramática y del ETDS para permitir el tipo array muldimensional. 
+● Implementación y prueba de los arrays. 
