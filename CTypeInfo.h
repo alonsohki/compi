@@ -291,11 +291,11 @@ private:
                 m_eType = PROCEDURE;
                 start = 10; // strlen("procedure$");
             }
-            assert ( str [ start - 1 ] == '$' );
+            assert ( str [ start - 1 ] == '$' || str [ start - 1 ] == '#' );
 
             // Extraemos los parámetros.
             m_params.numParams = 0;
-            if ( str [ start ] != '#' )
+            if ( str [ start - 1 ] != '#' )
             {
                 do
                 {

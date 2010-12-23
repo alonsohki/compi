@@ -7,5 +7,5 @@ programa ejemplo
     fin;
 
 comienzo
-    put_line ( a() [ 2 ] );
+    put_line ( suma() [ 2 ] );
 fin ;

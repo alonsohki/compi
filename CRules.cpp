@@ -1819,7 +1819,8 @@ DEFINE_RULE(lista_de_expr,
                     ( REAL ),
                     ( RESERVED, "true" ),
                     ( RESERVED, "false" ),
-                    ( SEPARATOR, "(" )
+                    ( SEPARATOR, "(" ),
+                    ( EMPTY )
                  ),
             NEXT(
                     ( SEPARATOR, "]" ),
@@ -1827,12 +1828,22 @@ DEFINE_RULE(lista_de_expr,
                 )
 )
 {
-    RULE  ( expresion , e )();
-    RULE  ( resto_lista_expr , resto )();
+    if ( IS_RULE_FIRST(expresion) )
     {
-        THIS.exprs = JOIN(INIT_LIST(e.nombre), resto.exprs);
-        THIS.tipos = JOIN(INIT_LIST(e.tipo), resto.tipos);
-        THIS.literales = JOIN(INIT_LIST(e.literal), resto.literales);
+        RULE  ( expresion , e )();
+        RULE  ( resto_lista_expr , resto )();
+        {
+            THIS.exprs = JOIN(INIT_LIST(e.nombre), resto.exprs);
+            THIS.tipos = JOIN(INIT_LIST(e.tipo), resto.tipos);
+            THIS.literales = JOIN(INIT_LIST(e.literal), resto.literales);
+        }
+    }
+    else
+    {
+        // Vacío
+        THIS.exprs = EMPTY_LIST();
+        THIS.tipos = EMPTY_LIST();
+        THIS.literales = EMPTY_LIST();
     }
 }
 
