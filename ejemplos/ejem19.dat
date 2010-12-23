@@ -1,9 +1,8 @@
 /* ejem9.dat contiene expresiones aritmeticas. Servira para probar el uso y la deteccion de errores en la traduccion de expresiones aritmeticas */
 
 programa aritmeticas
-
+	variables a, b, c, d: real;
 comienzo
-    variables a, b, c, d: real;
     get(a);
     get(b);
     get(c);

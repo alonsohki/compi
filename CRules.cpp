@@ -1531,15 +1531,8 @@ DEFINE_RULE(negacion,
             }
             else
             {
-                VAR boolNombre = TYPECAST(f.nombre, f.tipo, NEW_BASIC_TYPE(BOOLEAN), f.gtrue, f.gfalse);
-                THIS.nombre = NEW_IDENT();
-                THIS.tipo = NEW_BASIC_TYPE(BOOLEAN);
-                VAR ref = GET_REF();
-                ADD_INST ( "if " || boolNombre || " goto " || ref+2 );
-                ADD_INST ( "goto " || ref+4 );
-                ADD_INST ( THIS.nombre || " := false" );
-                ADD_INST ( "goto " || ref+5 );
-                ADD_INST ( THIS.nombre || " := true" );
+                TYPECAST(f.nombre, f.tipo, NEW_BASIC_TYPE(BOOLEXPR), THIS.gfalse, THIS.gtrue);
+                THIS.tipo = NEW_BASIC_TYPE(BOOLEXPR);
             }
             THIS.literal = false;
         }

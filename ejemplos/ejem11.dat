@@ -24,7 +24,7 @@ comienzo
     c = c*(c*d) + e;
     put_line(c*c);
     f = c > a * b + 9;
-    si f == true entonces
+    si f entonces
         put_line(c);
     fin si;
 fin;
