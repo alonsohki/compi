@@ -1,123 +1,48 @@
-(Tipo: IDENTIFIER, 8:1) programa
-(Tipo: IDENTIFIER, 8:10) ejemplo
-(Tipo: IDENTIFIER, 9:2) variables
-(Tipo: IDENTIFIER, 9:12) a
-(Tipo: SEPARATOR, 9:13) ,
-(Tipo: IDENTIFIER, 9:14) b
-(Tipo: SEPARATOR, 9:15) ,
-(Tipo: IDENTIFIER, 9:16) c
-(Tipo: SEPARATOR, 9:18) :
-(Tipo: IDENTIFIER, 9:20) entero
-(Tipo: SEPARATOR, 9:26) ;
-(Tipo: IDENTIFIER, 10:2) variables
-(Tipo: IDENTIFIER, 10:12) d
-(Tipo: SEPARATOR, 10:13) ,
-(Tipo: IDENTIFIER, 10:14) e
-(Tipo: SEPARATOR, 10:16) :
-(Tipo: IDENTIFIER, 10:18) real
-(Tipo: SEPARATOR, 10:22) ;
-(Tipo: IDENTIFIER, 13:2) procedimiento
-(Tipo: IDENTIFIER, 13:16) sumar
-(Tipo: SEPARATOR, 13:22) (
-(Tipo: IDENTIFIER, 13:23) x
-(Tipo: SEPARATOR, 13:24) ,
-(Tipo: IDENTIFIER, 13:25) y
-(Tipo: SEPARATOR, 13:26) :
-(Tipo: IDENTIFIER, 13:28) entrada
-(Tipo: IDENTIFIER, 13:36) entero
-(Tipo: SEPARATOR, 13:42) ;
-(Tipo: IDENTIFIER, 13:44) resul
-(Tipo: SEPARATOR, 13:49) :
-(Tipo: IDENTIFIER, 13:51) entrada
-(Tipo: IDENTIFIER, 13:59) salida
-(Tipo: IDENTIFIER, 13:66) entero
-(Tipo: SEPARATOR, 13:72) )
-(Tipo: IDENTIFIER, 14:2) variables
-(Tipo: IDENTIFIER, 14:12) aux
-(Tipo: SEPARATOR, 14:15) :
-(Tipo: IDENTIFIER, 14:16) entero
-(Tipo: SEPARATOR, 14:22) ;
-(Tipo: IDENTIFIER, 15:2) comienzo
-(Tipo: IDENTIFIER, 16:3) hacer
-(Tipo: IDENTIFIER, 17:4) aux
-(Tipo: OPERATOR, 17:7) =
-(Tipo: IDENTIFIER, 17:8) a
-(Tipo: SEPARATOR, 17:9) ;
-(Tipo: IDENTIFIER, 17:11) c
-(Tipo: OPERATOR, 17:12) =
-(Tipo: IDENTIFIER, 17:13) b
-(Tipo: SEPARATOR, 17:14) ;
-(Tipo: IDENTIFIER, 18:4) aux
-(Tipo: OPERATOR, 18:8) =
-(Tipo: IDENTIFIER, 18:10) aux
-(Tipo: OPERATOR, 18:14) -
-(Tipo: INTEGER, 18:16) 1
-(Tipo: SEPARATOR, 18:18) ;
-(Tipo: IDENTIFIER, 19:4) c
-(Tipo: OPERATOR, 19:6) =
-(Tipo: IDENTIFIER, 19:8) c
-(Tipo: OPERATOR, 19:9) +
-(Tipo: INTEGER, 19:10) 1
-(Tipo: SEPARATOR, 19:11) ;
-(Tipo: IDENTIFIER, 20:3) mientras
-(Tipo: IDENTIFIER, 20:12) aux
-(Tipo: OPERATOR, 20:16) >
-(Tipo: INTEGER, 20:18) 0
-(Tipo: IDENTIFIER, 20:20) fin
-(Tipo: IDENTIFIER, 20:24) hacer
-(Tipo: SEPARATOR, 20:30) ;
-(Tipo: IDENTIFIER, 21:2) fin
-(Tipo: SEPARATOR, 21:6) ;
-(Tipo: IDENTIFIER, 23:1) comienzo
-(Tipo: IDENTIFIER, 24:2) get
-(Tipo: SEPARATOR, 24:5) (
-(Tipo: IDENTIFIER, 24:6) a
-(Tipo: SEPARATOR, 24:7) )
-(Tipo: SEPARATOR, 24:8) ;
-(Tipo: IDENTIFIER, 24:10) get
-(Tipo: SEPARATOR, 24:13) (
-(Tipo: IDENTIFIER, 24:14) b
-(Tipo: SEPARATOR, 24:15) )
-(Tipo: SEPARATOR, 24:16) ;
-(Tipo: IDENTIFIER, 25:2) d
-(Tipo: OPERATOR, 25:3) =
-(Tipo: REAL, 25:5) 1.0e+1
-(Tipo: OPERATOR, 25:11) /
-(Tipo: IDENTIFIER, 25:12) b
-(Tipo: SEPARATOR, 25:13) ;
-(Tipo: IDENTIFIER, 26:2) e
-(Tipo: OPERATOR, 26:3) =
-(Tipo: INTEGER, 26:5) 1
-(Tipo: OPERATOR, 26:6) /
-(Tipo: IDENTIFIER, 26:7) a
-(Tipo: SEPARATOR, 26:8) ;
-(Tipo: IDENTIFIER, 27:2) sumar
-(Tipo: SEPARATOR, 27:7) (
-(Tipo: IDENTIFIER, 27:8) a
-(Tipo: SEPARATOR, 27:9) ,
-(Tipo: IDENTIFIER, 27:10) b
-(Tipo: SEPARATOR, 27:11) ,
-(Tipo: IDENTIFIER, 27:12) c
-(Tipo: SEPARATOR, 27:13) )
-(Tipo: SEPARATOR, 27:14) ;
-(Tipo: IDENTIFIER, 28:2) c
-(Tipo: OPERATOR, 28:3) =
-(Tipo: IDENTIFIER, 28:5) c
-(Tipo: OPERATOR, 28:6) *
-(Tipo: SEPARATOR, 28:7) (
-(Tipo: IDENTIFIER, 28:8) c
-(Tipo: OPERATOR, 28:9) *
-(Tipo: IDENTIFIER, 28:10) d
-(Tipo: SEPARATOR, 28:11) )
-(Tipo: OPERATOR, 28:12) +
-(Tipo: IDENTIFIER, 28:13) e
-(Tipo: SEPARATOR, 28:14) ;
-(Tipo: IDENTIFIER, 29:2) put_line
-(Tipo: SEPARATOR, 29:10) (
-(Tipo: IDENTIFIER, 29:11) c
-(Tipo: OPERATOR, 29:12) *
-(Tipo: IDENTIFIER, 29:13) c
-(Tipo: SEPARATOR, 29:14) )
-(Tipo: SEPARATOR, 29:15) ;
-(Tipo: IDENTIFIER, 30:1) fin
-(Tipo: SEPARATOR, 30:5) ;
+0: prog ejemplo;
+1: int a;
+2: int b;
+3: int c;
+4: real d;
+5: real e;
+6: proc sumar;
+7: val_int x;
+8: val_int y;
+9: ref_int resul;
+10: int aux;
+11: aux := a;
+12: c := b;
+13: _t0 := aux - 1;
+14: aux := _t0;
+15: _t1 := c + 1;
+16: c := _t1;
+17: if aux > 0 goto 11;
+18: goto 19;
+19: finproc;
+20: read a;
+21: read b;
+22: _t2 := b;
+23: int2real _t2;
+24: _t3 := 1.0e+1 / _t2;
+25: d := _t3;
+26: _t4 := 1 / a;
+27: _t5 := _t4;
+28: int2real _t5;
+29: e := _t5;
+30: param_copy a;
+31: param_copy b;
+32: param_ref c;
+33: call sumar;
+34: _t6 := c;
+35: int2real _t6;
+36: _t7 := _t6 * d;
+37: _t8 := c;
+38: int2real _t8;
+39: _t9 := _t8 * _t7;
+40: _t10 := _t9 + e;
+41: _t11 := _t10;
+42: real2int _t11;
+43: c := _t11;
+44: _t12 := c * c;
+45: write _t12;
+46: writeln;
+47: halt;

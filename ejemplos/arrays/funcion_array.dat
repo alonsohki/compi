@@ -1,7 +1,7 @@
 programa ejemplo
 
-    funcion suma retorna array [ 2 ] de array
-    variables a : array [ 2 ] de array ;
+    funcion suma retorna array [ 2 ] de entero
+    variables a : array [ 2 ] de entero ;
     comienzo
         retornar a;
     fin;

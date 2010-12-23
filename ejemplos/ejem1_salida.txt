@@ -1,5 +1,0 @@
-(Tipo: IDENTIFIER, 2:1) programa
-(Tipo: IDENTIFIER, 2:10) ejem1
-(Tipo: UNKNOWN, 3:2) /* Comentario sin cerrar
-comienzo
-fin; [Error: Non closed comment]

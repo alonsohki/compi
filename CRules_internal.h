@@ -604,7 +604,6 @@ struct __ETDS__Foreach_Iterator
 #define IS_BOOLEAN(x)   ( CTypeInfo((CString)x).GetType() == CTypeInfo::BOOLEAN )
 #define IS_BOOLEXPR(x)  ( CTypeInfo((CString)x).GetType() == CTypeInfo::BOOLEXPR )
 #define IS_ARRAY(x)     ( CTypeInfo((CString)x).GetType() == CTypeInfo::ARRAY )
-#define IS_VARIABLE(x)  ( IS_INTEGER(x) || IS_REAL(x) || IS_BOOLEAN(x) || IS_ARRAY(x) )
 #define IS_PROCEDURE(x) ( CTypeInfo((CString)x).GetType() == CTypeInfo::PROCEDURE )
 #define IS_FUNCTION(x)  ( CTypeInfo((CString)x).GetType() == CTypeInfo::FUNCTION )
 #define IS_NUMERIC(x)   ( IS_REAL(x) || IS_INTEGER(x) )
