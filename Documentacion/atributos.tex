@@ -12,37 +12,67 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 
 \begin{tabularx}{\textwidth}{| r | c | c | X |} \hline
 
-	\ter{No terminal}	& \ter{Tipo}		& \ter{Nombre}	& \ter{Descripcion} \\ \hline \hline
+	\ter{No terminal}	        & \ter{Tipo}		& \ter{Nombre}	& \ter{Descripcion} \\ \hline \hline
 	
 	%-----
 	
 	\ter{Todos los tipos de token} & \ter{L} 	& value			& El valor literal del token encontrado. \\ \hline
 		
-	programa 			&&& \\ \hline
-	
-	declaraciones 		&&& \\ \hline
-	
-	tipo 				& \ter{S} 		& tipo 			& El nombre interno del tipo especificado en la sintaxis. \\ \hline
-	
-	lista\_de\_ident 	& \ter{S} 		& ids			& Lista que contiene los identificadores encontrados. \\ \hline
-	
-	resto\_lista\_id 	& \ter{S} 		& ids			& Lista que contiene los identificadores encontrados. \\ \hline
+	programa 			        &&& \\ \hline
 
-	decl\_de\_subprogs 	&&& \\ \hline
-	
-	decl\_de\_subprograma &&& \\ \hline
+    lista\_de\_ident 	        & \ter{S} 		& ids			& Lista que contiene los identificadores encontrados. \\ \hline
 
-	cabecera 			&&& \\ \hline
+    resto\_lista\_ident	        & \ter{S} 		& ids			& Lista que contiene los identificadores encontrados. \\ \hline
 	
-	argumentos 			&&& \\ \hline
+	declaraciones 		        &&& \\ \hline
 	
-	lista\_de\_param 	&&& \\ \hline
-	
-	clase\_par 			& \ter{S} 		& clase			& La clase de parámetro que se ha derivado de la sintaxis (referencia o valor). \\ \hline
+	tipo 				        & \ter{S} 		& tipo 			& El nombre interno del tipo especificado en la sintaxis. \\ \hline
+    
+    lista\_de\_enteros          & \ter{S}       & ints          & \\ \hline
 
-	clase\_par’			& \ter{S} 		& clase			& La clase de parámetro que se ha derivado de la sintaxis (referencia o valor). \\ \hline
+    resto\_lista\_enteros       & \ter{S}       & ints          & \\ \hline
+
+	decl\_de\_subprogs 	        &&& \\ \hline
 	
-	lista\_de\_sentencias’ &&& \\ \hline
+	\multirow{3}{*}{decl\_de\_procedimiento}
+                                &               & args              & \\ \cline{2-4}
+                                &               & classes              & \\ \cline{2-4}     
+                                &               & nombre             & \\ \hline
+
+    \multirow{4}{*}{decl\_de\_function}
+                                &               & args              & \\ \cline{2-4}
+                                &               & classes              & \\ \cline{2-4}  
+                                &               & nombre              & \\ \cline{2-4}         
+                                &               & tipoRetorno              & \\ \hline
+
+	\multirow{3}{*}{cabecera\_procedimiento}
+                                &               & args              & \\ \cline{2-4}
+                                &               & classes              & \\ \cline{2-4}     
+                                &               & nombre             & \\ \hline
+
+	\multirow{4}{*}{cabecera\_funcion}
+                                &               & args              & \\ \cline{2-4}
+                                &               & classes              & \\ \cline{2-4}  
+                                &               & nombre              & \\ \cline{2-4}         
+                                &               & tipoRetorno              & \\ \hline
+	
+	\multirow{2}{*}{argumentos}
+                                &               & args              & \\ \cline{2-4}
+                                &               & classes              & \\ \hline
+	
+	\multirow{2}{*}{lista\_de\_param}
+                                &               & args              & \\ \cline{2-4}
+                                &               & classes              & \\ \hline
+
+	\multirow{2}{*}{resto\_lis\_de\_param}
+                                &               & args              & \\ \cline{2-4}
+                                &               & classes              & \\ \hline
+	
+	clase\_param			    & \ter{S} 		& clase			& La clase de parámetro que se ha derivado de la sintaxis (referencia o valor). \\ \hline
+
+	clase\_param’			    & \ter{S} 		& clase			& La clase de parámetro que se ha derivado de la sintaxis (referencia o valor). \\ \hline
+	
+	lista\_de\_sentencias’      & \ter{H}       & hinloop       & \\ \hline
 	
 \end{tabularx}
 
@@ -52,54 +82,234 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 
 \begin{tabularx}{\textwidth}{| r | c | c | X |} \hline
 
-	\ter{No terminal}	& \ter{Tipo}		& \ter{Nombre}	& \ter{Descripcion} \\ \hline \hline	
+	\ter{No terminal}	        & \ter{Tipo}		& \ter{Nombre}	& \ter{Descripcion} \\ \hline \hline	
 	
 	%-----
 
 	\multirow{2}{*}{lista\_de\_sentencias}  
-						& \ter{H} 		& hinloop 		& Marcador que indica si estamos dentro de un bucle. \\ \cline{2-4} 
-						& \ter{S} 		& salir\_si		& Lista de referencias a las instrucciones "salir\_si" contenidas dentro del ámbito de lista de sentencias. \\ \hline
+						        & \ter{H} 		& hinloop 		& Marcador que indica si estamos dentro de un bucle. \\ \cline{2-4} 
+						        & \ter{S} 		& salir\_si		& Lista de referencias a las instrucciones "salir\_si" contenidas dentro del ámbito de lista de sentencias. \\ \hline
 						
-	sentencia 			& \ter{S} 		& salir\_si		& Lista de referencias a las instrucciones "salir\_si" contenidas dentro de la sentencia. \\ \hline
+	sentencia 			        & \ter{S} 		& salir\_si		& Lista de referencias a las instrucciones "salir\_si" contenidas dentro de la sentencia. \\ \hline
 
-	variable				& \ter{S} 		& nombre			& El nombre del identificador que define esta variable. \\ \hline
+    \multirow{2}{*}{id\_o\_array}                
+                                & \ter{S}       & nombre        & \cline{2-4}
+                                & \ter{H}       & hident        & \\ \hline
 
-	\multirow{3}{*}{expresión} 
-						& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
+    asignacion\_o\_llamada      & \ter{H}       & hident        & \\ \hline
+
+    \multirow{2}{*}{acceso\_a\_array'}           
+                                & \ter{S}       & exprs         & \\ \cline{2-4}
+                                & \ter{S}       & tipos         & \\ \hline
+
+    \mutirow{4}{*}{acceso\_a\_array}
+                                & \ter{S}       & offset        & \\ \cline{2-4}
+                                & \ter{H}       & htipo         & \\ \cline{2-4}
+                                & \ter{H}       & hident        & \\ \cline{2-4}
+                                & \ter{S}       & tipo          & \\ \hline
+
+    \multirow{3}{*}{parametros\_llamadas}        
+                                & \ter{S}       & tipoRetorno   & \\ \cline{2-4}
+                                & \ter{H}       & hident        & \\ \cline{2-4}
+                                & \ter{H}       & hRequireFunc  & \\ \hline
+
+	variable				    & \ter{S} 		& nombre			& El nombre del identificador que define esta variable. \\ \hline
+
+	\multirow{5}{*}{expresion} 
+						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
 														  valor de evaluar la expresión.  \\ \cline{2-4} 
-						& \ter{S} 		& true			& Lista de referencias a saltos que han de completarse para definir a 
+						        & \ter{S} 		& gtrue			& Lista de referencias a saltos que han de completarse para definir a 
 														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
-						& \ter{S} 		& false			& Lista de referencias a saltos que han de completarse para definir a 
-														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \hline
+						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{S}       & tipo              & \\ \cline{2-4}
+                                & \ter{S}       & literal           & \\ \hline
+    \multirow{5}{*}{disyuncion} 
+						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{S} 		& gtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{S}       & tipo              & \\ \cline{2-4}
+                                & \ter{S}       & literal           & \\ \hline
 
-	opl2					& \ter{S}		& nombre			& Contiene el nombre del \emph{operador aritmético} (+ o -) \\ \hline
+    \multirow{5}{*}{conjuncion} 
+						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{S} 		& gtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{S}       & tipo              & \\ \cline{2-4}
+                                & \ter{S}       & literal           & \\ \hline
+    
+    \multirow{5}{*}{relacional} 
+						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{S} 		& gtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{S}       & tipo              & \\ \cline{2-4}
+                                & \ter{S}       & literal           & \\ \hline
+    \multirow{5}{*}{aritmetica} 
+						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{S} 		& gtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{S}       & tipo              & \\ \cline{2-4}
+                                & \ter{S}       & literal           & \\ \hline
 
-	opl1					& \ter{S}		& nombre			& Contiene el nombre del \emph{operador aritmético} (* o /) \\ \hline
+    \multirow{5}{*}{termino} 
+						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{S} 		& gtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{S}       & tipo              & \\ \cline{2-4}
+                                & \ter{S}       & literal           & \\ \hline
 
-	oprel 				& \ter{S}		& nombre			& Contiene el nombre del \emph{operador relacional} (+ o -) \\ \hline
-	
-	expresión\_simple	& \ter{S} 		& nombre			& El nombre de la variable del programa o temporal que contiene el 
-														  valor de evaluar la expresión. \\ \hline
-														  
-	expresión\_simple’	& \ter{H} 		& hnombre		& Atributo utilizado para que los operadores binarios conozcan el 
-														  elemento de su izquierda, o en caso de ser unario o un átomo se propague de 
-														  nuevo hacia arriba el nombre original. \\ \cline{2-4} 
-						
-						& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el 
-														  valor de evaluar la expresión. \\ \hline
-														  
-	término				& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el 
-														  valor de evaluar la expresión. \\ \hline
-														  
-	término’				& \ter{H} 		& hnombre		& Atributo utilizado para que los operadores binarios conozcan el 
-														  elemento de su izquierda, o en caso de ser unario o un átomo se propague de 
-														  nuevo hacia arriba el nombre original. \\ \cline{2-4} 
-														  
-						& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el \\ \hline
-	
-	factor				& \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el 
-														  valor de evaluar la expresión. \\ \hline
+    \multirow{10}{*}{disyuncion'} 
+						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{S} 		& gtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{S}       & tipo              & \\ \cline{2-4}
+                                & \ter{S}       & literal           & \\ \cline{2-4}
+						        & \ter{H} 		& hnombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{H} 		& hgtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{H} 		& hgfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{H}       & htipo              & \\ \cline{2-4}
+                                & \ter{H}       & hliteral           & \\ \hline
 
-	M					& \ter{S} 		& ref			& Referencia a la instrucción que se introducirá a continuación. \\ \hline
+    \multirow{10}{*}{conjuncion'} 
+						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{S} 		& gtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{S}       & tipo              & \\ \cline{2-4}
+                                & \ter{S}       & literal           & \\ \cline{2-4}
+						        & \ter{H} 		& hnombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{H} 		& hgtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{H} 		& hgfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{H}       & htipo              & \\ \cline{2-4}
+                                & \ter{H}       & hliteral           & \\ \hline
+    
+    \multirow{10}{*}{relacional'} 
+						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{S} 		& gtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{S}       & tipo              & \\ \cline{2-4}
+                                & \ter{S}       & literal           & \\ \cline{2-4}
+						        & \ter{H} 		& hnombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{H} 		& hgtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{H} 		& hgfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{H}       & htipo              & \\ \cline{2-4}
+                                & \ter{H}       & hliteral           & \\ \hline
+
+    \multirow{10}{*}{aritmetica'} 
+						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{S} 		& gtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{S}       & tipo              & \\ \cline{2-4}
+                                & \ter{S}       & literal           & \\ \cline{2-4}
+						        & \ter{H} 		& hnombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{H} 		& hgtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{H} 		& hgfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{H}       & htipo              & \\ \cline{2-4}
+                                & \ter{H}       & hliteral           & \\ \hline
+    
+    \multirow{10}{*}{termino'} 
+						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{S} 		& gtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{S}       & tipo              & \\ \cline{2-4}
+                                & \ter{S}       & literal           & \\ \cline{2-4}
+						        & \ter{H} 		& hnombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{H} 		& hgtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{H} 		& hgfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{H}       & htipo              & \\ \cline{2-4}
+                                & \ter{H}       & hliteral           & \\ \hline
+
+    \multirow{5}{*}{negacion} 
+						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{S} 		& gtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{S}       & tipo              & \\ \cline{2-4}
+                                & \ter{S}       & literal           & \\ \hline
+
+    \multirow{5}{*}{factor} 
+						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{S} 		& gtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{S}       & tipo              & \\ \cline{2-4}
+                                & \ter{S}       & literal           & \\ \hline
+
+    \multirow{5}{*}{factor'} 
+						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
+														  valor de evaluar la expresión.  \\ \cline{2-4} 
+						        & \ter{S} 		& gtrue			& Lista de referencias a saltos que han de completarse para definir a 
+														  dónde saltará el programa si la \emph{evaluación de la expresión es cierta}. \\ \cline{2-4} 
+						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
+														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
+                                & \ter{S}       & tipo              & \\ \cline{2-4}
+                                & \ter{S}       & literal           & \\ \hline
+
+    array\_o\_llamada           &&& \\ \hline
+
+    acceso\_a\_array\_opcional  &&& \\ \hline
+
+    lista\_de\_expr             &&& \\ \hline
+
+    resto\_lista\_expr          &&& \\ \hline
+
+    opl1					& \ter{S}		& op    			& Contiene el nombre del \emph{operador aritmético} (* o /) \\ \hline
+
+	opl2					& \ter{S}		& op    			& Contiene el nombre del \emph{operador aritmético} (+ o -) \\ \hline
+    
+    booleano                & \ter{L}       & value             & Contiene el valor de la \emph{constante booleana} (true o false) \\ \hline
+
+
+	M					    & \ter{S} 		& ref			& Referencia a la instrucción que se introducirá a continuación. \\ \hline
+
+	oprel 				    & \ter{S}		& op			& Contiene el nombre del \emph{operador relacional} ($<$, $>$, $\leq$, $\geq$, $==$ o $/=$) \\ \hline
 	
 \end{tabularx}
