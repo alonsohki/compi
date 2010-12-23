@@ -7,6 +7,8 @@ Hemos decidido llevar a cabo los 5 puntos optativos propuestos en la práctica. 
 ● Ampliación del ETDS para recoger la traducción de expresiones booleanas. 
 ● Ampliación del traductor para implementar lo anterior.
 
+\subsection{Ampliación de la ETDS}
+
 Añadimos las palabras reservadas \ter{ true } y ter{ false } como constantes booleanas.
 
 \small
@@ -18,7 +20,10 @@ tipo                                             	& $\longrightarrow$           
 Añadimos también un nuevo tipo de datos, \ter{ booleano }.
 
 \begin{tabular}{r c p{.72\textwidth}}
-booleano                                           	& $\longrightarrow$                     & \ter{ true } | \ter{ false } \\
+booleano                                           	& $\longrightarrow$                     & \ter{ true } \\
+                                                        &                                               & \sem{ booleano.value = true; } \\
+                                                        &                                       & | \ter{ false } \\
+                                                        &                                               & \sem{ booleano.value = false; } \\
 \espacio
 \end{tabular}
 
@@ -27,41 +32,339 @@ así como unos operadores para ellas \ter { or }, \ter{ and } y \ter{ not}.
 
 \begin{tabular}{r c p{.72\textwidth}}
 expresiones                                           	& $\longrightarrow$                     & \ter{ = } expresion \\
+
 expresion                                           	& $\longrightarrow$                     & disyuncion \\
+                                                                                                    & \sem{
+                                                                                                        expresion.nombre = disyuncion.nombre;
+                                                                                                        expresion.tipo = disyuncion.tipo;
+                                                                                                        expresion.gfalse = disyuncion.gfalse;
+                                                                                                        expresion.gtrue = disyuncion.gtrue;
+                                                                                                        expresion.literal = disyuncion.literal; } \\
+
 disyuncion                                          	& $\longrightarrow$                     & conjuncion disyuncion' \\
+                                                        &                                           &  \sem{
+                                                                                                        disyuncion'.hnombre = conjuncion.nombre;
+                                                                                                        disyuncion'.htipo = conjuncion.tipo;
+                                                                                                        disyuncion'.hgfalse = conjuncion.gfalse;
+                                                                                                        disyuncion'.hgtrue = conjuncion.gtrue;
+                                                                                                        disyuncion'.hliteral = conjuncion.literal; } \\
+                                                        &                                           & \sem{
+                                                                                                        disyuncion.nombre = disyuncion.nombre;
+                                                                                                        disyuncion.tipo = disyuncion.tipo;
+                                                                                                        disyuncion.gfalse = disyuncion.gfalse;
+                                                                                                        disyunciongtrue = disyuncion.gtrue;
+                                                                                                        disyuncion.literal = disyuncion.literal; } \\
+
 disyuncion'                                          	& $\longrightarrow$                     & \ter{ or } conjuncion disyuncion' \\
+                                                                                                        disyuncion'.hgtrue = JOIN(disyuncion'.hgtrue, conjuncion.gtrue);
+                                                                                                        disyuncion'.hgfalse = conjuncion.gfalse;
+                                                                                                        disyuncion'.hnombre = conjuncion.nombre;
+                                                                                                        disyuncion'.htipo = NEW\_BASIC\_TYPE(BOOLEXPR); } \\
+                                                        &                                           & \sem{
+                                                                                                        disyuncion'.nombre = disyuncion.nombre;
+                                                                                                        disyuncion'.tipo = disyuncion.tipo;
+                                                                                                        disyuncion'.gfalse = disyuncion.gfalse;
+                                                                                                        disyuncion'.gtrue = disyuncion.gtrue;
+                                                                                                        disyuncion'.literal = false; } \\
                                                         &                                       & | \xi
+                                                        &                                           & \sem{
+                                                                                                        disyuncion'.nombre = disyuncion'.hnombre;
+                                                                                                        disyuncion'.tipo = disyuncion'.htipo;
+                                                                                                        disyuncion'.gfalse = disyuncion'.hgfalse;
+                                                                                                        disyuncion'.gtrue = disyuncion'.hgtrue;
+                                                                                                        disyuncion'.literal = disyuncion'.hliteral; } \\
+
 conjuncion                                          	& $\longrightarrow$                     & relacional conjuncion' \\
+                                                        &                                           & \sem{
+                                                                                                        conjuncion'.hnombre = relacional.nombre;
+                                                                                                        conjuncion'.htipo = relacional.tipo;
+                                                                                                        conjuncion'.hgfalse = relacional.gfalse;
+                                                                                                        conjuncion'.hgtrue = relacional.gtrue;
+                                                                                                        conjuncion'.hliteral = relacional.literal; } \\
+
 conjuncion'                                          	& $\longrightarrow$                     & \ter{ and } relacional conjuncion' \\
+                                                        &                                           & \sem{
+                                                                                                        conjuncion'.hgfalse = JOIN( conjuncion'.hgfalse, relacional.gfalse );
+                                                                                                        conjuncion'.hgtrue = relacional.gtrue;
+                                                                                                        conjuncion'.hnombre = relacional.nombre;
+                                                                                                        conjuncion'.htipo = NEW_BASIC_TYPE(BOOLEXPR); } \\
+                                                        &                                           & \sem{
+                                                                                                        conjuncion'.nombre = conjuncion'.nombre;
+                                                                                                        conjuncion'.tipo = conjuncion'.tipo;
+                                                                                                        conjuncion'.gfalse = conjuncion'.gfalse;
+                                                                                                        conjuncion'.gtrue = conjuncion'.gtrue;
+                                                                                                        conjuncion'.literal = false; } \\
                                                         &                                       & | \xi
+                                                        &                                           & \sem{
+                                                                                                        conjuncion'.nombre = conjuncion'.hnombre;
+                                                                                                        conjuncion'.tipo = conjuncion'.htipo;
+                                                                                                        conjuncion'.gfalse = conjuncion'.hgfalse;
+                                                                                                        conjuncion'.gtrue = conjuncion'.hgtrue;
+                                                                                                        conjuncion'.literal = conjuncion'.hliteral; } \\
+
 relacional                                          	& $\longrightarrow$                     & aritmetica relacional' \\
+                                                        &                                           & \sem{
+                                                                                                        relacional'.hnombre = aritmetica.nombre;
+                                                                                                        relacional'.htipo = aritmetica.tipo;
+                                                                                                        relacional'.hgfalse = aritmetica.gfalse;
+                                                                                                        relacional'.hgtrue = aritmetica.gtrue;
+                                                                                                        relacional'.hliteral = aritmetica.literal; } \\
+                                                        &                                           & \sem{
+                                                                                                        relacional.nombre = relacional'.nombre;
+                                                                                                        relacional.tipo = relacional'.tipo;
+                                                                                                        relacional.gfalse = relacional'.gfalse;
+                                                                                                        relacional.gtrue = relacional'.gtrue;
+                                                                                                        relacional.literal = relacional'.literal; } \\
+
 relacional'                                          	& $\longrightarrow$                     & \ter{ oprel } aritmetica relacional' \\
+                                                                                                    & \sem{
+                                                                                                        if ( ! IS_NUMERIC(relacional'.htipo) ) \{
+                                                                                                            ERROR("Relational operand '" || relacional'.hnombre || "' is not scalar");
+                                                                                                        \}
+                                                                                                        else if ( ! IS_NUMERIC(aritmetica.tipo) )
+                                                                                                        \{
+                                                                                                            ERROR("Relational operand '" || aritmetica.nombre || "' is not scalar");
+                                                                                                        \}
+                                                                                                        else
+                                                                                                        \{
+
+                                                                                                            if ( IS_REAL(relacional'.htipo) || IS_REAL(aritmetica.tipo) )
+                                                                                                            \{
+                                                                                                                TYPECAST( relacional'.hnombre, relacional'.htipo, NEW_BASIC_TYPE(REAL) );
+                                                                                                                TYPECAST( aritmetica.nombre, aritmetica.tipo, NEW_BASIC_TYPE(REAL) );
+                                                                                                            \}
+
+                                                                                                            relacional'.hgtrue = INIT_LIST(GET_REF());
+                                                                                                            ADD_INST( "if " || relacional'.hnombre || " " || oprel.op || " " || aritmetica.nombre || " goto ");
+                                                                                                            r.hgfalse = INIT_LIST(GET_REF());
+                                                                                                            ADD_INST( "goto ");
+
+                                                                                                            relacional'.htipo = NEW_BASIC_TYPE(BOOLEXPR);
+
+                                                                                                        \} } \\
+                                                        &                                           & \sem{
+                                                                                                        relacional'.nombre = relacional'.hnombre;
+                                                                                                        relacional'.tipo = relacional'.htipo;
+                                                                                                        relacional'.gfalse = relacional'.hgfalse;
+                                                                                                        relacional'.gtrue = relacional'.hgtrue;
+                                                                                                        relacional'.literal = false; } \\
                                                         &                                       & | \xi
+                                                        &                                           & \sem{
+                                                                                                        relacional'.nombre = relacional'.hnombre;
+                                                                                                        relacional'.tipo = relacional'.htipo;
+                                                                                                        relacional'.gfalse = relacional'.hgfalse;
+                                                                                                        relacional'.gtrue = relacional'.hgtrue;
+                                                                                                        relacional'.literal = relacional'.hliteral; } \\
+
 aritmetica                                         	& $\longrightarrow$                     & termino aritmetica' \\
+                                                        &                                           & \sem {
+                                                                                                        aritmetica'.hnombre = termino.nombre;
+                                                                                                        aritmetica'.htipo = termino.tipo;
+                                                                                                        aritmetica'.hgfalse = termino.gfalse;
+                                                                                                        aritmetica'.hgtrue = termino.gtrue;
+                                                                                                        aritmetica'.hliteral = termino.literal; } \\
+                                                        &                                           & \sem{
+                                                                                                        aritmetica.nombre = aritmetica'.nombre;
+                                                                                                        aritmetica.tipo = aritmetica'.tipo;
+                                                                                                        aritmetica.gfalse = aritmetica'.gfalse;
+                                                                                                        aritmetica.gtrue = aritmetica'.gtrue;
+                                                                                                        aritmetica.literal = aritmetica'.literal; }
+
 aritmetica'                                         	& $\longrightarrow$                     & \ter{ opl2 } termino aritmetica' \\
+                                                        &                                           & \sem{
+                                                                                                        if ( IS_NUMERIC(aritmetica'.htipo) && IS_NUMERIC(termino.tipo) ) \{
+
+                                                                                                            if ( IS_REAL(aritmetica'.htipo) || IS_REAL(termino.tipo) )
+                                                                                                                \{
+                                                                                                                    TYPECAST( aritmetica'.hnombre, aritmetica'.htipo, NEW_BASIC_TYPE(REAL) );
+                                                                                                                    TYPECAST( termino.nombre, termino.tipo, NEW_BASIC_TYPE(REAL) );
+                                                                                                                    aritmetica.htipo = NEW_BASIC_TYPE(REAL);
+                                                                                                                \}
+                                                                                                            else
+                                                                                                            \{
+                                                                                                                aritmetica.htipo = NEW_BASIC_TYPE(INTEGER);
+                                                                                                            \}
+
+                                                                                                            aritmetica.hnombre = NEW_IDENT();
+                                                                                                            ADD_INST( aritmetica'.hnombre || " := " || aritmetica'.hnombre || " " || opl2.op || " " || termino.nombre );
+
+                                                                                                        \} else \{
+                                                                                                            ERROR("Type mismatch error");
+                                                                                                            arimetica'.htipo = NEW_BASIC_TYPE(UNKNOWN);
+                                                                                                        \} } \\
+                                                        &                                           & \sem{
+                                                                                                        aritmetica'.nombre = aritmetica'.hnombre;
+                                                                                                        aritmetica'.tipo = aritmetica'.htipo;
+                                                                                                        aritmetica'.gfalse = aritmetica'.hgfalse;
+                                                                                                        aritmetica'.gtrue = aritmetica'.hgtrue;
+                                                                                                        aritmetica'.literal = false; } \\
                                                         &                                       & | \xi
+                                                        &                                           & \sem{
+                                                                                                        aritmetica'.nombre = aritmetica'.hnombre;
+                                                                                                        aritmetica'.tipo = aritmetica'.htipo;
+                                                                                                        aritmetica'.gfalse = aritmetica'.hgfalse;
+                                                                                                        aritmetica'.gtrue = aritmetica'.hgtrue;
+                                                                                                        aritmetica'.literal = aritmetica'.hliteral; } \\
+
 termino                                         	& $\longrightarrow$                     & negacion termino' \\
+                                                        &                                           & \sem{
+                                                                                                        termino'.hnombre = negacion.nombre;
+                                                                                                        termino'.htipo = negacion.tipo;
+                                                                                                        termino'.hgfalse = negacion.gfalse;
+                                                                                                        termino'.hgtrue = negacion.gtrue;
+                                                                                                        termino'.hliteral = negacion.literal; } \\
+                                                        &                                           & \sem    {
+                                                                                                        termino.nombre = termino'.nombre;
+                                                                                                        termino.tipo = termino'.tipo;
+                                                                                                        termino.gfalse = termino'.gfalse;
+                                                                                                        termino.gtrue = termino'.gtrue;
+                                                                                                        termino.literal = termino'.literal; } \\
+
 termino'                                         	& $\longrightarrow$                     & \ter{ opl1 } negacion termino' \\
+                                                        &                                           & \sem{
+                                                                                                        if ( IS_NUMERIC(termino'.htipo) && IS_NUMERIC(negacion.tipo) ) \{
+
+                                                                                                            if ( IS_REAL(termino'.htipo) || IS_REAL(negacion.tipo) )
+                                                                                                            \{
+                                                                                                                TYPECAST( termino'.hnombre, termino'.htipo, NEW_BASIC_TYPE(REAL) );
+                                                                                                                TYPECAST( negacion.nombre, negacion.tipo, NEW_BASIC_TYPE(REAL) );
+                                                                                                                termino'.htipo = NEW_BASIC_TYPE(REAL);
+                                                                                                            \}
+                                                                                                            else
+                                                                                                            \{
+                                                                                                                termino'.htipo = NEW_BASIC_TYPE(INTEGER);
+                                                                                                            \}
+
+                                                                                                            termino'.hnombre = NEW_IDENT();
+                                                                                                            ADD_INST( termino'.hnombre || " := " || termino'.hnombre || " " || opl1.op || " " || negacion.nombre );
+
+                                                                                                        \} else \{
+                                                                                                            ERROR("Type mismatch error");
+                                                                                                            termino'.htipo = NEW_BASIC_TYPE(UNKNOWN);
+                                                                                                        \}
+                                                        &                                           & \sem{
+                                                                                                        termino'.nombre = termino'.hnombre;
+                                                                                                        termino'.tipo = termino'.htipo;
+                                                                                                        termino'.gfalse = termino'.hgfalse;
+                                                                                                        termino'.gtrue = termino'.hgtrue;
+                                                                                                        termino'.literal = false; } \\
                                                         &                                       & | \xi
+                                                        &                                           & \sem{
+                                                                                                        termino'.nombre = termino'.hnombre;
+                                                                                                        termino'.tipo = termino'.htipo;
+                                                                                                        termino'.gfalse = termino'.hgfalse;
+                                                                                                        termino'.gtrue = termino'.hgtrue;
+                                                                                                        termino'.literal = termino'.hliteral; } \\
+
 negacion                                         	& $\longrightarrow$                     & \ter{ not } factor \\
+                                                        &                                           & \sem{
+                                                                                                        if ( IS_BOOLEAN(factor.tipo) )
+                                                                                                        \{
+                                                                                                            if (factor.nombre == true)
+                                                                                                            \{
+                                                                                                                negacion.nombre = false;
+                                                                                                            \}
+                                                                                                            else if (factor.nombre == false)
+                                                                                                            \{
+                                                                                                                negacion.nombre = true;
+                                                                                                            \}
+                                                                                                            else
+                                                                                                            \{
+                                                                                                                negacion.gfalse = factor.gtrue;
+                                                                                                                negacion.gtrue = factor.gfalse;
+                                                                                                            \}
+                                                                                                            negacion.tipo = factor.tipo;
+                                                                                                            \}
+                                                                                                        else
+                                                                                                        \{
+                                                                                                            ERROR("Type mismatch error");
+                                                                                                        \}
+
+                                                                                                        negacion.literal = false; } \\
                                                         &                                       & | factor \\
+                                                        &                                           & \sem{
+                                                                                                        negacion.nombre = factor.nombre;
+                                                                                                        negacion.tipo = factor.tipo;
+                                                                                                        negacion.gfalse = factor.gfalse;
+                                                                                                        negacion.gtrue = factor.gtrue;
+                                                                                                        negacion.literal = factor.literal;
+        }
+
 factor                                           	& $\longrightarrow$                     & \ter{ - } factor' \\
-                                                       	&                                       & factor' \\
+                                                                                                    & \sem{
+                                                                                                        if ( IS_REAL(factor'.tipo) || IS_INTEGER(factor'.tipo) )
+                                                                                                        \{
+                                                                                                            factor.nombre = NEW_IDENT();
+                                                                                                            ADD_INST( factor.nombre || " := 0 - " || factor'.nombre );
+                                                                                                            factor.tipo = factor'.tipo;
+                                                                                                        \}
+                                                                                                        else
+                                                                                                        \{
+                                                                                                            ERROR("Type mismatch error");
+                                                                                                        \}
+                                                                                                        factor'.literal = factor.literal; } \\
+                                                       	&                                       & | factor' \\
+                                                        &                                           & \sem{
+                                                                                                        factor.nombre = factor'.nombre;
+                                                                                                        factor.tipo = factor'.tipo;
+                                                                                                        factor.gfalse = factor'.gfalse;
+                                                                                                        factor.gtrue = factor'.gtrue;
+                                                                                                        factor.literal = factor'.literal; } \\
+
 factor'                                         	& $\longrightarrow$                     & \ter{ ID } array\_o\_llamada \\
+                                                        &                                           & \sem{
+                                                                                                        array\_o\_llamada.hident = ID.value; } \\
+                                                        &                                           & \sem{
+                                                                                                        factor'.nombre = array\_o\_llamada.nombre;
+                                                                                                        factor'.tipo = array\_o\_llamada.tipo;
+                                                                                                        factor'.literal = false;
+                                                                                                        factor'.gtrue = EMPTY_LIST();
+                                                                                                        factor'.gfalse = EMPTY_LIST(); } \\
                                                         &                                       & | \ter{ INTEGER }
+                                                        &                                           & \sem{
+                                                                                                        factor'.tipo = NEW_BASIC_TYPE(INTEGER);
+                                                                                                        factor'.nombre = INTEGER.value;
+                                                                                                        factor'.literal = true;
+                                                                                                        factor'gtrue = EMPTY_LIST();
+                                                                                                        factor'.gfalse = EMPTY_LIST(); } \\
                                                         &                                       & | \ter{ REAL }
+                                                        &                                           & \sem{
+                                                                                                        factor'.tipo = NEW_BASIC_TYPE(REAL);
+                                                                                                        factor'.nombre = REAL.value;
+                                                                                                        factor'.literal = true;
+                                                                                                        factor'gtrue = EMPTY_LIST();
+                                                                                                        factor'.gfalse = EMPTY_LIST(); } \\
                                                         &                                       & | booleano
+                                                        &                                           & \sem{
+                                                                                                        factor'.tipo = NEW_BASIC_TYPE(BOOLEAN);
+                                                                                                        factor'.nombre = BOOLEAN.value;
+                                                                                                        factor'.literal = true;
+                                                                                                        factor'gtrue = EMPTY_LIST();
+                                                                                                        factor'.gfalse = EMPTY_LIST(); } \\
                                                         &                                       & \ter{ ( } expresion \ter{ ) }
-opl1                                            	& $\longrightarrow$                     & \ter{ * } | \ter{ / } \\
-opl2                                            	& $\longrightarrow$                     & \ter{ + } | \ter{ - } \\
-oprel                                            	& $\longrightarrow$                     & \ter{ $>$ } \\
-                                                        &                                       & | \ter{ $<$ } \\
-                                                        &                                       & | \ter{ $\leq$ } \\
-                                                        &                                       & | \ter{ $\geq$ }
-                                                        &                                       & | \ter{ $==$ }
-                                                        &                                       & | \ter{ $/=$ }
+                                                        &                                           & \sem{
+                                                                                                        factor'.tipo = expresion.tipo;
+                                                                                                        factor'.nombre = expresion.nombre;
+                                                                                                        factor'.gfalse = expresion.gfalse;
+                                                                                                        factor'.gtrue = expresion.gtrue;
+                                                                                                        factor'.literal = expresion.literal; } \\
+
+opl1                                            	& $\longrightarrow$                     & \ter{ * } \sem{ opl1.op = $*$ } \\
+                                                        &                                       & | \ter{ / } \sem{ opl1.op = $/$ } \\
+
+opl2                                            	& $\longrightarrow$                     & \ter{ + } \sem{ opl2.op = $+$ } \\
+                                                        &                                       &| \ter{ - } \sem{ opl2.op = $-$ } \\
+
+oprel                                            	& $\longrightarrow$                     & \ter{ $>$ } \sem{ oprel.op = $>$ } \\
+                                                        &                                       & | \ter{ $<$ } \sem{ oprel.op = $<$ } \\
+                                                        &                                       & | \ter{ $\leq$ } \sem{ oprel.op = $\leq$ } \\
+                                                        &                                       & | \ter{ $\geq$ } \sem{ oprel.op = $\geq$ }
+                                                        &                                       & | \ter{ $==$ } \sem{ oprel.op = $==$ }
+                                                        &                                       & | \ter{ $/=$ } \sem{ oprel.op = $/=$ }
 \espacio
 \end{tabular}
+
+\subsection{Explicación de la EDTS (atributos, etc)}
 
 \section{Uso correcto de identificadores}
 
@@ -93,15 +396,15 @@ x = 5 * 1.3 + true;
 
 
 Tratamiento estático y tratamiento dinámico :
-	
-● Definición de restricciones semánticas sobre uso correcto de identificadores. 
-● Ampliación del ETDS para comprobar la corrección semántica. 
-● Especificación funcional 
-   de la Tabla de Símbolos. 
-● Selección de una representación para la Tabla de Símbolos. 
-● Implementación y prueba de la parte de análisis semántico. 
+
+● Definición de restricciones semánticas sobre uso correcto de identificadores.
+● Ampliación del ETDS para comprobar la corrección semántica.
+● Especificación funcional de la Tabla de Símbolos.
+● Selección de una representación para la Tabla de Símbolos.
+● Implementación y prueba de la parte de análisis semántico.
 
 \section{Llamadas a procedimientos}
+
 ● Ampliación de la gramática y del ETDS para permitir llamadas a procedimientos 
 ● Implementación y prueba de las llamadas a procedimientos.
 
