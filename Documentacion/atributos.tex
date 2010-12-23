@@ -28,22 +28,22 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 	
 	tipo 				        & \ter{S} 		& tipo 			& El nombre interno del tipo especificado en la sintaxis. \\ \hline
     
-    lista\_de\_enteros          & \ter{S}       & ints          & \\ \hline
+    lista\_de\_enteros          & \ter{S}       & ints          & Lista que contiene los enteros que se van encontrando. \\ \hline
 
-    resto\_lista\_enteros       & \ter{S}       & ints          & \\ \hline
+    resto\_lista\_enteros       & \ter{S}       & ints          & Lista que contiene los enteros que se van encontrando. \\ \hline
 
 	decl\_de\_subprogs 	        &&& \\ \hline
 	
 	\multirow{3}{*}{decl\_de\_procedimiento}
-                                &               & args              & \\ \cline{2-4}
-                                &               & classes              & \\ \cline{2-4}     
-                                &               & nombre             & \\ \hline
+                                & \ter{S}       & args              & Lista que contiene los argumentos del procedimiento. \\ \cline{2-4}
+                                & \ter{S}       & classes              & \\ \cline{2-4}     
+                                & \ter{S}       & nombre            & Contiene el nombre del procedimiento. \\ \hline
 
     \multirow{4}{*}{decl\_de\_function}
-                                &               & args              & \\ \cline{2-4}
-                                &               & classes              & \\ \cline{2-4}  
-                                &               & nombre              & \\ \cline{2-4}         
-                                &               & tipoRetorno              & \\ \hline
+                                & \ter{S}       & args              & Lista que contiene los argumentos de la función. \\ \cline{2-4}
+                                &               & classes           & \\ \cline{2-4}  
+                                & \ter{S}       & nombre            & Contiene el nombre de la función. \\ \hline
+                                & \ter{L}       & tipoRetorno       & Contiene el tipo de dato de retorno de la función. \\ \hline
 
 	\multirow{3}{*}{cabecera\_procedimiento}
                                 &               & args              & \\ \cline{2-4}
@@ -72,7 +72,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 
 	clase\_param’			    & \ter{S} 		& clase			& La clase de parámetro que se ha derivado de la sintaxis (referencia o valor). \\ \hline
 	
-	lista\_de\_sentencias’      & \ter{H}       & hinloop       & \\ \hline
+	lista\_de\_sentencias’      & \ter{H}       & hinloop       & Marcador que indica si estamos dentro de un bucle. \\ \hline
 	
 \end{tabularx}
 
@@ -88,7 +88,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 
 	\multirow{2}{*}{lista\_de\_sentencias}  
 						        & \ter{H} 		& hinloop 		& Marcador que indica si estamos dentro de un bucle. \\ \cline{2-4} 
-						        & \ter{S} 		& salir\_si		& Lista de referencias a las instrucciones "salir\_si" contenidas dentro del ámbito de lista de sentencias. \\ \hline
+						        & \ter{S} 		& salir\_si		& Lista de referencias a las instrucciones "salir\_si" contenidas dentro del ámbito de lista de    sentencias. \\ \hline
 						
 	sentencia 			        & \ter{S} 		& salir\_si		& Lista de referencias a las instrucciones "salir\_si" contenidas dentro de la sentencia. \\ \hline
 
@@ -123,7 +123,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{S}       & tipo              & \\ \cline{2-4}
-                                & \ter{S}       & literal           & \\ \hline
+                                & \ter{S}       & literal           & Indica si la expresión a tratar es un literal o no \\ \hline
     \multirow{5}{*}{disyuncion} 
 						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
 														  valor de evaluar la expresión.  \\ \cline{2-4} 
@@ -132,7 +132,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{S}       & tipo              & \\ \cline{2-4}
-                                & \ter{S}       & literal           & \\ \hline
+                                & \ter{S}       & literal           & Indica si la disyunción a tratar es un literal o no \\ \hline
 
     \multirow{5}{*}{conjuncion} 
 						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
@@ -142,7 +142,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{S}       & tipo              & \\ \cline{2-4}
-                                & \ter{S}       & literal           & \\ \hline
+                                & \ter{S}       & literal           & Indica si la conjunción a tratar es un literal o no \\ \hline
     
     \multirow{5}{*}{relacional} 
 						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
@@ -152,7 +152,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{S}       & tipo              & \\ \cline{2-4}
-                                & \ter{S}       & literal           & \\ \hline
+                                & \ter{S}       & literal           & Indica si la operación relacional a tratar es un literal o no \\ \hline
     \multirow{5}{*}{aritmetica} 
 						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
 														  valor de evaluar la expresión.  \\ \cline{2-4} 
@@ -161,7 +161,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{S}       & tipo              & \\ \cline{2-4}
-                                & \ter{S}       & literal           & \\ \hline
+                                & \ter{S}       & literal           & Indica si la operación aritmética a tratar es un literal o no \\ \hline
 
     \multirow{5}{*}{termino} 
 						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
@@ -171,7 +171,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{S}       & tipo              & \\ \cline{2-4}
-                                & \ter{S}       & literal           & \\ \hline
+                                & \ter{S}       & literal           & Indica si el término a tratar es un literal o no \\ \hline
 
     \multirow{10}{*}{disyuncion'} 
 						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
@@ -181,7 +181,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{S}       & tipo              & \\ \cline{2-4}
-                                & \ter{S}       & literal           & \\ \cline{2-4}
+                                & \ter{S}       & literal           & Indica si la disyunción a tratar es un literal o no \\ \cline{2-4}
 						        & \ter{H} 		& hnombre			& Nombre de la variable del programa o temporal que contiene el
 														  valor de evaluar la expresión.  \\ \cline{2-4} 
 						        & \ter{H} 		& hgtrue			& Lista de referencias a saltos que han de completarse para definir a 
@@ -189,7 +189,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{H} 		& hgfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{H}       & htipo              & \\ \cline{2-4}
-                                & \ter{H}       & hliteral           & \\ \hline
+                                & \ter{H}       & hliteral           & Indica si la disyunción tratada anteriormente es un literal o no \\ \hline
 
     \multirow{10}{*}{conjuncion'} 
 						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
@@ -199,7 +199,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{S}       & tipo              & \\ \cline{2-4}
-                                & \ter{S}       & literal           & \\ \cline{2-4}
+                                & \ter{S}       & literal           & Indica si la conjunción a tratar es un literal o no \\ \cline{2-4}
 						        & \ter{H} 		& hnombre			& Nombre de la variable del programa o temporal que contiene el
 														  valor de evaluar la expresión.  \\ \cline{2-4} 
 						        & \ter{H} 		& hgtrue			& Lista de referencias a saltos que han de completarse para definir a 
@@ -207,7 +207,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{H} 		& hgfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{H}       & htipo              & \\ \cline{2-4}
-                                & \ter{H}       & hliteral           & \\ \hline
+                                & \ter{H}       & hliteral           & Indica si la conjunción tratada anteriormente es un literal o no \\ \hline
     
     \multirow{10}{*}{relacional'} 
 						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
@@ -217,7 +217,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{S}       & tipo              & \\ \cline{2-4}
-                                & \ter{S}       & literal           & \\ \cline{2-4}
+                                & \ter{S}       & literal           & Indica si la operación relacional a tratar es un literal o no \\ \cline{2-4}
 						        & \ter{H} 		& hnombre			& Nombre de la variable del programa o temporal que contiene el
 														  valor de evaluar la expresión.  \\ \cline{2-4} 
 						        & \ter{H} 		& hgtrue			& Lista de referencias a saltos que han de completarse para definir a 
@@ -225,7 +225,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{H} 		& hgfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{H}       & htipo              & \\ \cline{2-4}
-                                & \ter{H}       & hliteral           & \\ \hline
+                                & \ter{H}       & hliteral           & Indica si la operación relacional tratada anteriormente es un literal o no \\ \hline
 
     \multirow{10}{*}{aritmetica'} 
 						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
@@ -235,7 +235,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{S}       & tipo              & \\ \cline{2-4}
-                                & \ter{S}       & literal           & \\ \cline{2-4}
+                                & \ter{S}       & literal           & Indica si la operación aritmética a tratar es un literal o no \\ \cline{2-4}
 						        & \ter{H} 		& hnombre			& Nombre de la variable del programa o temporal que contiene el
 														  valor de evaluar la expresión.  \\ \cline{2-4} 
 						        & \ter{H} 		& hgtrue			& Lista de referencias a saltos que han de completarse para definir a 
@@ -243,7 +243,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{H} 		& hgfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{H}       & htipo              & \\ \cline{2-4}
-                                & \ter{H}       & hliteral           & \\ \hline
+                                & \ter{H}       & hliteral           & Indica si la operación aritmética tratada anteriormente es un literal o no \\ \hline
     
     \multirow{10}{*}{termino'} 
 						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
@@ -253,7 +253,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{S}       & tipo              & \\ \cline{2-4}
-                                & \ter{S}       & literal           & \\ \cline{2-4}
+                                & \ter{S}       & literal           & Indica si el término a tratar es un literal o no \\ \cline{2-4}
 						        & \ter{H} 		& hnombre			& Nombre de la variable del programa o temporal que contiene el
 														  valor de evaluar la expresión.  \\ \cline{2-4} 
 						        & \ter{H} 		& hgtrue			& Lista de referencias a saltos que han de completarse para definir a 
@@ -261,7 +261,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{H} 		& hgfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{H}       & htipo              & \\ \cline{2-4}
-                                & \ter{H}       & hliteral           & \\ \hline
+                                & \ter{H}       & hliteral           & Indica si el término tratado anteriormente es un literal o no \\ \hline
 
     \multirow{5}{*}{negacion} 
 						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
@@ -271,7 +271,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{S}       & tipo              & \\ \cline{2-4}
-                                & \ter{S}       & literal           & \\ \hline
+                                & \ter{S}       & literal           & Indica si lo que se quiere negar es un literal \\ \hline
 
     \multirow{5}{*}{factor} 
 						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
@@ -281,7 +281,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{S}       & tipo              & \\ \cline{2-4}
-                                & \ter{S}       & literal           & \\ \hline
+                                & \ter{S}       & literal           & Indica si el factor a tratar es un literal o no \\ \hline
 
     \multirow{5}{*}{factor'} 
 						        & \ter{S} 		& nombre			& Nombre de la variable del programa o temporal que contiene el
@@ -291,7 +291,7 @@ Lista de atributos, detallando para cada uno una descripción y la naturaleza de
 						        & \ter{S} 		& gfalse			& Lista de referencias a saltos que han de completarse para definir a 
 														dónde saltará el programa si la \emph{evaluación de la expresión es falsa}. \\ \cline{2-4}
                                 & \ter{S}       & tipo              & \\ \cline{2-4}
-                                & \ter{S}       & literal           & \\ \hline
+                                & \ter{S}       & literal           & Indica si el factor a tratar es un literal o no \\ \hline
 
     array\_o\_llamada           &&& \\ \hline
 
