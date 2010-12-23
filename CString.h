@@ -93,6 +93,11 @@ public:
         return ret;
     }
 
+    CString operator|| ( int iRight ) const
+    {
+        return operator|| ( CString ( iRight ) );
+    }
+
     bool operator== ( const char* Right ) const
     {
         return m_str == Right;

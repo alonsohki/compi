@@ -636,12 +636,12 @@ DEFINE_RULE(sentencia,
     }
     else if (IS_FIRST ( RESERVED, "salir"))
     {
+        MATCH ( RESERVED, "salir" );
+        MATCH ( RESERVED, "si" );
         {
             if ( THIS.hinloop == false )
                 ERROR ( "`salir si` outside a loop" );
         }
-        MATCH ( RESERVED, "salir" );
-        MATCH ( RESERVED, "si" );
         RULE  ( expresion , e )();
         RULE  ( M , m )();
         {
@@ -1046,15 +1046,15 @@ DEFINE_RULE(disyuncion_prima,
 )
 {
     if (IS_FIRST (RESERVED, "or")) {
-        MATCH ( RESERVED, "or");
+        MATCH ( RESERVED, "or" );
         {
             TYPECAST( THIS.hnombre, THIS.htipo, NEW_BASIC_TYPE(BOOLEXPR), THIS.hgtrue , THIS.hgfalse );
         }
-        RULE  ( M , m)();
+        RULE  ( M , m )();
         RULE  ( conjuncion , c )();
         RULE  ( disyuncion_prima , d );
         {
-        	TYPECAST( c.nombre, c.tipo, NEW_BASIC_TYPE(BOOLEXPR), c.gtrue , c.gfalse );
+            TYPECAST( c.nombre, c.tipo, NEW_BASIC_TYPE(BOOLEXPR), c.gtrue , c.gfalse );
             COMPLETE( THIS.hgfalse, m.ref );
             d.hgtrue = JOIN( THIS.hgtrue, c.gtrue );
             d.hgfalse = c.gfalse;
@@ -1260,10 +1260,10 @@ DEFINE_RULE(relacional_prima,
         }
         r();
         {
-            THIS.nombre = r.hnombre;
-            THIS.tipo = r.htipo;
-            THIS.gfalse = r.hgfalse;
-            THIS.gtrue = r.hgtrue;
+            THIS.nombre = r.nombre;
+            THIS.tipo = r.tipo;
+            THIS.gfalse = r.gfalse;
+            THIS.gtrue = r.gtrue;
             THIS.literal = false;
         }
     } else {
@@ -1366,10 +1366,10 @@ DEFINE_RULE(aritmetica_prima,
         }
         a();
         {
-            THIS.nombre = a.hnombre;
-            THIS.tipo = a.htipo;
-            THIS.gfalse = a.hgfalse;
-            THIS.gtrue = a.hgtrue;
+            THIS.nombre = a.nombre;
+            THIS.tipo = a.tipo;
+            THIS.gfalse = a.gfalse;
+            THIS.gtrue = a.gtrue;
             THIS.literal = false;
         }
     }
@@ -1475,10 +1475,10 @@ DEFINE_RULE(termino_prima,
         }
         t();
         {
-            THIS.nombre = t.hnombre;
-            THIS.tipo = t.htipo;
-            THIS.gfalse = t.hgfalse;
-            THIS.gtrue = t.hgtrue;
+            THIS.nombre = t.nombre;
+            THIS.tipo = t.tipo;
+            THIS.gfalse = t.gfalse;
+            THIS.gtrue = t.gtrue;
             THIS.literal = false;
         }
     } else {
@@ -1523,28 +1523,24 @@ DEFINE_RULE(negacion,
         MATCH ( RESERVED, "not");
         RULE  ( factor , f )();
         {
-            if ( IS_BOOLEAN(f.tipo) )
+            if ( IS_BOOLEXPR(f.tipo) )
             {
-                if (f.nombre == true)
-                {
-                    THIS.nombre = false;
-                }
-                else if (f.nombre == false)
-                {
-                    THIS.nombre = true;
-                }
-                else
-                {
-                    THIS.gfalse = f.gtrue;
-                    THIS.gtrue = f.gfalse;
-                }
+                THIS.gtrue = f.gfalse;
+                THIS.gfalse = f.gtrue;
                 THIS.tipo = f.tipo;
             }
             else
             {
-                ERROR("Type mismatch error");
+                VAR boolNombre = TYPECAST(f.nombre, f.tipo, NEW_BASIC_TYPE(BOOLEAN), f.gtrue, f.gfalse);
+                THIS.nombre = NEW_IDENT();
+                THIS.tipo = NEW_BASIC_TYPE(BOOLEAN);
+                VAR ref = GET_REF();
+                ADD_INST ( "if " || boolNombre || " goto " || ref+2 );
+                ADD_INST ( "goto " || ref+4 );
+                ADD_INST ( THIS.nombre || " := false" );
+                ADD_INST ( "goto " || ref+5 );
+                ADD_INST ( THIS.nombre || " := true" );
             }
-
             THIS.literal = false;
         }
     }

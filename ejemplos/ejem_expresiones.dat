@@ -1,0 +1,8 @@
+programa ejem_expresiones
+	variables a, b, c, d : real;
+	variables e : booleano;
+comienzo
+	get ( a ); get ( b ); get ( c ); get ( d );
+	e = not(a > b or a < b);
+	a = -b + c - -d;
+fin;
