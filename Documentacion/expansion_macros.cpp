@@ -1,3 +1,6 @@
+//
+// Gramática original
+//
 DEFINE_RULE(disyuncion,
             FIRST(
                     ( RESERVED, "not" ),
@@ -38,6 +41,9 @@ DEFINE_RULE(disyuncion,
     }
 }
 
+//
+// Código generado tras expandir las macros.
+//
 const CTokenizer::SToken disyuncion::ms_firstToken [] =
 {
 	CTokenizer::SToken ( CTokenizer::RESERVED , "not" ),
