@@ -1,0 +1,161 @@
+\chapter{Demostración LL1}
+
+\small
+\begin{tabular}{| l | p{.27\textwidth} | p{.27\textwidth} | c | c | } \hline
+
+\textbf{Regla} & \textbf{Primero} & \textbf{Siguiente} & {\scriptsize Cond1} & {\scriptsize Cond2} \\ \hline
+
+
+programa						& programa
+             				& \# & \ding{52} & \ding{52} \\ \hline
+
+declaraciones				& variables $\xi$ 
+							& procedimiento funcion comienzo & \ding{52} & \ding{52} \\ \hline
+
+lista\_de\_ident				& IDENTIFIER
+							& :	 & \ding{52} & \ding{52} \\ \hline
+
+resto\_lista\_ident			& , $\xi$
+							& : & \ding{52} & \ding{52} \\ \hline
+
+tipo							& entero real booleano array
+							& ; variables comienzo ) & \ding{52} & \ding{52} \\ \hline
+
+lista\_de\_enteros			& INTEGER
+							& ] & \ding{52} & \ding{52} \\ \hline
+
+resto\_lista\_enteros		& ,  $\xi$
+							& ] & \ding{52} & \ding{52} \\ \hline
+
+decl\_de\_subprogs			& procedimiento funcion $\xi$
+							& comienzo & \ding{52} & \ding{52} \\ \hline
+
+decl\_de\_procedimiento		& procedimiento
+							& procedimiento funcion comienzo & \ding{52} & \ding{52} \\ \hline
+
+decl\_de\_funcion			& funcion
+							& procedimiento funcion comienzo & \ding{52} & \ding{52} \\ \hline
+
+cabecera\_procedimiento		& procedimiento
+							& variables comienzo & \ding{52} & \ding{52} \\ \hline
+
+cabecera\_funcion			& funcion
+							& variables comienzo & \ding{52} & \ding{52} \\ \hline
+
+argumentos					& ( $\xi$
+							& variables comienzo retorna & \ding{52} & \ding{52} \\ \hline
+
+lista\_de\_param				& IDENTIFIER
+							& ) & \ding{52} & \ding{52} \\ \hline
+
+resto\_lis\_de\_param		& ;  $\xi$
+							& ) & \ding{52} & \ding{52} \\ \hline
+
+clase\_param					& entrada salida
+							& entero real booleano array & \ding{52} & \ding{52} \\ \hline
+
+clase\_param'				& salida 	$\xi$
+							& entero real booleano array & \ding{52} & \ding{52} \\ \hline
+
+lista\_de\_sentencias'		& IDENTIFIER si hacer salir get put\_line $\xi$
+							& fin retorna & \ding{52} & \ding{52} \\ \hline
+
+lista\_de\_sentencias		& IDENTIFIER si hacer salir get put\_line $\xi$
+							& fin  retorna mientras & \ding{52} & \ding{52} \\ \hline
+
+
+sentencia					& IDENTIFIER si hacer salir get put\_line
+							& IDENTIFIER si hacer salir get put\_line fin retorna mientras & \ding{52} & \ding{52} \\ \hline
+
+id\_o\_array					& [ $\xi$
+							& ) & \ding{52} & \ding{52} \\ \hline
+
+asignacion\_o\_llamada		& =  [  (
+							& ;  ) & \ding{52} & \ding{52} \\ \hline
+
+acceso\_a\_array				& [
+							& = * / + - < > <= >= == /= and  or  entonces  fin  ;  )  ] , & \ding{52} & \ding{52} \\ \hline
+
+\end{tabular}
+
+\small
+\begin{tabular}{| l | p{.27\textwidth} | p{.27\textwidth} | c | c | } \hline
+
+\textbf{Regla} & \textbf{Primero} & \textbf{Siguiente} & {\scriptsize Cond1} & {\scriptsize Cond2} \\ \hline
+
+acceso\_a\_array'		& [ $\xi$
+							& = * / + - < > <= >= == /= and  or  entonces  fin  ;  )  ] ,   & \ding{52} & \ding{52} \\ \hline
+
+parametros\_llamadas			& (
+							& * / + - < > <= >= == /= and  or  entonces  fin  ;  )  ]  ] ,  & \ding{52} & \ding{52} \\ \hline
+
+expresion					& not - IDENTIFIER INTEGER REAL  true  false  ( 
+							& entonces  fin  ;  )  ] ,  & \ding{52} & \ding{52} \\ \hline
+
+disyuncion					& not - IDENTIFIER INTEGER REAL  true  false  (
+							& entonces  fin  ;  )  ] ,  & \ding{52} & \ding{52} \\ \hline
+
+disyuncion'					& or $\xi$
+							& entonces  fin  ;  )  ] ,  & \ding{52} & \ding{52} \\ \hline
+
+conjuncion					& not - IDENTIFIER INTEGER REAL  true  false  (
+							& or  entonces  fin  ;  )  ] ,  & \ding{52} & \ding{52} \\ \hline
+
+conjuncion'					& and $\xi$
+							& or  entonces  fin  ;  )  ] , & \ding{52} & \ding{52} \\ \hline
+
+relacional					& not  - IDENTIFIER INTEGER REAL  true  false  (
+							& and  or  entonces  fin  ;  )  ] ,  & \ding{52} & \ding{52} \\ \hline
+
+relacional'					& < > <= >= == /= $\xi$
+							& and  or  entonces  fin  ;  )  ] ,  & \ding{52} & \ding{52} \\ \hline
+
+aritmetica					& not  - IDENTIFIER INTEGER REAL  true  false  (
+							& < > <= >= == /= and  or  entonces  fin  ;  )  ] ,  & \ding{52} & \ding{52} \\ \hline
+
+aritmetica'					& + - $\xi$
+							& < > <= >= == /= and  or  entonces  fin  ;  )  ] ,  & \ding{52} & \ding{52} \\ \hline
+
+termino						& not  - IDENTIFIER INTEGER REAL  true  false  (
+							& + - < > <= >= == /= and  or  entonces  fin  ;  )  ] ,  & \ding{52} & \ding{52} \\ \hline
+
+termino'						& * / $\xi$
+							& + - < > <= >= == /= and  or  entonces  fin  ;  )  ] ,  & \ding{52} & \ding{52} \\ \hline
+
+negacion						& not  - IDENTIFIER INTEGER REAL  true  false  (
+							& * / + - < > <= >= == /= and  or  entonces  fin  ;  )  ] ,  & \ding{52} & \ding{52} \\ \hline
+
+factor						& OPERATOR - IDENTIFIER INTEGER REAL  true  false  (
+							& * / + - < > <= >= == /= and  or  entonces  fin  ;  )  ] ,  & \ding{52} & \ding{52} \\ \hline
+
+factor'						& IDENTIFIER INTEGER REAL  true  false  (
+							& * / + - < > <= >= == /= and  or  entonces  fin  ;  )  ] ,  & \ding{52} & \ding{52} \\ \hline
+
+array\_o\_llamada			& (  [ $\xi$
+							& * / + - < > <= >= == /= and  or  entonces  fin  ;  )  ] ,  & \ding{52} & \ding{52} \\ \hline
+
+acceso\_a\_array\_opcional	& [ $\xi$
+							& * / + - < > <= >= == /= and  or  entonces  fin  ;  )  ] , & \ding{52} & \ding{52} \\ \hline
+
+lista\_de\_expr				& not - IDENTIFIER INTEGER REAL true false (
+							& ] ) & \ding{52} & \ding{52} \\ \hline
+
+resto\_lista\_expr			& , $\xi$
+							& ]  ) & \ding{52} & \ding{52} \\ \hline
+
+opl1							& * /
+							& not - IDENTIFIER INTEGER REAL true false ( & \ding{52} & \ding{52} \\ \hline
+
+opl2							& + -
+							& not - IDENTIFIER INTEGER REAL true false ( & \ding{52} & \ding{52} \\ \hline
+
+oprel						& < > <= >= == /=
+							& not - IDENTIFIER INTEGER REAL true false ( & \ding{52} & \ding{52} \\ \hline
+
+booleano						& true false
+							& * / + - < > <= >= == /= and or entonces fin ; ) ] , & \ding{52} & \ding{52} \\ \hline
+
+M							& $\xi$
+							& IDENTIFIER si hacer salir get put\_line fin ; & \ding{52} & \ding{52} \\ \hline
+
+\end{tabular}

@@ -1,121 +1,162 @@
 \chapter{Gramática}
 
+% Código para autoformatear código
+\lstdefineformat{C}{% 
+\{=\newline\string\newline\indent,% 
+\}=[;]\newline\noindent\string\newline,% 
+\};=\newline\noindent\string\newline,% 
+;=[\ ]\string\space}
+
+\newfontfamily{\J}{Andale Mono}
+
+% Establecemos las propiedades de listings
+\lstset{
+		language={C++}, 
+		format={C},
+		mathescape,
+		texcl,
+		breaklines=true,
+		basicstyle=\scriptsize,
+		escapechar={¡},
+}
+
 \small
 \begin{tabular}{r c p{.72\textwidth}}
 	
 	programa 		&$\longrightarrow$	& \ter{programa} \ter{id} \\
-					&				 	& \sem{ ADD\_INST('prog ' || ID.value); } \\
+					&					& \begin{lstlisting}
+										ADD_INST("prog " || ID.value);
+										\end{lstlisting} \\
 					&					& declaraciones \\
 					&					& decl\_de\_subprogs \\
 					&					& \ter{comienzo} \\
-					&					& lista\_de\_sentencias\_prima \\
+					&					& lista\_de\_sentencias' \\
 					&					& \ter{fin} \ter{;} \\
-					&					& \sem{ ADD\_INST\_inst('halt'); } \\
+					&					& \begin{lstlisting}
+										ADD_INST("halt");
+										\end{lstlisting} \\
 
 	\espacio
 	
-	declaraciones 	&$\longrightarrow$ 	& \ter{variables} lista\_de\_ident \ter{:} tipo \ter{;} \\
-					&					& \footnotesize\sem{ if ( IS\_INTEGER( t.tipo) || IS\_REAL(t.tipo) || IS\_BOOLEAN(t.tipo) ) \\
-												\{ \\
-												\ind FOREACH( lista\_de\_ident.ids AS ident) \\
-												\ind\ind ADD\_INST( TYPE\_OF(tipo.tipo) || " " || ident); \\
-												\} \\
-												else if ( IS\_ARRAY(t.tipo) ) \\
-												\ind FOREACH( lista\_de\_ident.ids AS ident) \\
-												\ind\ind ADD\_INST( ``array'' || TYPE\_OF(ARRAY\_CONTENT(t.tipo)) || `` '' \\
-												\ind\ind\ind\ind\ind\ind\ind\ind || ident || ``,'' || ARRAY\_SIZE(t.tipo) ); \\
-										  } \\
-					&					& declaraciones \\
-										
-					& | 					& $\xi$ \\
-
-
+	lista\_de\_ident	&$\longrightarrow$	& \ter{id} resto\_lista\_ident \\
+					&					& \begin{lstlisting}
+											lista_de_ident.ids := JOIN(INIT_LIST(id.value), resto_lista_id.ids);
+										\end{lstlisting} \\
 
 	\espacio
-
-	declaraciones 	&$\longrightarrow$ 	& \ter{variables} lista\_de\_ident \ter{:} tipo \ter{;} \\
-					&					&         \begin{lstlisting}[caption={Trigger para contar lineas en un comentario multilinea}]
-void CTokenizer::CheckMultilineComment ( unsigned char c )
-{
-    static bool bLastCharWasCR = false;
-
-    switch ( c )
-    {
-        case '\r':
-            bLastCharWasCR = true;
-            ++m_uiLine;
-            m_uiCol = 0;
-            break;
-        case '\n':
-            m_uiCol = 0;
-            if ( bLastCharWasCR == true )
-            {
-                bLastCharWasCR = false;
-            }
-            else
-            {
-                ++m_uiLine;
-            }
-            break;
-    }
-}
-        \end{lstlisting} \\
-					&					& declaraciones \\
-										
-					& | 					& $\xi$ \\
-
-	\espacio
-	
-	lista\_de\_ident	&$\longrightarrow$	& \ter{id} resto\_lista\_id \\
-					&					& \sem{lista\_de\_ident.ids := JOIN( & INIT\_LIST(id.value), \\
-																			& resto\_lista\_ident.ids); } \\
+											
+	resto\_lista\_ident 	& $\longrightarrow$ 	& \ter{,} \ter{id} resto\_lista\_ident \\
+						&					& \begin{lstlisting}
+											resto_lista_indet.ids := 
+											JOIN( INIT_LIST(id.value), resto_lista_ident$_{1}$.ids);
+											\end{lstlisting} \\
+																			
+						& | 					& $\xi$ \\
+						&					& \begin{lstlisting}
+											resto_lista_ident.ids := EMPTY_LIST(); 
+											\end{lstlisting} \\
 
 \end{tabular}
 
 
 \small
 \begin{tabular}{r c p{.72\textwidth}}
-	
-	resto\_lista\_ident 	& $\longrightarrow$ 	& \ter{,} \ter{id} resto\_lista\_id \\
-						&					& \sem{ resto\_lista\_ident.ids := JOIN(	& INIT\_LIST(id.value) , \\
-																					& resto\_lista\_id.ids); } \\
-																			
-						& | 					& $\xi$ \\
-						&					& \sem{ resto\_lista\_ident.ids := EMPTY\_LIST(); } \\
-
+	declaraciones 	&$\longrightarrow$ 	& \ter{variables} lista\_de\_ident \ter{:} tipo \ter{;} \\
+					&					& \begin{lstlisting}
+            if ( IS_INTEGER(t.tipo) || IS_REAL(t.tipo) || IS_BOOLEAN(t.tipo) )
+            {
+                FOREACH ( lista_de_ident.ids AS ident )
+                {
+                    // Si la política de resolución de colisiones de la tabla de símbolos lo permite 
+                    // para este identificador, añadimos la declaración.
+                    if ( ST_ADD(ident, tipo.tipo) )
+                    {
+                        ADD_INST(TYPE_OF(tipo.tipo) || " " || ident );
+                    }
+                }
+            }
+            else if ( IS_ARRAY(t.tipo) )
+            {
+                FOREACH ( lista_de_ident.ids AS ident )
+                {
+                    // Si la política de resolución de colisiones de la tabla de símbolos lo permite 
+                    // para este identificador, añadimos la declaración.
+                    if ( ST_ADD(ident, tipo.tipo) )
+                    {
+                        ADD_INST("array_" || TYPE_OF(ARRAY_CONTENT(tipo.tipo))
+                                 || " " || ident || "," || ARRAY_SIZE(tipo.tipo) );
+                    }
+                }
+            }
+            
+										\end{lstlisting} \\
+										
+					&					& declaraciones \\
+										
+					& | 					& $\xi$ \\
+					
 	\espacio
 	
-	tipo 			& $\longrightarrow$ 	& entero \\
-					&					& \sem{ tipo.tipo := 'int'} \\
+	tipo 			& $\longrightarrow$ 	& \ter{entero} \\
+					&					& \begin{lstlisting}
+											tipo.tipo := NEW_BASIC_TYPE(INTEGER);
+										\end{lstlisting} \\
 					
-					& | 					& real \\
-					&					& \sem{ tipo.tipo := 'real'} \\
+					& | 					& \ter{real} \\
+					&					& \begin{lstlisting}
+											tipo.tipo := NEW_BASIC_TYPE(REAL);
+										\end{lstlisting} \\
 					
-					& | 					& booleano \\
-					&					& \sem{tipo.tipo := 'booleano'} \\
+					& | 					& \ter{booleano} \\
+					&					& \begin{lstlisting}
+											tipo.tipo := NEW_BASIC_TYPE(BOOLEAN);
+										\end{lstlisting} \\
 
-					& | 					& \ter{array} \ter{[} lista\_de\_enteros \ter{]} \ter{de} tipo \\
-					&					& \sem{ tipo.tipo := NEW\_ARRAY\_TYPE(lista\_de\_enteros, tipo); } \\
+					& | 					& \ter{array} \ter{[} lista\_de\_enteros \ter{]} \ter{de} tipo1 \\
+					&					& \begin{lstlisting}
+											tipo.tipo := NEW_ARRAY_TYPE(lista_de_enteros.ints, tipo$_{1}$.tipo);
+										\end{lstlisting} \\
 					
-	\espacio	
-	
+\end{tabular}
 
+\small
+\begin{tabular}{r c p{.72\textwidth}}
 	
 	lista\_de\_enteros	& $\longrightarrow$ 	& entero resto\_lista\_enteros \\
-						&					& \sem{ lista\_de\_enteros := JOIN(INIT\_LIST(entero), resto\_de\_enteros.ints); } \\
+						&					& \begin{lstlisting}
+												lista_de_enteros.ints := JOIN( INIT_LIST(entero.value), 
+												¡\hspace{18em}¡ resto_lista_enteros.ints);
+											\end{lstlisting} \\
 					
 	\espacio
 
-	resto\_de\_enteros	& $\longrightarrow$ 	& entero resto\_lista\_enteros\textsubscript{1} \\
-						&					& \sem{ resto\_de\_enteros := JOIN(	& INIT\_LIST(entero), \\
-																				& resto\_de\_enteros\textsubscript{1}.ints); } \\
-						& | 					& $\xi$ \\
-						&					& \sem{ resto\_de\_enteros := EMPTY\_LIST } \\
+	resto\_lista\_enteros	& $\longrightarrow$ 	& entero resto\_lista\_enteros \\
+							&					& \begin{lstlisting}
+												 resto_lista_enteros.ints := JOIN(INIT_LIST(entero.value), 
+												 ¡\hspace{19.5em}¡ resto_lista_enteros$_{1}$.ints);
+												\end{lstlisting} \\
+												 
+							& | 					& $\xi$ \\
+							&					& \begin{lstlisting}
+												resto_de_enteros.ints := EMPTY_LIST();
+												\end{lstlisting} \\
 					
 	\espacio
 	
 	decl\_de\_subprogs 		& $\longrightarrow$ 	& decl\_de\_procedimiento decl\_de\_subprogs \\
+							&					& \begin{lstlisting}
+												 ST_ADD ( decl_de_procedimiento.nombre, 
+												 ¡\hspace{5em}¡ NEW_PROCEDURE_TYPE(decl_de_procedimiento.args, 
+												 ¡\hspace{16.5em}¡ decl_de_procedimiento.classes) );
+												\end{lstlisting} \\
+												
 							& |					& decl\_de\_funcion decl\_de\_subprogs \\
+							&					& \begin{lstlisting}
+												 ST_ADD ( decl_de_funcion.nombre, 
+												 ¡\hspace{5em}¡ NEW_FUNCTION_TYPE( decl_de_funcion.args, 
+												 ¡\hspace{16.5em}¡ decl_de_funcion.classes, 
+												 ¡\hspace{16.5em}¡ decl_de_funcion.tipoRetorno) );
+												\end{lstlisting} \\
 							& | 					& $\xi$ \\
 
 \end{tabular}
@@ -123,101 +164,1092 @@ void CTokenizer::CheckMultilineComment ( unsigned char c )
 \small
 \begin{tabular}{r c p{.72\textwidth}}
 
-	decl\_de\_procedimiento 	& $\longrightarrow$ 	& \sem{ ST\_PUSH(); } \\
+	decl\_de\_procedimiento 	& $\longrightarrow$ 	& \begin{lstlisting}
+												 ST_PUSH();
+												\end{lstlisting} \\
 							&					& cabecera\_procedimiento declaraciones \\
-							&					& \ter{comienzo} lista\_de\_sentencias\_prima \ter{fin} \\
-							&					& \sem{ ADD\_INST(``finproc''); } \\
+							&					& \ter{comienzo} lista\_de\_sentencias' \ter{fin} \\
+							&					& \begin{lstlisting}
+												 ADD_INST ( "finproc" );
+												\end{lstlisting} \\
 							&					& \ter{;} \\
-							&					& \sem{ ST\_POP(); } \\
+							&					& \begin{lstlisting}
+												 ST_POP();
+      											 decl_de_procedimiento.args := cabecera_procedimiento.args;
+    												 decl_de_procedimiento.classes := cabecera_procedimiento.classes;
+      											 decl_de_procedimiento.nombre := cabecera_procedimiento.nombre;
+												\end{lstlisting} \\
 							
 							
 	\espacio
 	
-	decl\_de\_function	 	& $\longrightarrow$ 	& \sem{ ST\_PUSH(); } \\
+	decl\_de\_function	 	& $\longrightarrow$ 	& \begin{lstlisting}
+												 ST_PUSH();
+												\end{lstlisting} \\
 							&					& cabecera\_funcion declaraciones \\
-							&					& \ter{comienzo} lista\_de\_sentencias\_prima \ter{retornar} expresion \\
-							&					& \sem{ if ( & cabecera\_funcion.tipo == expresion.tipo) \{ \\
-																& ADD\_INST( ``ret '' || expresion.nombre ); \\
-																& ADD\_INST( ``finfunc''); \\
-														\} else & \{ \\
-																& ERROR( "Function return type mismatch" ); \\
-														\} } \\
+							&					& \ter{comienzo} lista\_de\_sentencias' \ter{retornar} expresion \\
+							&					&  \begin{lstlisting}
+												 ADD_INST ( "ret " || TYPECAST( expresion.nombre, expresion.tipo,
+												 ¡\hspace{18em}¡ cabecera_funcion.tipoRetorno, 
+												 ¡\hspace{18em}¡ expresion.gtrue, expresion.gfalse ) );
+        											 ADD_INST ( "finfunc" );
+												\end{lstlisting} \\
+
 							&					& \ter{fin} \\
 							&					& \ter{;} \\
-							&					& \sem{ ST\_POP(); } \\
+							&					& \begin{lstlisting}
+												 ST_POP();
+												 decl_de_function.args := cabecera_funcion.args;
+        											 decl_de_function.classes := cabecera_funcion.classes;
+        											 decl_de_function.nombre := cabecera_funcion.nombre;
+        											 decl_de_function.tipoRetorno := cabecera_funcion.tipoRetorno;
+												\end{lstlisting} \\
 
-	\espacio
-	
+\end{tabular}
+
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+
 	cabecera	\_procedimiento 	&$\longrightarrow$	& \ter{procedimiento} \ter{id} \\
-							& 					& \sem{'proc ' || id.value } \\
+							& 					& \begin{lstlisting}
+												 ADD_INST( "proc " || id.value );
+												\end{lstlisting} \\
 							&					& argumentos \\
+							& 					& \begin{lstlisting}
+										         cabecera_procedimiento.nombre := id.value;
+        											 cabecera_procedimiento.args := argumentos.args;
+    											     cabecera_procedimiento.classes := argumentos.classes;
+												\end{lstlisting} \\
 
 	\espacio
 
 	cabecera	\_funcion	 	&$\longrightarrow$	& \ter{funcion} \ter{id} \\
-							& 					& \sem{'func ' || id.value } \\
+							& 					& \begin{lstlisting}
+												 ADD_INST ( "func " || ID.value );
+												\end{lstlisting} \\
 							&					& argumentos \ter{retorna} tipo \\
-							&					& \sem{cabecera	\_funcion := tipo.tipo } \\
-	
+							& 					& \begin{lstlisting}
+        												cabecera_funcion.tipoRetorno := tipo.tipo;
+        												cabecera_funcion.nombre := id.value;
+        												cabecera_funcion.args := argumentos.args;
+        												cabecera_funcion.classes := argumentos.classes;
+												\end{lstlisting} \\
+												
 	\espacio
 		
 	argumentos 		&$\longrightarrow$ 	& \ter{(} lista\_de\_param \ter{)} \\
+					& 					& \begin{lstlisting}
+										 	argumentos.args := lista_de_param.args;
+           								 	argumentos.classes := lista_de_param.classes;
+										\end{lstlisting} \\
+
 					& | 					& $\xi$ \\
+					& 					& \begin{lstlisting}
+   										    argumentos.args := EMPTY_LIST ();
+    										    argumentos.classes := EMPTY_LIST ();
+										\end{lstlisting} \\
+
 							
 \end{tabular}
 
 
 \small
 \begin{tabular}{r c p{.72\textwidth}}
-	lista\_de\_param &$\longrightarrow$  	& lista\_de\_ident \ter{:} clase\_par tipo \\
-					&					& \sem{ FOREACH(	lista\_de\_ident.ids as id) \{ \\
-												\ind ADD\_INST( clase\_par.clase || ``\_'' || TYPE\_OF(tipo.tipo) || `` '' || id); \\
-										\} \\
-										} \\
+	lista\_de\_param &$\longrightarrow$  	& lista\_de\_ident \ter{:} clase\_param tipo \\
+					&					& \begin{lstlisting}
+       									 lista_de_param.args = EMPTY_LIST ();
+   									     lista_de_param.classes = EMPTY_LIST ();
+										 FOREACH ( lista_de_ident.ids AS id )
+  										 {
+											ADD_INST( clase_param.clase || "_" || 
+											¡\hspace{3em}¡ TYPE_OF(tipo.tipo) || " " || id );
+											ST_ADD ( id, tipo.tipo );
+											lista_de_param.args = JOIN(lista_de_param.args, 
+											¡\hspace{13em}¡ INIT_LIST(tipo.tipo));
+											lista_de_param.classes = JOIN(lista_de_param.classes, 
+											¡\hspace{15em}¡ INIT_LIST(clase_param.clase));
+										}
+										\end{lstlisting} \\
 					&					& resto\_lis\_de\_param \\
-					
-	\espacio
+					&					& \begin{lstlisting}
+											lista_de_param.args = JOIN(lista_de_param.args, 
+											¡\hspace{16em}¡ resto_lis_de_param.args);
+											lista_de_param.classes = JOIN(lista_de_param.classes, 
+											¡\hspace{17.5em}¡ resto_lis_de_param.classes);
+										\end{lstlisting} \\
 	
-	resto\_lis\_de\_param 	&$\longrightarrow$ 	& \ter{;} lista\_de\_ident \ter{:} clase\_par tipo \\
-							&					& \sem{ FOREACH(	lista\_de\_ident.ids as id) \{ \\
-														\ind ADD\_INST(clase\_par.clase || ``\_'' || TYPE\_OF(tipo.tipo) || `` '' || id); \\
-												\} } \\
+	resto\_lis\_de\_param 	&$\longrightarrow$ 	& \ter{;} lista\_de\_ident \ter{:} clase\_param tipo \\
+							&					& \begin{lstlisting}
+           resto_lis_de_param.args := EMPTY_LIST();
+            resto_lis_de_param.classes := EMPTY_LIST();
+            FOREACH ( lista_de_ident.ids AS id )
+            {
+                ADD_INST( clase_param.clase || "_" || 
+                ¡\hspace{3em}¡ TYPE_OF(tipo.tipo) || " " || id );
+                ST_ADD ( id, tipo.tipo );
+                resto_lis_de_param.args := JOIN(resto_lis_de_param.args, 
+                ¡\hspace{13em}¡ INIT_LIST(tipo.tipo));
+                resto_lis_de_param.classes := JOIN(resto_lis_de_param.classes,
+                ¡\hspace{15em}¡ INIT_LIST(clase_param.clase));
+            }
+										\end{lstlisting} \\
 							&					& resto\_lis\_de\_param \\
+					&						& \begin{lstlisting}
+                resto_lis_de_param.args := JOIN(resto_lis_de_param.args, 
+                ¡\hspace{18em}¡ resto_lis_de_param$_{1}$.args);
+                resto_lis_de_param.classes := JOIN(resto_lis_de_param.classes, 
+                ¡\hspace{19em}¡ resto_lis_de_param$_{1}$.classes);
+
+										\end{lstlisting} \\
+										
 							& |					& $\xi$ \\
+							&					& \begin{lstlisting}
 
-	\espacio
+                resto_lis_de_param.args := EMPTY_LIST();
+                resto_lis_de_param.classes := EMPTY_LIST();
+
+										\end{lstlisting} \\
+										
+\end{tabular}
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
 
 
-	clase\_par 		& $\longrightarrow$		& entrada clase\_par' \\
-					&						& \sem{clase\_par.clase := clase\_par'.clase; } \\ 
-					& | 						& salida \\
-					&						& \sem{clase\_par := 'ref'; } \\
+	clase\_param 	& $\longrightarrow$		& \ter{entrada} clase\_param' \\
+					&						& \begin{lstlisting}
+												clase_param.clase := clase_param¡'¡.clase;
+											\end{lstlisting} \\
+					& | 						& \ter{salida} \\
+					&						& \begin{lstlisting}
+												clase_param.clase := "ref";
+											\end{lstlisting} \\
 	
 	\espacio
 	
-	clase\_par' 		& $\longrightarrow$		& salida \\
-					&						& \sem{clase\_par := 'ref'; } \\ 
+	clase\_param' 	& $\longrightarrow$		& \ter{salida} \\
+					&						& \begin{lstlisting}
+												clase_param¡'¡.clase := "ref";
+											\end{lstlisting} \\
 					& | 						& $\xi$ \\
-					&						& \sem{clase\_par := 'val'; } \\
+					&						& \begin{lstlisting}
+												clase_param¡'¡.clase := "val";
+											\end{lstlisting} \\
 					
-	\espacio
-
-	lista\_de\_sentencias' 	& $\longrightarrow$ 	& \sem{ lista\_de\_sentencias.hinloop := false; } \\
+	lista\_de\_sentencias' 	& $\longrightarrow$ 	& \begin{lstlisting}
+												lista_de_sentencias.hinloop := false;
+												\end{lstlisting} \\
 							& 					& lista\_de\_sentencias \\
 
 	\espacio
+
+	lista\_de\_sentencias 	& $\longrightarrow$ 	&  \begin{lstlisting}
+												sentencia.hinloop := lista_de_sentencias.hinloop;
+												\end{lstlisting} \\
+							& 					& sentencia \\
+							&					& \begin{lstlisting}
+												lista_de_sentencias$_{1}$.hinloop := lista_de_sentencias.hinloop;
+												\end{lstlisting} \\
+							&					& lista\_de\_sentencias \\
+							&					& \begin{lstlisting}
+												lista_de_sentencias.salir_si := JOIN( sentencia.salir_si , 
+												¡\hspace{22.5em}¡ lista_de_sentencias$_{1}$.salir_si );
+												\end{lstlisting} \\
+							& | 					& $\xi$ \\
+							&					& \begin{lstlisting}
+												lista_de_sentencias.salir_si := EMPTY_LIST();
+												\end{lstlisting} \\
+\end{tabular}
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+
+	\espacio
+
+	sentencia 				& $\longrightarrow$ 	& \ter{id} \\
+							&					& \begin{lstlisting}
+													asignacion_o_llamada.hident := id.value;
+												\end{lstlisting} \\
+							&					& asignacion\_o\_llamada \ter{;} \\
+							&					& \begin{lstlisting}
+													sentencia.salir_si := EMPTY_LIST();
+												\end{lstlisting} \\
+							
+							
+							& | 					& \ter{si} expresion \\
+							&					& \begin{lstlisting}
+	TYPECAST( expresion.nombre, expresion.tipo, NEW_BASIC_TYPE(BOOLEXPR), expresion.gtrue, expresion.gfalse);
+												\end{lstlisting} \\
+							&					& \ter{entonces} M \\
+							&					& \begin{lstlisting}
+	lista_de_sentencias.hinloop := sentencia.hinloop;
+												\end{lstlisting} \\							
+							&					& lista\_de\_sentencias \ter{fin} \ter{si} M \ter{;} \\
+							&					& \begin{lstlisting}
+    COMPLETE( expresion.gtrue , M$_{1}$.ref );
+  	COMPLETE( expresion.gfalse, M$_{2}$.ref );
+  	sentencia.salir_si := lista_de_sentencias.salir_si;
+												\end{lstlisting} \\
+
+							& | 					& \ter{hacer} M \\
+							&					& \begin{lstlisting}
+	lista_de_sentencias.hinloop := true;
+												\end{lstlisting} \\	
+							&					& lista\_de\_sentencias \ter{mientras} expresion \\
+							&					& \begin{lstlisting}
+	TYPECAST( expresion.nombre, expresion.tipo, NEW_BASIC_TYPE(BOOLEXPR), expresion.gtrue, expresion.gfalse);
+												\end{lstlisting} \\								
+							&					& \ter{fin} \ter{hacer} M \ter{;} \\
+							&					& \begin{lstlisting}
+            COMPLETE( expresion.gtrue , M$_{1}$.ref );
+            COMPLETE( expresion.gfalse, M$_{2}$.ref );
+            COMPLETE( lista_de_sentencias.salir_si, M$_{2}$.ref );
+            sentencia.salir_si := EMPTY_LIST();
+												\end{lstlisting} \\	
+						
+\end{tabular}
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+														
+							& | 					& \ter{salir} \ter{si} \\
+							&					& \begin{lstlisting}
+	if ( sentencia.hinloop == false )
+                ERROR ( "`salir si` outside a loop" );
+												\end{lstlisting} \\                
+                				&					& expresion M \ter{;} \\
+							&					& \begin{lstlisting}
+            COMPLETE( expresion.gfalse, M.ref );
+            sentencia.salir_si := expresion.gtrue;
+												\end{lstlisting} \\
+							
+							& | 					& \ter{get} \ter{(} \ter{id} \\
+							&					& \begin{lstlisting}
+			id_o_array.hident := id.value;
+												\end{lstlisting} \\
+							&					& id\_o\_array \ter{)} \ter{;} \\
+							&					& \begin{lstlisting}
+            sentencia.salir_si := EMPTY_LIST();
+            ADD_INST( "read " || id_o_array.nombre );
+												\end{lstlisting} \\
+												
+							& | 					& \ter{put\_line} \ter{(} expresion \ter{)} \ter{;} \\
+							&					& \begin{lstlisting}
+            sentencia.salir_si := EMPTY_LIST ();
+            ADD_INST ( "write " || expresion.nombre );
+            ADD_INST ( "writeln" );
+            
+												\end{lstlisting} \\
+
+		id\_o\_array			& $\longrightarrow$ 	& \begin{lstlisting}
+            acceso_a_array.hident := id_o_array.hident;
+            acceso_a_array.htipo := NEW_BASIC_TYPE(UNKNOWN);
+												\end{lstlisting} \\
+							&					& acceso\_a\_array \\
+							&					& \begin{lstlisting}
+           id_o_array.nombre = id_o_array.hident || "[" || acceso_a_array.offset || "]";
+												\end{lstlisting} \\
+												
+							& | 					& $\xi$ \\
+							&					& \begin{lstlisting}
+			if ( ST_EXISTS(id_o_array.hident) == false )
+			{
+            ERROR("Unknown identifier \\"" || id_o_array.hident || "\\"");
+        		}
+			id_o_array.nombre = id_o_array.hident;
+												\end{lstlisting} \\
+												
+\end{tabular}
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+		
+		asignacion\_o\_llamada	& $\longrightarrow$ 	& \ter{=} expresion \\
+								&					& \begin{lstlisting}
+            VAR tipo;
+            if ( ST_EXISTS (asignacion_o_llamada.hident))
+            {
+            	tipo := ST_GET_TYPE(asignacion_o_llamada.hident);
+            }
+            else
+            {
+            	tipo := NEW_BASIC_TYPE(UNKNOWN);
+            	ERROR ( "Identifier " || asignacion_o_llamada.hident || 
+			¡\hspace{2em}¡ " not found" );
+            }
+            ADD_INST( asignacion_o_llamada.hident || " := " || 
+            ¡\hspace{6em}¡TYPECAST( expresion.nombre, expresion.tipo, tipo, 
+            ¡\hspace{12em}¡expresion.gtrue, expresion.gfalse ) );
+ 
+												\end{lstlisting} \\
+												
+							& | 					& \begin{lstlisting}
+            acceso_a_array.hident := asignacion_o_llamada.hident;
+            acceso_a_array.htipo := NEW_BASIC_TYPE(UNKNOWN);
+												\end{lstlisting} \\
+							& 					& acceso\_a\_array \ter{=} expresion \\
+							&  					& \begin{lstlisting}
+            ADD_INST ( asignacion_o_llamada.hident || "[" || 
+            ¡\hspace{7em}¡acceso_a_array.offset || "]" || " := " || 
+            ¡\hspace{7em}¡TYPECAST(expresion.nombre, expresion.tipo, 
+            ¡\hspace{12.5em}¡acceso_a_array.tipo) );
+												\end{lstlisting} \\
+												
+							& | 					& \begin{lstlisting}
+            parametros_llamadas.hident := acceso_a_array.hident;
+            parametros_llamadas.hrequireFunc := false;
+												\end{lstlisting} \\
+							&					& parametros\_llamadas \\
+							
+							& 					& \begin{lstlisting}
+            ADD_INST( "call " || asignacion_o_llamada.hident );
+												\end{lstlisting} \\
+
+	
+			acceso\_a\_array'	& $\longrightarrow$ 	& \ter{[} lista\_de\_expr \ter{]} acceso\_a\_array' \\
+								&					& \begin{lstlisting}
+			acceso_a_array¡'¡.exprs := JOIN(lista_de_expr.exprs, 
+			¡\hspace{18em}¡acceso_a_array¡'¡.exprs);
+            acceso_a_array¡'¡.tipos := JOIN(lista_de_expr.tipos, 
+            ¡\hspace{18em}¡acceso_a_array¡'¡.tipos);
+            											\end{lstlisting} \\
+
+								& | 					& $\xi$ \\
+								&					& \begin{lstlisting}											
+			acceso_a_array¡'¡.exprs := EMPTY_LIST();
+        		acceso_a_array¡'¡.tipos := EMPTY_LIST();
+                    									\end{lstlisting} \\
+																
+\end{tabular}
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+										
+			acceso\_a\_array		& $\longrightarrow$ 	& \ter{[} lista\_de\_expr \ter{]} acceso\_a\_array' \\
+								&					& \begin{lstlisting}
+		acceso_a_array.offset := NEW_IDENT ();
+        ADD_INST ( acceso_a_array.offset || " := 0" );
+
+        VAR exprs := JOIN(lista_de_expr.exprs, acceso_a_array¡'¡.exprs);
+        VAR tipos := JOIN(lista_de_expr.tipos, acceso_a_array¡'¡.tipos);
+        
+        // No buscamos en la tabla de símbolos si ya nos han provisto de información del tipo
+        // a través del atributo heredado, como en el caso de las variables temporales.
+        if ( IS_UNKNOWN(acceso_a_array.htipo) == true && ST_EXISTS(acceso_a_array.hident) == false )
+        {
+            ERROR( "Identifier ¡'¡" || acceso_a_array.hident || "¡'¡ not found." );
+            acceso_a_array.tipo := NEW_BASIC_TYPE ( UNKNOWN );
+        }
+        else
+        {
+            VAR tipo;
+            if ( IS_UNKNOWN(acceso_a_array.htipo) == true )
+                tipo := ST_GET_TYPE ( acceso_a_array.hident );
+            else
+                tipo := acceso_a_array.htipo;
+            if ( IS_ARRAY(tipo) == false )
+            {
+                ERROR( "Identifier ¡'¡" || acceso_a_array.hident || "¡'¡ is not of type ¡'¡array¡'¡.");
+                acceso_a_array.tipo := NEW_BASIC_TYPE ( UNKNOWN );
+            }
+            else
+            {
+                acceso_a_array.tipo := ARRAY_CONTENT(tipo);
+                if ( LIST_SIZE(exprs) > ARRAY_DEPTH(tipo) )
+                    ERROR ( "Too many subscripts for array ¡'¡" || acceso_a_array.hident || "¡'¡" );
+                else if ( LIST_SIZE(exprs) < ARRAY_DEPTH(tipo) )
+                    ERROR ( "Too few subscripts for array ¡'¡" || acceso_a_array.hident || "¡'¡" );
+                else
+                {
+                    VAR i := 0;
+                    VAR curDimension := ARRAY_DEPTH(tipo) - 1;
+                    FOREACH ( exprs AS nombre )
+                    {
+                        ADD_INST ( acceso_a_array.offset || " := " || acceso_a_array.offset || " * " || ARRAY_DIMENSION(tipo, curDimension) );
+                        ADD_INST ( acceso_a_array.offset || " := " || acceso_a_array.offset || " + " ||
+                        		   TYPECAST(nombre, LIST_ITEM(tipos,i), NEW_BASIC_TYPE(INTEGER)) );
+                        curDimension := curDimension - 1;
+                        i := i + 1;
+                    }
+                }
+            }
+        }
+ 
+												\end{lstlisting} \\
+
 
 \end{tabular}
 
 \small
 \begin{tabular}{r c p{.72\textwidth}}
-	lista\_de\_sentencias 	& $\longrightarrow$ 	& \sem{sentencia.hinloop:=lista\_de\_sentencias.hinloop} \\
-							& 					& sentencia \ter{;} \\
-							&					& \sem{ lista\_de\_sentencia\textsubscript{1}.hinloop:=lista\_de\_sentencias.hinloop; } \\
-							&					& lista\_de\_sentencias\textsubscript{1} \\
-							&					& \sem{ lista\_de\_sentencias.salir\_si := unir( 	& sentencia.salir\_si, \\
-																								& lista\_de\_sentencia\textsubscript{1}.salir\_si ) } \\
-							& | 					& $\xi$ \\
-							&					& \sem{lista\_de\_sentencias.salir\_si := lista\_vacia() } \\
+			parametros\_llamadas	& $\longrightarrow$ 	& \ter{(} lista\_de\_expr \ter{)} \\
+\end{tabular}
 
+\begin{lstlisting}
+        if ( ST_EXISTS ( parametros_llamadas.hident ) == false ) {
+            ERROR ( "Unknown identifier ¡'¡" || parametros_llamadas.hident || "¡'¡" );
+            parametros_llamadas.tipoRetorno := NEW_BASIC_TYPE ( UNKNOWN );
+        } else {
+            VAR tipo := ST_GET_TYPE ( parametros_llamadas.hident );
+            if ( ( IS_FUNCTION ( tipo ) || IS_PROCEDURE ( tipo ) ) == false )
+            {
+                ERROR ( "Attempting to call ¡'¡" || parametros_llamadas.hident || "¡'¡, which is not a function or procedure." );
+                parametros_llamadas.tipoRetorno := NEW_BASIC_TYPE ( UNKNOWN );
+            }
+            else if ( parametros_llamadas.hrequireFunc == true && IS_PROCEDURE ( tipo ) )
+            {
+                ERROR ( "You cannot call ¡'¡" || parametros_llamadas.hident || "¡'¡ from here. It must be a function." );
+                parametros_llamadas.tipoRetorno := NEW_BASIC_TYPE ( UNKNOWN );
+            }
+            else
+            {
+                if ( IS_PROCEDURE ( tipo ) )
+                {
+                    parametros_llamadas.tipoRetorno := NEW_BASIC_TYPE ( UNKNOWN );
+                    if ( parametros_llamadas.hrequireFunc == true )
+                        ERROR ( "You cannot call ¡'¡" || parametros_llamadas.hident || "¡'¡ from here. It must be a function." );
+                }
+                else
+                    parametros_llamadas.tipoRetorno := FUNCTION_RETURN( tipo );
+
+                if ( LIST_SIZE(ls.exprs) != SUBPROG_NUM_PARAMS(tipo) )
+                    ERROR ( "Wrong number of arguments for ¡'¡" || parametros_llamadas.hident || "¡'¡" );
+                else
+                {
+                    VAR i := 0;
+                    FOREACH ( lista_de_expr.exprs AS expr )
+                    {
+                        VAR paramTipo := LIST_ITEM(lista_de_expr.tipos, i);
+                        VAR reqTipo := SUBPROG_PARAM(tipo, i);
+                        if ( SUBPROG_PARAM_CLASS(tipo, i) == "ref" && LIST_ITEM(lista_de_expr.literales, i) == true )
+                            ERROR ( "You cannot pass literal values as out parameters." );
+                        else if ( SUBPROG_PARAM_CLASS(tipo, i) == "ref" && paramTipo != reqTipo )
+                            ERROR ( "Cannot make type conversion for parameter #" || i || " of ¡'¡" || parametros_llamadas.hident || "¡'¡ (Out parameter types must match)" );
+                        else
+                            ADD_INST ( "param_" || SUBPROG_PARAM_CLASS(tipo, i) || " " || TYPECAST(expr, paramTipo, reqTipo) );
+                        i := i + 1;
+                    }
+                }
+            }
+        }
+\end{lstlisting}
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+
+			expresion			& $\longrightarrow$ 	& disyuncion \\
+								&					& \begin{lstlisting}
+        expresion.nombre := disyuncion.nombre;
+        expresion.tipo := disyuncion.tipo;
+        expresion.gfalse := disyuncion.gfalse;
+        expresion.gtrue := disyuncion.gtrue;
+        expresion.literal := disyuncion.literal;
+                    									\end{lstlisting} \\
+
+			disyuncion			& $\longrightarrow$ 	& conjuncion \\
+								&					& \begin{lstlisting}
+		disyuncion¡'¡.hnombre := conjuncion.nombre;
+        disyuncion¡'¡.htipo := conjuncion.tipo;
+        disyuncion¡'¡.hgfalse := conjuncion.gfalse;
+        disyuncion¡'¡.hgtrue := conjuncion.gtrue;
+        disyuncion¡'¡.hliteral := conjuncion.literal;
+                    									\end{lstlisting} \\
+								&					& disyuncion' \\
+								&					& \begin{lstlisting}
+		disyuncion.nombre := disyuncion¡'¡.nombre;
+        disyuncion.tipo := disyuncion¡'¡.tipo;
+        disyuncion.gfalse := disyuncion¡'¡.gfalse;
+        disyuncion.gtrue := disyuncion¡'¡.gtrue;
+        disyuncion.literal := disyuncion¡'¡.literal;
+                    									\end{lstlisting} \\
+		
+			conjuncion			& $\longrightarrow$ 	& relacional \\
+								&					& \begin{lstlisting}
+		conjuncion¡'¡.hnombre := relacional.nombre;
+        conjuncion¡'¡.htipo := relacional.tipo;
+        conjuncion¡'¡.hgfalse := relacional.gfalse;
+        conjuncion¡'¡.hgtrue := relacional.gtrue;
+        conjuncion¡'¡.hliteral := relacional.literal;
+                    									\end{lstlisting} \\
+								&					& conjuncion' \\
+								&					& \begin{lstlisting}
+		conjuncion.nombre := conjuncion¡'¡.nombre;
+        conjuncion.tipo := conjuncion¡'¡.tipo;
+        conjuncion.gfalse := conjuncion¡'¡.gfalse;
+        conjuncion.gtrue := conjuncion¡'¡.gtrue;
+        conjuncion.literal := conjuncion¡'¡.literal;
+                    									\end{lstlisting} \\
+\end{tabular}
+
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+
+		relacional			& $\longrightarrow$ 	& aritmetica \\
+								&					& \begin{lstlisting}
+		relacional¡'¡.hnombre := aritmetica.nombre;
+        relacional¡'¡.htipo := aritmetica.tipo;
+        relacional¡'¡.hgfalse := aritmetica.gfalse;
+        relacional¡'¡.hgtrue := aritmetica.gtrue;
+        relacional¡'¡.hliteral := aritmetica.literal;
+                    									\end{lstlisting} \\
+								&					& relacional' \\
+								&					& \begin{lstlisting}
+		relacional.nombre := relacional¡'¡.nombre;
+        relacional.tipo := relacional¡'¡.tipo;
+        relacional.gfalse := relacional¡'¡.gfalse;
+        relacional.gtrue := relacional¡'¡.gtrue;
+        relacional.literal := relacional¡'¡.literal;
+                    									\end{lstlisting} \\
+									
+									
+		aritmetica			& $\longrightarrow$ 	& termino \\
+								&					& \begin{lstlisting}
+		aritmetica¡'¡.hnombre := termino.nombre;
+        aritmetica¡'¡.htipo := termino.tipo;
+        aritmetica¡'¡.hgfalse := termino.gfalse;
+        aritmetica¡'¡.hgtrue := termino.gtrue;
+        aritmetica¡'¡.hliteral := termino.literal;
+                    									\end{lstlisting} \\
+								&					& aritmetica' \\
+								&					& \begin{lstlisting}
+		aritmetica.nombre := aritmetica¡'¡.nombre;
+        aritmetica.tipo := aritmetica¡'¡.tipo;
+        aritmetica.gfalse := aritmetica¡'¡.gfalse;
+        aritmetica.gtrue := aritmetica¡'¡.gtrue;
+        aritmetica.literal := aritmetica¡'¡.literal;
+                    									\end{lstlisting} \\
+									
+		
+			termino			& $\longrightarrow$ 	& negacion \\
+							&					& \begin{lstlisting}
+		termino¡'¡.hnombre := negacion.nombre;
+        termino¡'¡.htipo := negacion.tipo;
+        termino¡'¡.hgfalse := negacion.gfalse;
+        termino¡'¡.hgtrue := negacion.gtrue;
+        termino¡'¡.hliteral := negacion.literal;
+                    									\end{lstlisting} \\
+								&					& termino' \\
+								&					& \begin{lstlisting}
+		termino.nombre := termino¡'¡.nombre;
+        termino.tipo := termino¡'¡.tipo;
+        termino.gfalse := termino¡'¡.gfalse;
+        termino.gtrue := termino¡'¡.gtrue;
+        termino.literal := termino¡'¡.literal;
+                    									\end{lstlisting} \\
+\end{tabular}
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}						
+
+			disyuncion'			& $\longrightarrow$ 	& \ter{or} \\
+											&					& \begin{lstlisting}
+		TYPECAST( disyuncion¡'¡.hnombre, disyuncion¡'¡.htipo, NEW_BASIC_TYPE(BOOLEXPR), disyuncion¡'¡.hgtrue , disyuncion¡'¡.hgfalse );
+                    									\end{lstlisting} \\
+								&					& M conjuncion \\
+								&					& \begin{lstlisting}
+        	TYPECAST( conjuncion.nombre, conjuncion.tipo, NEW_BASIC_TYPE(BOOLEXPR), conjuncion.gtrue , conjuncion.gfalse );
+        COMPLETE( disyuncion¡'¡.hgfalse, M.ref );
+        disyuncion¡'¡$_{1}$.hgtrue := JOIN( disyuncion¡'¡.hgtrue, conjuncion.gtrue );
+        disyuncion¡'¡$_{1}$.hgfalse := conjuncion.gfalse;
+        disyuncion¡'¡$_{1}$.hnombre := conjuncion.nombre;
+        disyuncion¡'¡$_{1}$.htipo := NEW_BASIC_TYPE(BOOLEXPR);
+                    									\end{lstlisting} \\
+								&					& disyuncion' \\
+								&					& \begin{lstlisting}
+        disyuncion¡'¡.nombre := disyuncion¡'¡$_{1}$.nombre;
+        disyuncion¡'¡.tipo := disyuncion¡'¡$_{1}$.tipo;
+        disyuncion¡'¡.gfalse := disyuncion¡'¡$_{1}$.gfalse;
+        disyuncion¡'¡.gtrue := disyuncion¡'¡$_{1}$.gtrue;
+        disyuncion¡'¡.literal := false;
+                    									\end{lstlisting} \\
+									
+								& | 					& $\xi$ \\
+								&					& \begin{lstlisting}
+        disyuncion¡'¡.nombre := disyuncion¡'¡.hnombre;
+        disyuncion¡'¡.tipo := disyuncion¡'¡.htipo;
+        disyuncion¡'¡.gfalse := disyuncion¡'¡.hgfalse;
+        disyuncion¡'¡.gtrue := disyuncion¡'¡.hgtrue;
+        disyuncion¡'¡.literal := disyuncion¡'¡.hliteral;
+                    									\end{lstlisting} \\
+
+\end{tabular}
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+
+		
+			conjuncion'			& $\longrightarrow$ 	& \ter{and} \\
+								&					& \begin{lstlisting}
+		TYPECAST( conjuncion¡'¡.hnombre, conjuncion¡'¡.htipo, NEW_BASIC_TYPE(BOOLEXPR), conjuncion¡'¡.hgtrue , conjuncion¡'¡.hgfalse );
+                    									\end{lstlisting} \\
+								&					& M relacional \\
+								&					& \begin{lstlisting}
+            TYPECAST( relacional.nombre, relacional.tipo, NEW_BASIC_TYPE(BOOLEXPR), relacional.gtrue , relacional.gfalse );
+            COMPLETE( conjuncion¡'¡.hgtrue, M.ref );
+            conjuncion¡'¡$_{1}$.hgfalse := JOIN( conjuncion¡'¡.hgfalse, relacional.gfalse );
+            conjuncion¡'¡$_{1}$.hgtrue := relacional.gtrue;
+            conjuncion¡'¡$_{1}$.hnombre := relacional.nombre;
+            conjuncion¡'¡$_{1}$.htipo := NEW_BASIC_TYPE(BOOLEXPR);
+                    									\end{lstlisting} \\
+								&					& conjucion' \\
+								&					& \begin{lstlisting}
+        conjucion¡'¡.nombre := conjucion¡'¡$_{1}$.nombre;
+        conjucion¡'¡.tipo := conjucion¡'¡$_{1}$.tipo;
+        conjucion¡'¡.gfalse := conjucion¡'¡$_{1}$.gfalse;
+        conjucion¡'¡.gtrue := conjucion¡'¡$_{1}$.gtrue;
+        conjucion¡'¡.literal := false;
+                    									\end{lstlisting} \\
+									
+								& | 					& $\xi$ \\
+								&					& \begin{lstlisting}
+        conjucion¡'¡.nombre := conjucion¡'¡.hnombre;
+        conjucion¡'¡.tipo := conjucion¡'¡.htipo;
+        conjucion¡'¡.gfalse := conjucion¡'¡.hgfalse;
+        conjucion¡'¡.gtrue := conjucion¡'¡.hgtrue;
+        conjucion¡'¡.literal := conjucion¡'¡.hliteral;
+                    									\end{lstlisting} \\
+
+\end{tabular}
+
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+
+			relacional'			& $\longrightarrow$ 	& oprel aritmetica \\
+								&					& \begin{lstlisting}
+            if ( ! IS_NUMERIC(relacional¡'¡.htipo) ) {
+            	ERROR("Relational operand ¡'¡" || relacional¡'¡.hnombre || "¡'¡ is not scalar");
+            }
+            else if ( ! IS_NUMERIC(aritmetica.tipo) )
+            {
+            	ERROR("Relational operand ¡'¡" || aritmetica.nombre || "¡'¡ is not scalar");
+            }
+            else
+            {
+
+                if ( IS_REAL(relacional¡'¡.htipo) || IS_REAL(aritmetica.tipo) )
+                {
+                    TYPECAST( relacional¡'¡.hnombre, relacional¡'¡.htipo, NEW_BASIC_TYPE(REAL) );
+                    TYPECAST( aritmetica.nombre, aritmetica.tipo, NEW_BASIC_TYPE(REAL) );
+                }
+
+                relacional ¡'¡$_{1}$.hgtrue := INIT_LIST(GET_REF());
+                ADD_INST( "if " || relacional¡'¡.hnombre || " " || oprel.op || " " || aritmetica.nombre || " goto ");
+                relacional ¡'¡$_{1}$.hgfalse := INIT_LIST(GET_REF());
+                ADD_INST( "goto ");
+
+                relacional ¡'¡$_{1}$.htipo = NEW_BASIC_TYPE(BOOLEXPR);
+             }
+                    									\end{lstlisting} \\
+								&					& M relacional' \\
+								&					& \begin{lstlisting}
+            relacional¡'¡.nombre = relacional¡'¡$_{1}$.nombre;
+            relacional¡'¡.tipo = relacional¡'¡$_{1}$.tipo;
+            relacional¡'¡.gfalse = relacional¡'¡$_{1}$.gfalse;
+            relacional¡'¡.gtrue = relacional¡'¡$_{1}$.gtrue;
+            relacional¡'¡.literal = false;
+                    									\end{lstlisting} \\
+									
+								& | 					& $\xi$ \\
+								&					& \begin{lstlisting}
+        relacional¡'¡.nombre := relacional¡'¡.hnombre;
+        relacional¡'¡.tipo := relacional¡'¡.htipo;
+        relacional¡'¡.gfalse := relacional¡'¡.hgfalse;
+        relacional¡'¡.gtrue := relacional¡'¡.hgtrue;
+        relacional¡'¡.literal := relacional¡'¡.hliteral;
+                    									\end{lstlisting} \\
+
+\end{tabular}
+
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+
+			aritmetica'			& $\longrightarrow$ 	& opl2 termino \\
+								&					& \begin{lstlisting}
+            if ( IS_NUMERIC(aritmetica¡'¡.htipo) && IS_NUMERIC(termino.tipo) ) {
+
+				// Si uno de los dos es real, se realiza aritmética con números reales.
+                if ( IS_REAL(aritmetica¡'¡.htipo) || IS_REAL(termino.tipo) )
+                {
+                    TYPECAST( aritmetica¡'¡.hnombre, aritmetica¡'¡.htipo, NEW_BASIC_TYPE(REAL) );
+                    TYPECAST( termino.nombre, termino.tipo, NEW_BASIC_TYPE(REAL) );
+                    arimetica ¡'¡$_{1}$.htipo := NEW_BASIC_TYPE(REAL);
+                }
+                else
+                {
+                    arimetica¡'¡$_{1}$.htipo := NEW_BASIC_TYPE(INTEGER);
+                }
+
+                arimetica ¡'¡$_{1}$.hnombre := NEW_IDENT();
+                ADD_INST( arimetica¡'¡$_{1}$.hnombre || " := " || arimetica¡'¡.hnombre || " " || opl2.op || " " || termino.nombre );
+                
+            } else {
+                ERROR("Type mismatch error");
+                arimetica¡'¡$_{1}$.htipo := NEW_BASIC_TYPE(UNKNOWN);
+            }
+                    									\end{lstlisting} \\
+								&					& aritmetica' \\
+								&					& \begin{lstlisting}
+            aritmetica¡'¡.nombre = arimetica¡'¡$_{1}$.nombre;
+            aritmetica¡'¡.tipo = arimetica¡'¡$_{1}$.tipo;
+            aritmetica¡'¡.gfalse = arimetica¡'¡$_{1}$.gfalse;
+            aritmetica¡'¡.gtrue = arimetica¡'¡$_{1}$.gtrue;
+            aritmetica¡'¡.literal = false;
+                    									\end{lstlisting} \\
+									
+								& | 					& $\xi$ \\
+								&					& \begin{lstlisting}
+        aritmetica¡'¡.nombre := aritmetica¡'¡.hnombre;
+        aritmetica¡'¡.tipo := aritmetica¡'¡.htipo;
+        aritmetica¡'¡.gfalse := aritmetica¡'¡.hgfalse;
+        aritmetica¡'¡.gtrue := aritmetica¡'¡.hgtrue;
+        aritmetica¡'¡.literal := aritmetica¡'¡.hliteral;
+                    									\end{lstlisting} \\
+
+\end{tabular}
+
+
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+
+			termino'			& $\longrightarrow$ 	& opl1 negacion \\
+							&					& \begin{lstlisting}
+			// Si uno de los dos es real, se realiza aritmética con números reales.
+            if ( IS_NUMERIC(termino¡'¡.htipo) && IS_NUMERIC(negacion.tipo) ) {
+
+				// Si uno de los dos es real, se realiza aritmética con números reales.
+                if ( IS_REAL(termino¡'¡.htipo) || IS_REAL(negacion.tipo) )
+                {
+                    TYPECAST( termino¡'¡.hnombre, termino¡'¡.htipo, NEW_BASIC_TYPE(REAL) );
+                    TYPECAST( negacion.nombre, negacion.tipo, NEW_BASIC_TYPE(REAL) );
+                    termino ¡'¡$_{1}$.htipo := NEW_BASIC_TYPE(REAL);
+                }
+                else
+                {
+                    termino ¡'¡$_{1}$.htipo := NEW_BASIC_TYPE(INTEGER);
+                }
+
+                termino¡'¡$_{1}$.hnombre := NEW_IDENT();
+                ADD_INST( termino¡'¡$_{1}$.hnombre || " := " || termino¡'¡.hnombre || " " || opl1.op || " " || negacion.nombre );
+                
+            } else {
+                ERROR("Type mismatch error");
+                termino¡'¡$_{1}$.htipo := NEW_BASIC_TYPE(UNKNOWN);
+            }
+                    									\end{lstlisting} \\
+								&					& termino' \\
+								&					& \begin{lstlisting}
+            termino¡'¡.nombre = termino¡'¡$_{1}$.nombre;
+            termino¡'¡.tipo = termino¡'¡$_{1}$.tipo;
+            termino¡'¡.gfalse = termino¡'¡$_{1}$.gfalse;
+            termino¡'¡.gtrue = termino¡'¡$_{1}$.gtrue;
+            termino¡'¡.literal = false;
+                    									\end{lstlisting} \\
+									
+								& | 					& $\xi$ \\
+								&					& \begin{lstlisting}
+        termino¡'¡.nombre := termino¡'¡.hnombre;
+        termino¡'¡.tipo := termino¡'¡.htipo;
+        termino¡'¡.gfalse := termino¡'¡.hgfalse;
+        termino¡'¡.gtrue := termino¡'¡.hgtrue;
+        termino¡'¡.literal := termino¡'¡.hliteral;
+                    									\end{lstlisting} \\
+
+\end{tabular}
+
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+
+		\espacio
+		
+			negacion			& $\longrightarrow$ 	& not factor \\
+							&					& \begin{lstlisting}
+            if ( IS_BOOLEXPR(factor.tipo) )
+            {
+                negacion.gtrue = factor.gfalse;
+                negacion.gfalse = factor.gtrue;
+                negacion.tipo = factor.tipo;
+            }
+            else
+            {
+                VAR boolNombre = TYPECAST(factor.nombre, factor.tipo, NEW_BASIC_TYPE(BOOLEAN), factor.gtrue, factor.gfalse);
+                negacion.nombre = NEW_IDENT();
+                negacion.tipo = NEW_BASIC_TYPE(BOOLEAN);
+                VAR ref = GET_REF();
+                ADD_INST ( "if " || boolNombre || " goto " || ref+2 );
+                ADD_INST ( "goto " || ref+4 );
+                ADD_INST ( factor.nombre || " := false" );
+                ADD_INST ( "goto " || ref+5 );
+                ADD_INST ( factor.nombre || " := true" );
+            }
+            negacion.literal = false;
+                    									\end{lstlisting} \\
+							& |					& factor \\ 
+							&					& \begin{lstlisting}
+           negacion.nombre = factor.nombre;
+           negacion.tipo = factor.tipo;
+           negacion.gfalse = factor.gfalse;
+           negacion.gtrue = factor.gtrue;
+           negacion.literal = factor.literal;
+                    									\end{lstlisting} \\
+
+\end{tabular}
+
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+
+			factor			& $\longrightarrow$ 	& \ter{-} factor' \\
+							&					& \begin{lstlisting}
+            if ( IS_REAL(factor¡'¡.tipo) || IS_INTEGER(factor¡'¡.tipo) )
+            {
+                factor.nombre = NEW_IDENT();
+                ADD_INST( factor.nombre || " := 0 - " || factor¡'¡.nombre );
+                factor.tipo = factor¡'¡.tipo;
+            }
+            else
+            {
+                ERROR("Type mismatch error");
+            }
+            factor.literal = factor¡'¡.literal;
+                    									\end{lstlisting} \\
+							&					& factor' \\
+							&					& \begin{lstlisting}
+           factor.nombre = factor¡'¡.nombre;
+           factor.tipo = factor¡'¡.tipo;
+           factor.gfalse = factor¡'¡.gfalse;
+           factor.gtrue = factor¡'¡.gtrue;
+           factor.literal = factor¡'¡.literal;
+                    									\end{lstlisting} \\
+\end{tabular}
+
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+
+		\espacio
+		
+			factor'			& $\longrightarrow$ 	& IDENTIFIER \\
+							&					& \begin{lstlisting}
+				array_o_llamada.hident := IDENTIFIER.value;
+                    									\end{lstlisting} \\
+							& 					& array\_o\_llamada \\ 
+							&					& \begin{lstlisting}
+            factor ¡'¡.nombre = array_o_llamada.nombre;
+            factor ¡'¡.tipo = array_o_llamada.tipo;
+            factor ¡'¡.literal = false;
+            factor ¡'¡.gtrue = EMPTY_LIST();
+            factor ¡'¡.gfalse = EMPTY_LIST();
+                    								\end{lstlisting} \\
+								
+							& |				 	& INTEGER \\
+							&					& \begin{lstlisting}
+            factor ¡'¡.tipo = NEW_BASIC_TYPE(INTEGER);
+            factor ¡'¡.nombre = INTEGER.value;
+            factor ¡'¡.literal = true;
+            factor ¡'¡.gtrue = EMPTY_LIST();
+            factor ¡'¡.gfalse = EMPTY_LIST();
+                    									\end{lstlisting} \\
+									
+							& |				 	& REAL \\
+							&					& \begin{lstlisting}
+            factor ¡'¡.tipo = NEW_BASIC_TYPE(REAL);
+            factor ¡'¡.nombre = REAL.value;
+            factor ¡'¡.literal = true;
+            factor ¡'¡.gtrue = EMPTY_LIST();
+            factor ¡'¡.gfalse = EMPTY_LIST();
+                    									\end{lstlisting} \\
+									
+							& |				 	& booleano \\
+							&					& \begin{lstlisting}
+            factor ¡'¡.tipo = NEW_BASIC_TYPE(BOOLEAN);
+            factor ¡'¡.nombre = booleano.value;
+            factor ¡'¡.literal = true;
+            factor ¡'¡.gtrue = EMPTY_LIST();
+            factor ¡'¡.gfalse = EMPTY_LIST();
+                    									\end{lstlisting} \\
+									
+									
+							& |				 	& \ter{(} expresion \ter{)} \\
+							&					& \begin{lstlisting}
+            factor ¡'¡.tipo = expresion.tipo;
+            factor ¡'¡.nombre = expresion.nombre;
+            factor ¡'¡.gfalse = expresion.gfalse;
+            factor ¡'¡.gtrue = expresion.gtrue;
+            factor ¡'¡.literal = expresion.literal;
+                    									\end{lstlisting} \\
+\end{tabular}
+
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+
+		\espacio
+		
+			array\_o\_llamada	& $\longrightarrow$ 	& \begin{lstlisting}
+         															     parametros\_llamadas.hident := array_o_llamada.hident;
+       																     parametros\_llamadas.hrequireFunc := true;
+                    									\end{lstlisting} \\
+							& 					& parametros\_llamadas \\ 
+							&					& \begin{lstlisting}
+            																ADD_INST ( "call " || array_o_llamada.hident );
+            																acceso_a_array_opcional.hnombre := NEW_IDENT();
+            																acceso_a_array_opcional.htipo := parametros_llamadas.tipoRetorno;
+            																ADD_INST ( "store_function_ret " || acceso_a_array_opcional.hnombre );
+                    								\end{lstlisting} \\
+							& 				 	& acceso\_a\_array\_opcional \\
+							&					& \begin{lstlisting}
+            																array_o_llamada.nombre := acceso_a_array_opcional.nombre;
+            																array_o_llamada.tipo := acceso_a_array_opcional.tipo;
+                    									\end{lstlisting} \\
+									
+							& |				 	& \begin{lstlisting}
+            																acceso_a_array.hident := array_o_llamada.hident;
+            																acceso_a_array.htipo := NEW_BASIC_TYPE(UNKNOWN);
+                    									\end{lstlisting} \\
+							&					& acceso\_a\_array \\
+							&					& \begin{lstlisting}
+            																array_o_llamada.nombre := NEW_IDENT ();
+            																ADD_INST ( array_o_llamada.nombre || " := " || array_o_llamada.hident
+																		¡\hspace{5em}¡ || "[" || acceso_a_array.offset || "]" );
+            																array_o_llamada.tipo = acceso_a_array.tipo;
+                    									\end{lstlisting} \\
+
+							& |				 	& $\xi$ \\
+							&					& \begin{lstlisting}
+        array_o_llamada.nombre = array_o_llamada.hident;
+
+        if ( ST_EXISTS(array_o_llamada.hident) == false )
+        {
+            ERROR( "Unknow identifier " || array_o_llamada.hident );
+            array_o_llamada.tipo = NEW_BASIC_TYPE ( UNKNOWN );
+        }
+        else
+        {
+            array_o_llamada.tipo = ST_GET_TYPE ( array_o_llamada.hident );
+        }
+                    									\end{lstlisting} \\
+
+\end{tabular}
+
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+
+		\espacio
+		
+			acceso\_a\_array\_opcional	& $\longrightarrow$ 	& \begin{lstlisting}
+																acceso_a_array.hident := "`function return value`";
+																acceso_a_array.htipo := acceso_a_array_opcional.htipo;
+                    									\end{lstlisting} \\
+										& 					& acceso\_a\_array \\
+										&					& \begin{lstlisting}
+            acceso_a_array_opcional.nombre := NEW_IDENT ();
+            ADD_INST ( acceso_a_array_opcional.nombre || " := " || acceso_a_array_opcional.hnombre || "[" || acceso_a_array.offset || "]" );
+            acceso_a_array_opcional.tipo := acceso_a_array.tipo;
+                    									\end{lstlisting} \\
+									
+										& | 					& $\xi$ \\
+										&					& \begin{lstlisting}
+        acceso_a_array_opcional.nombre = acceso_a_array_opcional.hnombre;
+        acceso_a_array_opcional.tipo = acceso_a_array_opcional.htipo;
+                    									\end{lstlisting} \\
+										
+
+			lista\_de\_expr	& $\longrightarrow$ 	& expresion resto\_lista\_expr \\
+							&					& \begin{lstlisting}
+        lista_de_expr.exprs := JOIN(INIT_LIST(expresion.nombre), resto_lista_expr.exprs);
+        lista_de_expr.tipos := JOIN(INIT_LIST(expresion.tipo), resto_lista_expr.tipos);
+        lista_de_expr.literales := JOIN(INIT_LIST(expresion.literal), resto_lista_expr.literales);
+                    									\end{lstlisting} \\
+									
+			resto\_lista\_expr	& $\longrightarrow$ 	& \ter{,} expresion resto\_lista\_expr \\
+								&					& \begin{lstlisting}
+        resto_lista_expr.exprs := JOIN(INIT_LIST(expresion.nombre), resto_lista_expr$_{1}$.exprs);
+        resto_lista_expr.tipos := JOIN(INIT_LIST(expresion.tipo), resto_lista_expr$_{1}$.tipos);
+        resto_lista_expr.literales := JOIN(INIT_LIST(expresion.literal), resto_lista_expr$_{1}$.literales);
+                    									\end{lstlisting} \\
+									
+								& | 					& $\xi$ \\
+								&					& \begin{lstlisting}
+        resto_lista_expr.exprs = EMPTY_LIST();
+        resto_lista_expr.tipos = EMPTY_LIST();
+        resto_lista_expr.literales = EMPTY_LIST();
+                    									\end{lstlisting} \\
+        
+        
+\end{tabular}
+
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+
+		\espacio
+		
+			opl1							& $\longrightarrow$ 	& \ter{*} \\
+										&					& \begin{lstlisting}
+																opl1.op := "*";
+                    											  \end{lstlisting} \\
+										& |					& \ter{/} \\
+										&					& \begin{lstlisting}
+																opl1.op := "/";
+															  \end{lstlisting} \\
+
+			opl2							& $\longrightarrow$ 	& \ter{+} \\
+										&					& \begin{lstlisting}
+																opl2.op := "+";
+                    											  \end{lstlisting} \\
+										& |					& \ter{-} \\
+										&					& \begin{lstlisting}
+																opl2.op := "-";
+															  \end{lstlisting} \\        
+			booleano						& $\longrightarrow$ 	& \ter{true} \\
+										&					& \begin{lstlisting}
+																booleano.value := "true";
+                    											  \end{lstlisting} \\
+										& |					& \ter{false} \\
+										&					& \begin{lstlisting}
+																booleano.value := "true";
+															  \end{lstlisting} \\
+															     
+			M							& $\longrightarrow$ 	& $\xi$ \\
+										&					& \begin{lstlisting}
+																M.ref := GET_REF();
+                    											  \end{lstlisting} \\
+											  
+\end{tabular}
+
+
+\small
+\begin{tabular}{r c p{.72\textwidth}}
+	  
+			oprel						& $\longrightarrow$ 	& \ter{<} \\
+										&					& \begin{lstlisting}
+																oprel.op := "<";
+                    											  \end{lstlisting} \\
+										& |					& \ter{>} \\
+										&					& \begin{lstlisting}
+																oprel.op := ">";
+															  \end{lstlisting} \\
+  										& |					& \ter{<=} \\
+										&					& \begin{lstlisting}
+																oprel.op := "<=";
+															  \end{lstlisting} \\
+  										& |					& \ter{>=} \\
+										&					& \begin{lstlisting}
+																oprel.op := ">=";
+															  \end{lstlisting} \\
+  										& |					& \ter{==} \\
+										&					& \begin{lstlisting}
+																oprel.op := "==";
+															  \end{lstlisting} \\          
+  										& |					& \ter{/=} \\
+										&					& \begin{lstlisting}
+																oprel.op := "/=";
+															  \end{lstlisting} \\ 															  
 \end{tabular}
