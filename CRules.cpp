@@ -1531,6 +1531,10 @@ DEFINE_RULE(negacion,
             }
             else
             {
+                // Le pasamos el gtrue y el gfalse en orden inverso al TYPECAST
+                // para que haga de forma transparente la negación.
+                THIS.gtrue = EMPTY_LIST ();
+                THIS.gfalse = EMPTY_LIST ();
                 TYPECAST(f.nombre, f.tipo, NEW_BASIC_TYPE(BOOLEXPR), THIS.gfalse, THIS.gtrue);
                 THIS.tipo = NEW_BASIC_TYPE(BOOLEXPR);
             }

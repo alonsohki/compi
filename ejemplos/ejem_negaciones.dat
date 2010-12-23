@@ -1,8 +1,11 @@
 programa ejem_negaciones
 	variables b : booleano;
+	variables a : entero;
 comienzo
 	b = not b;
 	b = 1 > 2;
-	b = not 1;
+	b = not a;
+	b = not 1.0;
 	b = not(1 > 2);
+	b = not ( not true );
 fin;
