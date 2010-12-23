@@ -1344,7 +1344,7 @@ DEFINE_RULE(aritmetica_prima,
         RULE ( aritmetica_prima , a );
         {
             if ( IS_NUMERIC(THIS.htipo) && IS_NUMERIC(t.tipo) ) {
-
+                // Si uno de los dos es real, se realia la aritmética con números reales.
                 if ( IS_REAL(THIS.htipo) || IS_REAL(t.tipo) )
                 {
                     TYPECAST( THIS.hnombre, THIS.htipo, NEW_BASIC_TYPE(REAL) );
@@ -1449,15 +1449,15 @@ DEFINE_RULE(termino_prima,
 {
     if (IS_RULE_FIRST ( opl1 )) {
         RULE ( opl1 , op )();
-        RULE ( negacion , f )();
+        RULE ( negacion , neg )();
         RULE ( termino_prima , t );
         {
-            if ( IS_NUMERIC(THIS.htipo) && IS_NUMERIC(f.tipo) ) {
-
-                if ( IS_REAL(THIS.htipo) || IS_REAL(f.tipo) )
+            if ( IS_NUMERIC(THIS.htipo) && IS_NUMERIC(neg.tipo) ) {
+                // Si uno de los dos es real, se realiza aritmética con números reales.
+                if ( IS_REAL(THIS.htipo) || IS_REAL(neg.tipo) )
                 {
                     TYPECAST( THIS.hnombre, THIS.htipo, NEW_BASIC_TYPE(REAL) );
-                    TYPECAST( f.nombre, f.tipo, NEW_BASIC_TYPE(REAL) );
+                    TYPECAST( neg.nombre, neg.tipo, NEW_BASIC_TYPE(REAL) );
                     t.htipo = NEW_BASIC_TYPE(REAL);
                 }
                 else
@@ -1466,7 +1466,7 @@ DEFINE_RULE(termino_prima,
                 }
                 
                 t.hnombre = NEW_IDENT();
-                ADD_INST( t.hnombre || " := " || THIS.hnombre || " " || op.op || " " || f.nombre );
+                ADD_INST( t.hnombre || " := " || THIS.hnombre || " " || op.op || " " || neg.nombre );
                 
             } else {
                 ERROR("Type mismatch error");
