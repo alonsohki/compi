@@ -1,0 +1,2 @@
+[4:10] Error: Cannot convert from integer to array
+Compilation finished. 1 errors, 0 warnings

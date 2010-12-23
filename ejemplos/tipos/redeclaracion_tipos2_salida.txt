@@ -1,0 +1,10 @@
+0: prog ejemplo;
+1: int a;
+2: int b;
+3: int c;
+4: func suma;
+5: real a;
+6: ret 5.0;
+7: finfunc;
+8: halt;
+Compilation finished. 0 errors, 0 warnings

@@ -1,0 +1,2 @@
+[4:16] Error: Cannot convert from boolean expression to integer
+Compilation finished. 1 errors, 0 warnings

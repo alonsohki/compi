@@ -1,0 +1,13 @@
+0: prog ejemplo;
+1: int a;
+2: int b;
+3: int c;
+4: real d;
+5: real e;
+6: bool f;
+7: array_int g,60;
+8: array_int h,60;
+9: array_real i,16;
+10: array_real j,16;
+11: halt;
+Compilation finished. 0 errors, 0 warnings

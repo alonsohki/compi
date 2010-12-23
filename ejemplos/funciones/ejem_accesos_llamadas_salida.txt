@@ -1,0 +1,23 @@
+0: prog accesos_llamadas;
+1: real a;
+2: func suma;
+3: val_real x;
+4: val_real y;
+5: _t0 := x + y;
+6: _t1 := _t0;
+7: real2int _t1;
+8: ret _t1;
+9: finfunc;
+10: param_copy 1.0;
+11: param_copy 1.0;
+12: call suma;
+13: store_function_ret _t2;
+14: _t3 := _t2;
+15: int2real _t3;
+16: _t4 := _t3 + 5.0;
+17: a := _t4;
+18: param_copy 2.0;
+19: param_copy 2.0;
+20: call suma;
+21: halt;
+Compilation finished. 0 errors, 0 warnings

@@ -1,0 +1,25 @@
+0: prog ejem_expresiones;
+1: real a;
+2: real b;
+3: real c;
+4: real d;
+5: bool e;
+6: read a;
+7: read b;
+8: read c;
+9: read d;
+10: if a > b goto 16;
+11: goto 12;
+12: if a < b goto 16;
+13: goto 14;
+14: _t0 := true;
+15: goto 17;
+16: _t0 := false;
+17: e := _t0;
+18: _t1 := 0 - b;
+19: _t2 := _t1 + c;
+20: _t3 := 0 - d;
+21: _t4 := _t2 - _t3;
+22: a := _t4;
+23: halt;
+Compilation finished. 0 errors, 0 warnings

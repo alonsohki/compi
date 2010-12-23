@@ -1,0 +1,15 @@
+0: prog ejemplo;
+1: func suma;
+2: array_int a,2;
+3: ret a;
+4: finfunc;
+5: call suma;
+6: store_function_ret _t0;
+7: _t1 := 0;
+8: _t1 := _t1 * 2;
+9: _t1 := _t1 + 2;
+10: _t2 := _t0[_t1];
+11: write _t2;
+12: writeln;
+13: halt;
+Compilation finished. 0 errors, 0 warnings

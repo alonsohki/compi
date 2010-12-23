@@ -1,0 +1,10 @@
+0: prog ejemplo;
+1: array_int i,4;
+2: _t0 := 0;
+3: _t0 := _t0 * 2;
+4: _t0 := _t0 + 2;
+5: _t0 := _t0 * 2;
+6: _t0 := _t0 + 2;
+7: i[_t0] := 5;
+8: halt;
+Compilation finished. 0 errors, 0 warnings

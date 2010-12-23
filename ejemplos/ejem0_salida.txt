@@ -46,3 +46,4 @@
 45: write _t12;
 46: writeln;
 47: halt;
+Compilation finished. 0 errors, 0 warnings

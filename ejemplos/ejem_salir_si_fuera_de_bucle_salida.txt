@@ -1,2 +1,2 @@
-[3:15] Error: Unknown token
+[6:11] Error: `salir si` outside a loop
 Compilation finished. 1 errors, 0 warnings

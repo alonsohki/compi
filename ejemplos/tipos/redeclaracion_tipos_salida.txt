@@ -1,0 +1,8 @@
+0: prog ejemplo;
+1: int a;
+2: int b;
+4: real d;
+5: real c;
+6: halt;
+[4:1] Warning: Redeclaration of symbol 'c'
+Compilation finished. 0 errors, 1 warnings

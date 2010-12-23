@@ -1,0 +1,20 @@
+0: prog ejem_expresiones_booleanas;
+1: bool a;
+2: if 1 > 2 goto 8;
+3: goto 4;
+4: if true goto 6;
+5: goto 10;
+6: if false goto 8;
+7: goto 10;
+8: write 1;
+9: writeln;
+10: if 3 == 0 goto 12;
+11: goto 14;
+12: if 5 == 0 goto 16;
+13: goto 14;
+14: _t0 := true;
+15: goto 17;
+16: _t0 := false;
+17: a := _t0;
+18: halt;
+Compilation finished. 0 errors, 0 warnings

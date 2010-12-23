@@ -1,0 +1,2 @@
+[15:11] Error: Relational operand 'c' is not scalar
+Compilation finished. 1 errors, 0 warnings

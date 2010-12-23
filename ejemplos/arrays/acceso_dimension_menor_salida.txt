@@ -1,0 +1,2 @@
+[4:12] Error: Too few subscripts for array 'i'
+Compilation finished. 1 errors, 0 warnings

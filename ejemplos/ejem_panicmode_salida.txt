@@ -1,0 +1,6 @@
+[1:1] Error: øþ"Expected 'programa', but got 'programaaa'
+[5:5] Error: øþ"Expected ';', but got 'get'
+[7:26] Error: øþ"Expected ';', but got 'fin'
+[9:9] Error: Unexpected token ';'
+[10:7] Error: Type mismatch error
+Compilation finished. 5 errors, 0 warnings

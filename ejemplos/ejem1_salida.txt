@@ -1,0 +1,2 @@
+[3:2] Error: Non closed comment
+Compilation finished. 1 errors, 0 warnings

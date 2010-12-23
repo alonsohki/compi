@@ -1,0 +1,12 @@
+0: prog ejemplo;
+1: int a;
+2: int b;
+3: int c;
+4: func suma;
+5: ret 5.0;
+6: finfunc;
+8: ret 5;
+9: finfunc;
+10: halt;
+[15:1] Warning: Redeclaration of symbol 'suma'
+Compilation finished. 0 errors, 1 warnings

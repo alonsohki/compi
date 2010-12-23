@@ -1,0 +1,11 @@
+0: prog ejemplo;
+1: bool a;
+2: int b;
+3: if b > b goto 5;
+4: goto 7;
+5: _t0 := true;
+6: goto 8;
+7: _t0 := false;
+8: a := _t0;
+9: halt;
+Compilation finished. 0 errors, 0 warnings

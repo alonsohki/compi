@@ -1,0 +1,25 @@
+0: prog ejem_bucles;
+1: int i;
+2: int a;
+3: int b;
+4: read a;
+5: read b;
+6: if b == 0 goto 21;
+7: goto 8;
+8: _t0 := a + 1;
+9: a := _t0;
+10: _t1 := b - 1;
+11: b := _t1;
+12: i := 0;
+13: if i < a goto 15;
+14: goto 19;
+15: _t2 := i + 1;
+16: i := _t2;
+17: if i < a goto 15;
+18: goto 19;
+19: if b > 0 goto 6;
+20: goto 21;
+21: write a;
+22: writeln;
+23: halt;
+Compilation finished. 0 errors, 0 warnings
