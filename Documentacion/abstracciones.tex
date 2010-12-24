@@ -1,32 +1,180 @@
 
-\chapter{Abstracciones}
+\chapter{Abstracciones funcionales}
 
 Lista de abstracciones utilizadas, detallando los parámetros con sus tipos y una breve 
 descripción :
 
-\begin{enumerate}
-	\item \ter{foreach} ( lista as elemento ) \\
-			Recorre la lista especificada como argumento en el parámetro elemento. \\
-			
-	\item \ter{ini\_lista} ( primerElem ) \\
-			Crea una nueva lista con el elemento primerElem como único elemento. \\
-			
-	\item \ter{lista\_vacia} ( ) \\
-			Crea una nueva lista vacía. \\
-			
-	\item \ter{unir} ( lista1, lista2 ) \\
-			Crea una nueva lista añadiendo al final de lista1 los elementos de lista2. \\
-			
-	\item \ter{obtener\_ref} () \\
-			Obtiene una referencia a la instrucción que se introducirá a continuación. \\
-			
-	\item \ter{añadir\_inst} ( instrucción ) \\
-			Añade una instrucción al código intermedio. \\
+\section{Control de código}
 
-	\item \ter{completa} ( lista, ref ) \\
-			Completa la lista de instrucciones incompletas con la referencia especificada. \\
+\begin{enumerate}
+	\item \ter{ADD\_INST} ( instrucción ) \\
+			Añade la instrucción al resultado, e incrementa la posición actual en el código intermedio.
 			
-	\item \ter{nuevo\_ident} ( ) \\
-			Crea un nuevo nombre para una variable temporal. \\
+	\item \ter{GET\_REF} ( ) \\
+			Obtiene una referencia a la posición actual en el código intermedio.
+	
+	\item \ter{NEW\_INDENT} ( ) \\
+			Crea un nuevo identificador temporal.
+
+	\item \ter{COMPLETE} ( lista, ref ) \\
+			Completa las instrucciones contenidas en lista, añadiéndoles la referencia ref.
+\end{enumerate}
+
+\section{Listas}
+
+\begin{enumerate}
+	\item \ter{EMPTY\_LIST} () \\
+			Crea una lista vacia.
 			
+	\item \ter{INIT\_LIST} ( elemento ) \\
+			Crea una lista y la inicializa con un elemento.
+			
+	\item \ter{JOIN} ( lista$_{1}$, lista$_{2}$ ) \\
+			Une dos listas.
+			
+	\item \ter{LIST\_SIZE} ( lista ) \\
+			Retorna el tamaño de la lista.
+			
+	\item \ter{LIST\_ITEM} ( lista, n ) \\
+			Devuelve el enésimo elemento de la lista.
+	
+	\item \ter{FOREACH} ( lista \ter{AS} iterador ) \\
+			Recorre la lista especificada como argumento en el parámetro iterador.
+	
+\end{enumerate}
+
+\section{Tipos}
+
+\begin{enumerate}
+
+	\item \ter{NEW\_BASIC\_TYPE} ( tipo ) \\
+			Genera la representación en memoria de un tipo.
+
+	\item \ter{IS\_INTEGER} ( attr\_tipo ) \\
+			Comprueba si el parámetro representa a un entero.
+			
+	\item \ter{IS\_REAL} ( attr\_tipo ) \\
+			Comprueba si el parámetro representa a un real.
+
+	\item \ter{IS\_NUMERIC} ( attr\_tipo ) \\
+			Comprueba si el parámetro representa a un tipo numérico (entero o real).
+
+	\item \ter{IS\_BOOLEAN} ( attr\_tipo ) \\
+			Comprueba si el parámetro representa a un booleano.
+
+	\item \ter{IS\_BOOLEANEXPR} ( attr\_tipo ) \\
+			Comprueba si el parámetro representa a una expresión condicional.
+
+	\item \ter{IS\_ARRAY} ( attr\_tipo ) \\
+			Comprueba si el parámetro representa a un array.
+
+	\item \ter{IS\_PROCEDURE} ( attr\_tipo ) \\
+			Comprueba si el parámetro representa a un procedimiento.
+
+	\item \ter{IS\_FUNCTION} ( attr\_tipo ) \\
+			Comprueba si el parámetro representa a una función.
+
+	\item \ter{IS\_UNKNOWN} ( attr\_tipo ) \\
+			Comprueba si el parámetro representa a un tipo desconocido.
+		
+	\item \ter{TYPE\_OF} ( attr\_tipo ) \\
+			Retorna una representación literal de un tipo.
+			
+	\item \ter{TYPE\_CAST} ( nombre, tipo\_origen, tipo\_destino ) \\
+		  \ter{TYPE\_CAST} ( nombre, tipo\_origen, tipo\_destino, lista\_true, lista\_false ) \\	
+			Transforma la variable nombre del tipo origen al tipo destino, cuando sea posible o necesaria la conversión.
+
+\end{enumerate}
+
+\section{Arrays}
+
+\begin{enumerate}
+
+	\item \ter{NEW\_ARRAY\_TYPE} ( tipo )
+			Crea la representación en memoria del tipo de un array, que contiene tipo.
+			
+	\item \ter{ARRAY\_CONTENT} ( array )
+			Retorna el tipo del array.
+			
+	\item \ter{ARRAY\_SIZE} ( array )
+			Retorna el tamaño total del array.
+			
+	\item \ter{ARRAY\_DEPTH} ( array )
+			Retorna el número de dimensiones del array.
+	
+	\item \ter{ARRAY\_DIMENSION} ( array, n )
+			Retorna la longitud de la enésima dimensión del array.
+
+\end{enumerate}
+
+\section{Funciones y procedimientos}
+
+\begin{enumerate}
+		
+	\item \ter{NEW\_PROCEDURE\_TYPE} ( nombre, lista\_parametros ) \\
+			Crea la representación en memoria del tipo de un procedimiento.
+			
+	\item \ter{NEW\_FUNCTION\_TYPE} ( nombre, lista\_parametros, tipo\_retorno )
+			Crea la representación en memoria del tipo de una función.
+			
+	\item \ter{SUBPROG\_NUM\_PARAMS} ( tipo\_subprog ) \\
+			Retorna el número de parámetros del subprograma.
+
+	\item \ter{SUBPROG\_PARAM} ( tipo\_subprog, n ) \\
+			Retorna el tipo del enésimo parámetro del subprograma.
+
+	\item \ter{SUBPROG\_PARAM\_CLASS} ( tipo\_subprog, n ) \\
+			Retorna la clase del enésimo parámetro del subprograma.
+	
+	\item \ter{FUNCTION\_RETURN} ( tipo\_subprog, n ) \\
+			Retorna el tipo de retorno de la función.
+			
+\end{enumerate}
+
+\section{Tabla de símbolos}
+
+\begin{enumerate}
+
+	\item \ter{ST\_PUSH} ( ) \\
+			Apila un nuevo ámbito en la tabla de símbolos.
+			
+	\item \ter{ST\_POP} ( ) \\
+			Desapila el ámbito de la cima de la tabla de símbolos.
+
+	\item \ter{ST\_ADD} ( nombre, tipo ) \\
+			Registra el identificador nombre con el tipo dado en la tabla de símbolos.\\
+			En caso de que ya exista un símbolo con ese nombre, se llevará a cabo una de las siguientes políticas de reemplazo :
+			%
+				\begin{enumerate}
+				
+					\item \ter{Fail}: La compilación se aborta.
+					
+					\item \ter{Replace}: Se reemplaza la antigua declaración con la nueva. \\
+						  \emph{Política por defecto}.
+					
+					\item \ter{Ignore}: Se mantiene la antigua declaración.
+					
+				\end{enumerate}
+			%
+			Retorna true, en caso de que se permita realizar la declaración.
+					
+	\item \ter{ST\_EXISTS} ( nombre ) \\
+			Retorna true en caso de existir un símbolo con ese nombre.
+				
+	\item \ter{ST\_GET\_TYPE} ( nombre ) \\
+			Retorna el tipo del símbolo con el nombre dado.
+	
+\end{enumerate}
+
+\section{Control de errores}
+
+\begin{enumerate}
+	\item \ter{WARNING} ( mensaje ) \\
+			Muestra un mensaje de advertencia.
+			
+	\item \ter{ERROR} ( mensaje ) \\
+			Muestra un mensaje de error, y cancela la generación de código.
+	
+	\item \ter{DIE} ( mensaje ) \\
+			Muestra un mensaje de error, y cancela la compilación.
 \end{enumerate}

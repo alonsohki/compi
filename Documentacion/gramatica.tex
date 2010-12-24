@@ -874,8 +874,8 @@
 				// Si uno de los dos es real, se realiza aritmética con números reales.
                 if ( IS_REAL(aritmetica¡'¡.htipo) || IS_REAL(termino.tipo) )
                 {
-                    TYPECAST( aritmetica¡'¡.hnombre, aritmetica¡'¡.htipo, NEW_BASIC_TYPE(REAL) );
-                    TYPECAST( termino.nombre, termino.tipo, NEW_BASIC_TYPE(REAL) );
+                    TYPECAST( aritmetica¡'¡.hnombre, aritmetica¡'¡.htipo, NEW_BASIC_TYPE(REAL));
+                    TYPECAST( termino.nombre, termino.tipo, NEW_BASIC_TYPE(REAL));
                     arimetica ¡'¡$_{1}$.htipo := NEW_BASIC_TYPE(REAL);
                 }
                 else
@@ -971,31 +971,28 @@
 							&					& \begin{lstlisting}
             if ( IS_BOOLEXPR(factor.tipo) )
             {
-                negacion.gtrue = factor.gfalse;
-                negacion.gfalse = factor.gtrue;
-                negacion.tipo = factor.tipo;
+                negacion.gtrue := factor.gfalse;
+                negacion.gfalse := factor.gtrue;
+                negacion.tipo := factor.tipo;
             }
             else
             {
-                VAR boolNombre = TYPECAST(factor.nombre, factor.tipo, NEW_BASIC_TYPE(BOOLEAN), factor.gtrue, factor.gfalse);
-                negacion.nombre = NEW_IDENT();
-                negacion.tipo = NEW_BASIC_TYPE(BOOLEAN);
-                VAR ref = GET_REF();
-                ADD_INST ( "if " || boolNombre || " goto " || ref+2 );
-                ADD_INST ( "goto " || ref+4 );
-                ADD_INST ( factor.nombre || " := false" );
-                ADD_INST ( "goto " || ref+5 );
-                ADD_INST ( factor.nombre || " := true" );
+                // Le pasamos el gtrue y el gfalse en orden inverso al TYPECAST
+                // para que haga de forma transparente la negación.
+                negacion.gtrue := EMPTY_LIST ();
+                negacion.gfalse := EMPTY_LIST ();
+                TYPECAST(factor.nombre, factor.tipo, NEW_BASIC_TYPE(BOOLEXPR), negacion.gfalse, negacion.gtrue);
+                negacion.tipo := NEW_BASIC_TYPE(BOOLEXPR);
             }
             negacion.literal = false;
                     									\end{lstlisting} \\
 							& |					& factor \\ 
 							&					& \begin{lstlisting}
-           negacion.nombre = factor.nombre;
-           negacion.tipo = factor.tipo;
-           negacion.gfalse = factor.gfalse;
-           negacion.gtrue = factor.gtrue;
-           negacion.literal = factor.literal;
+           negacion.nombre := factor.nombre;
+           negacion.tipo := factor.tipo;
+           negacion.gfalse := factor.gfalse;
+           negacion.gtrue := factor.gtrue;
+           negacion.literal := factor.literal;
                     									\end{lstlisting} \\
 
 \end{tabular}
@@ -1034,54 +1031,54 @@
 
 		\espacio
 		
-			factor'			& $\longrightarrow$ 	& IDENTIFIER \\
+			factor'			& $\longrightarrow$ 	& \ter{id} \\
 							&					& \begin{lstlisting}
 				array_o_llamada.hident := IDENTIFIER.value;
                     									\end{lstlisting} \\
 							& 					& array\_o\_llamada \\ 
 							&					& \begin{lstlisting}
-            factor ¡'¡.nombre = array_o_llamada.nombre;
-            factor ¡'¡.tipo = array_o_llamada.tipo;
-            factor ¡'¡.literal = false;
-            factor ¡'¡.gtrue = EMPTY_LIST();
-            factor ¡'¡.gfalse = EMPTY_LIST();
+            factor ¡'¡.nombre := array_o_llamada.nombre;
+            factor ¡'¡.tipo := array_o_llamada.tipo;
+            factor ¡'¡.literal := false;
+            factor ¡'¡.gtrue := EMPTY_LIST();
+            factor ¡'¡.gfalse := EMPTY_LIST();
                     								\end{lstlisting} \\
 								
-							& |				 	& INTEGER \\
+							& |				 	& \ter{integer} \\
 							&					& \begin{lstlisting}
-            factor ¡'¡.tipo = NEW_BASIC_TYPE(INTEGER);
-            factor ¡'¡.nombre = INTEGER.value;
-            factor ¡'¡.literal = true;
-            factor ¡'¡.gtrue = EMPTY_LIST();
-            factor ¡'¡.gfalse = EMPTY_LIST();
+            factor ¡'¡.tipo := NEW_BASIC_TYPE(INTEGER);
+            factor ¡'¡.nombre := INTEGER.value;
+            factor ¡'¡.literal := true;
+            factor ¡'¡.gtrue := EMPTY_LIST();
+            factor ¡'¡.gfalse := EMPTY_LIST();
                     									\end{lstlisting} \\
 									
-							& |				 	& REAL \\
+							& |				 	& \ter{real} \\
 							&					& \begin{lstlisting}
-            factor ¡'¡.tipo = NEW_BASIC_TYPE(REAL);
-            factor ¡'¡.nombre = REAL.value;
-            factor ¡'¡.literal = true;
-            factor ¡'¡.gtrue = EMPTY_LIST();
-            factor ¡'¡.gfalse = EMPTY_LIST();
+            factor ¡'¡.tipo := NEW_BASIC_TYPE(REAL);
+            factor ¡'¡.nombre := REAL.value;
+            factor ¡'¡.literal := true;
+            factor ¡'¡.gtrue := EMPTY_LIST();
+            factor ¡'¡.gfalse := EMPTY_LIST();
                     									\end{lstlisting} \\
 									
 							& |				 	& booleano \\
 							&					& \begin{lstlisting}
-            factor ¡'¡.tipo = NEW_BASIC_TYPE(BOOLEAN);
-            factor ¡'¡.nombre = booleano.value;
-            factor ¡'¡.literal = true;
-            factor ¡'¡.gtrue = EMPTY_LIST();
-            factor ¡'¡.gfalse = EMPTY_LIST();
+            factor ¡'¡.tipo := NEW_BASIC_TYPE(BOOLEAN);
+            factor ¡'¡.nombre := booleano.value;
+            factor ¡'¡.literal := true;
+            factor ¡'¡.gtrue := EMPTY_LIST();
+            factor ¡'¡.gfalse := EMPTY_LIST();
                     									\end{lstlisting} \\
 									
 									
 							& |				 	& \ter{(} expresion \ter{)} \\
 							&					& \begin{lstlisting}
-            factor ¡'¡.tipo = expresion.tipo;
-            factor ¡'¡.nombre = expresion.nombre;
-            factor ¡'¡.gfalse = expresion.gfalse;
-            factor ¡'¡.gtrue = expresion.gtrue;
-            factor ¡'¡.literal = expresion.literal;
+            factor ¡'¡.tipo := expresion.tipo;
+            factor ¡'¡.nombre := expresion.nombre;
+            factor ¡'¡.gfalse := expresion.gfalse;
+            factor ¡'¡.gtrue := expresion.gtrue;
+            factor ¡'¡.literal := expresion.literal;
                     									\end{lstlisting} \\
 \end{tabular}
 
@@ -1092,8 +1089,8 @@
 		\espacio
 		
 			array\_o\_llamada	& $\longrightarrow$ 	& \begin{lstlisting}
-         															     parametros\_llamadas.hident := array_o_llamada.hident;
-       																     parametros\_llamadas.hrequireFunc := true;
+         															     parametros_llamadas.hident := array_o_llamada.hident;
+       																     parametros_llamadas.hrequireFunc := true;
                     									\end{lstlisting} \\
 							& 					& parametros\_llamadas \\ 
 							&					& \begin{lstlisting}
@@ -1117,21 +1114,21 @@
             																array_o_llamada.nombre := NEW_IDENT ();
             																ADD_INST ( array_o_llamada.nombre || " := " || array_o_llamada.hident
 																		¡\hspace{5em}¡ || "[" || acceso_a_array.offset || "]" );
-            																array_o_llamada.tipo = acceso_a_array.tipo;
+            																array_o_llamada.tipo := acceso_a_array.tipo;
                     									\end{lstlisting} \\
 
 							& |				 	& $\xi$ \\
 							&					& \begin{lstlisting}
-        array_o_llamada.nombre = array_o_llamada.hident;
+        array_o_llamada.nombre := array_o_llamada.hident;
 
         if ( ST_EXISTS(array_o_llamada.hident) == false )
         {
             ERROR( "Unknow identifier " || array_o_llamada.hident );
-            array_o_llamada.tipo = NEW_BASIC_TYPE ( UNKNOWN );
+            array_o_llamada.tipo := NEW_BASIC_TYPE ( UNKNOWN );
         }
         else
         {
-            array_o_llamada.tipo = ST_GET_TYPE ( array_o_llamada.hident );
+            array_o_llamada.tipo := ST_GET_TYPE ( array_o_llamada.hident );
         }
                     									\end{lstlisting} \\
 
@@ -1156,8 +1153,8 @@
 									
 										& | 					& $\xi$ \\
 										&					& \begin{lstlisting}
-        acceso_a_array_opcional.nombre = acceso_a_array_opcional.hnombre;
-        acceso_a_array_opcional.tipo = acceso_a_array_opcional.htipo;
+        acceso_a_array_opcional.nombre := acceso_a_array_opcional.hnombre;
+        acceso_a_array_opcional.tipo := acceso_a_array_opcional.htipo;
                     									\end{lstlisting} \\
 										
 
@@ -1167,7 +1164,13 @@
         lista_de_expr.tipos := JOIN(INIT_LIST(expresion.tipo), resto_lista_expr.tipos);
         lista_de_expr.literales := JOIN(INIT_LIST(expresion.literal), resto_lista_expr.literales);
                     									\end{lstlisting} \\
-									
+								& | 					& $\xi$ \\
+								&					& \begin{lstlisting}
+        lista_de_expr.exprs := EMPTY_LIST();
+        lista_de_expr.tipos := EMPTY_LIST();
+        lista_de_expr.literales := EMPTY_LIST();
+                    									\end{lstlisting} \\
+																		
 			resto\_lista\_expr	& $\longrightarrow$ 	& \ter{,} expresion resto\_lista\_expr \\
 								&					& \begin{lstlisting}
         resto_lista_expr.exprs := JOIN(INIT_LIST(expresion.nombre), resto_lista_expr$_{1}$.exprs);
@@ -1177,9 +1180,9 @@
 									
 								& | 					& $\xi$ \\
 								&					& \begin{lstlisting}
-        resto_lista_expr.exprs = EMPTY_LIST();
-        resto_lista_expr.tipos = EMPTY_LIST();
-        resto_lista_expr.literales = EMPTY_LIST();
+        resto_lista_expr.exprs := EMPTY_LIST();
+        resto_lista_expr.tipos := EMPTY_LIST();
+        resto_lista_expr.literales := EMPTY_LIST();
                     									\end{lstlisting} \\
         
         

@@ -1,0 +1,30 @@
+\chapter{Implementación}
+
+
+	La práctica se ha implementado mediante un Pseudolenguaje basado en macros de preprocesador de C++.
+	
+	Disponemos de dos macros, DECLARE\_RULE y DEFINE\_RULE que construyen las clases que implementan cada una de las reglas.
+	
+	\begin{description}
+	
+		\item[DECLARE\_RULE] ~ \\
+			Mediante esta macro definimos el nombre y los atributos que dispondrá la clase que implementa la regla.
+			
+		\item[DEFINE\_RULE] ~\\
+			Mediante esta macro construimos la clase, y completamos el método \emph{Execute()} encargado de hacer el análisis.
+			
+			En esta MACRO también definimos la lista de primeros y siguientes, para implementar el modo pánico y el branching.
+			
+		\item[MATCH] ~\\
+			Realiza un Match, y activa el modo pánico en caso de fallo.
+			
+		\item[RULE] ~\\
+			Apila una regla para ser ejecutada, y opcionalmente lo deja en una variable que usamos para modificar y obtener sus atributos (heredados y sintetizados).
+			
+			
+	\end{description}
+	
+	
+	\subsection{Ejemplo de expansión de Macros}
+	
+		\lstinputlisting[basicstyle=\small]{expansion_macros.cpp}

@@ -28,6 +28,8 @@
 	% Activate to begin paragraphs with an empty line rather than an indent
 	\usepackage[parfill]{parskip}
 
+	\usepackage{pifont}
+
 	% Identar el comienzo de cada parrafo
 	\usepackage{indentfirst}
 
@@ -83,7 +85,7 @@
 	%\setmonofont[Scale=MatchLowercase]{Andale Mono}
 
 	% Paquete para poder incluir código fuente
-	\usepackage{listings}
+	\usepackage[formats]{listings}
 
     % Establecemos los valores por defecto de Listings
 	\lstset{
@@ -153,7 +155,7 @@
 		Compilación I. 
 	\end{centering}
 	%
-	\newline \Huge{2º Entrega. \newline La ETDS.}
+	\newline \Huge{Entrega Final.}
 	%
 	% Dejamos un hueco flexible, de modo que los autores bajen hasta la parte de abajo del documento
 	\vfill
@@ -177,21 +179,29 @@
     % Creamos la tabla de contenidos
     \tableofcontents
 
-	%\input{1-Analizador-Lexico}
+\part{Analizador léxico}
 
-	%\input{2-Analizador-casos-prueba}
-	
-	%\input{3-Mejoras}
-	
-	%\input{4-Horas-invertidas}
+	\input{1-Analizador-Lexico}
 
-        \input{introduccion}
+	\input{2-Analizador-casos-prueba}
+	
+	\input{3-Mejoras}
+
+\part{Analizador sintáctico y semántico}
 	
 	\input{gramatica}
-	
+
+	\input{LL}
+		
 	\input{atributos}
 	
 	\input{abstracciones}
 	
+	\input{Opcionales}
+	
+	\input{implementacion}
+	
+	\input{4-Horas-invertidas}
+		
 \end{document}  
 
